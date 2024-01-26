@@ -1,5 +1,7 @@
 <script setup>
 
+import { ref } from 'vue'
+
 </script>
 
 <template>
@@ -18,9 +20,9 @@
           <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Maps</a>
             <div class="dropdown-menu">
-              <router-link class="nav-link" to="/maps">France</router-link>
-              <router-link class="nav-link" to="/maps">Reunion</router-link>
-              <router-link class="nav-link" to="/maps">Rodrigues</router-link>
+              <router-link class="nav-link" :to="{ name: 'Maps', params: { zone : 'maurice' }}">Maurice</router-link>
+              <router-link class="nav-link" :to="{ name: 'Maps', params: { zone : 'reunion' }}">Reunion</router-link>
+              <router-link class="nav-link" :to="{ name: 'Maps', params: { zone : 'rodrigues' }}">Rodrigues</router-link>
             </div>
           </li>
         </ul>

@@ -11,8 +11,8 @@
     <br/><br/><br/>
     
     <div class="btn-group btn-group-lg" role="group" aria-label="Basic mixed styles example">
-      <router-link class="btn btn-outline-secondary" to="/maps">Maps</router-link>
-      <router-link class="btn btn-outline-secondary" to="/maps">Hosts</router-link>
+      <router-link class="btn btn-outline-secondary" to="/about">Maps</router-link>
+      <router-link class="btn btn-outline-secondary" to="/about">Hosts</router-link>
     </div>
   </div>
   

@@ -17,9 +17,10 @@ const router = createRouter({
       component: About,
     },
     {
-      path: '/maps',
+      path: '/maps/:zone',
       name: 'Maps',
       component: Maps,
+      props: true,
     },
   ]
 })
