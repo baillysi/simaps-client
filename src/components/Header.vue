@@ -6,7 +6,7 @@ import { ref } from 'vue'
 
 <template>
   
-  <div class="container" style="text-align:center;">
+  <div id="header">
     <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container-fluid">
         <a class="navbar-brand">Simaps</a>
@@ -43,8 +43,10 @@ import { ref } from 'vue'
     margin-bottom: 8px;
   }
 
-  .container {
+  #header {
     margin-top: 50px;
+    padding-left: 40px;
+    padding-right: 40px;
   }
 
   .nav-link .active {

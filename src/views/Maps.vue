@@ -1,8 +1,11 @@
 <script setup>
 
 import 'leaflet/dist/leaflet.css';
-import { LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import { ref, computed } from 'vue';
+import { LMap, LTileLayer } from '@vue-leaflet/vue-leaflet';
+
+import MapDetails from '../components/MapDetails.vue'
+
 
 const props = defineProps({
   zone: String
@@ -18,37 +21,47 @@ const centroidMaurice = ref([-20.160720261354005, 57.50003722462224])
 
 <template>
 
-  <div class="container" style="text-align:center;">
+  <div class="row" style="margin-left: 50px; margin-right: 50px;">
 
-    <div class="vue-map-container" v-if="zone === 'maurice'">
-      <l-map ref="map" :zoom="zoom" :center="centroidMaurice">
-        <l-tile-layer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          layer-type="base"
-          name="OpenStreetMap"
-        ></l-tile-layer>
-      </l-map>
+    <div class="col-md-7" style='border: 2px solid #226d68; border-right: 0;padding: 15px;' v-if="zone === 'maurice'">
+      <div id="map">
+        <l-map ref="map" :zoom="zoom" :center="centroidMaurice">
+          <l-tile-layer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            layer-type="base"
+            name="OpenStreetMap"
+          ></l-tile-layer>
+        </l-map>
+      </div>
     </div>
 
-    <div class="vue-map-container" v-else-if="zone === 'reunion'">
-      <l-map ref="map" :zoom="zoom" :center="centroidReunion">
-        <l-tile-layer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          layer-type="base"
-          name="OpenStreetMap"
-        ></l-tile-layer>
-      </l-map>
+
+    <div class="col-md-7" style='border: 2px solid #226d68; border-right: 0;padding: 15px;' v-else-if="zone === 'reunion'">
+      <div id="map">
+        <l-map ref="map" :zoom="zoom" :center="centroidReunion">
+          <l-tile-layer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            layer-type="base"
+            name="OpenStreetMap"
+          ></l-tile-layer>
+        </l-map>
+      </div>
     </div>
 
-    <div class="vue-map-container" v-else-if="zone === 'rodrigues'">
-      <l-map ref="map" :zoom="zoom" :center="centroidRodrigues">
-        <l-tile-layer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          layer-type="base"
-          name="OpenStreetMap"
-        ></l-tile-layer>
-      </l-map>
+
+    <div class="col-md-7" style='border: 2px solid #226d68; border-right: 0; padding: 15px;' v-else-if="zone === 'rodrigues'">
+      <div id="map">
+        <l-map ref="map" :zoom="zoom" :center="centroidRodrigues">
+          <l-tile-layer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            layer-type="base"
+            name="OpenStreetMap"
+          ></l-tile-layer>
+        </l-map>
+      </div>
     </div>
+
+    <map-details/>
 
   </div>
 
@@ -56,10 +69,10 @@ const centroidMaurice = ref([-20.160720261354005, 57.50003722462224])
 
 <style>
 
-  .vue-map-container {
-    height:600px; 
-    width:800px; 
-    display: block;
-  }
+  #map {
+    position: relative;
+    height: 600px;  /* or as desired */
+    width: 100%;  /* This means "100% of the width of its container", the .col-md-8 */
+}
 
 </style>

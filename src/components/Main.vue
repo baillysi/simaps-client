@@ -4,7 +4,7 @@
 
 <template>
 
-  <div class="container" style="text-align:center;">
+  <div class="container" style="text-align:center; margin-top: 50px;">
     <div class="container-fluid">
       <img src="../assets/img.png">
     </div>
@@ -19,10 +19,6 @@
 </template>
 
 <style>
-
-  .container {
-    margin-top: 50px;
-  }
 
   img {
     max-width: 100%;
