@@ -11,21 +11,38 @@ const props = defineProps({
   zone: String
 })
 
-const zoom = ref(9)
+const infoReunion = ref({
+  area: 2512,
+  hab: 863100,
+  centroidReunion: [-21.093988981873036, 55.49092544120333],
+  zoom: ref(9)
+})
 
-const centroidReunion = ref([-21.093988981873036, 55.49092544120333])
-const centroidRodrigues = ref([-19.704283864132748, 63.44646333715872])
-const centroidMaurice = ref([-20.160720261354005, 57.50003722462224])
+const infoMaurice = ref({
+  area: 2040,
+  hab: 1266000,
+  centroidMaurice: [-20.160720261354005, 57.50003722462224],
+  zoom: ref(9)
+})
+
+const infoRodrigues = ref({
+  area: 108,
+  hab: 41669,
+  centroidRodrigues: [-19.704283864132748, 63.44646333715872],
+  zoom: ref(11)
+})
 
 </script>
 
 <template>
 
+  <!-- TODO : essayer de passer le centroid de manière dynamique avec les props / slots (via router-link ?) et éviter rendu conditionnel -->
+
   <div class="row" style="margin-left: 50px; margin-right: 50px;">
 
     <div class="col-md-7" style='border: 2px solid #226d68; border-right: 0;padding: 15px;' v-if="zone === 'maurice'">
-      <div id="map">
-        <l-map ref="map" :zoom="zoom" :center="centroidMaurice">
+      <div class="map">
+        <l-map ref="map" :zoom="infoMaurice.zoom" :center="infoMaurice.centroidMaurice">
           <l-tile-layer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             layer-type="base"
@@ -37,8 +54,8 @@ const centroidMaurice = ref([-20.160720261354005, 57.50003722462224])
 
 
     <div class="col-md-7" style='border: 2px solid #226d68; border-right: 0;padding: 15px;' v-else-if="zone === 'reunion'">
-      <div id="map">
-        <l-map ref="map" :zoom="zoom" :center="centroidReunion">
+      <div class="map">
+        <l-map ref="map" :zoom="infoReunion.zoom" :center="infoReunion.centroidReunion">
           <l-tile-layer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             layer-type="base"
@@ -50,8 +67,8 @@ const centroidMaurice = ref([-20.160720261354005, 57.50003722462224])
 
 
     <div class="col-md-7" style='border: 2px solid #226d68; border-right: 0; padding: 15px;' v-else-if="zone === 'rodrigues'">
-      <div id="map">
-        <l-map ref="map" :zoom="zoom" :center="centroidRodrigues">
+      <div class="map">
+        <l-map ref="map" :zoom="infoRodrigues.zoom" :center="infoRodrigues.centroidRodrigues">
           <l-tile-layer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             layer-type="base"
@@ -61,7 +78,37 @@ const centroidMaurice = ref([-20.160720261354005, 57.50003722462224])
       </div>
     </div>
 
-    <map-details/>
+    <map-details>
+      <template v-slot:title>
+        <h4>{{ zone.toUpperCase() }}</h4>
+      </template>
+      <template v-slot:description>
+        <ul v-if="zone === 'maurice'">
+          <li>
+            superficie : {{ infoMaurice.area }} km<sup>2</sup>
+          </li>
+          <li>
+            nombre d'habitants : {{ infoMaurice.hab }}
+          </li>
+        </ul>
+        <ul v-if="zone === 'reunion'">
+          <li>
+            superficie : {{ infoReunion.area }} km<sup>2</sup>
+          </li>
+          <li>
+            nombre d'habitants : {{ infoReunion.hab }}
+          </li>
+        </ul>
+        <ul v-if="zone === 'rodrigues'">
+          <li>
+            superficie : {{ infoRodrigues.area }} km<sup>2</sup>
+          </li>
+          <li>
+            nombre d'habitants : {{ infoRodrigues.hab }}
+          </li>
+        </ul>
+      </template>
+    </map-details>
 
   </div>
 
@@ -69,7 +116,7 @@ const centroidMaurice = ref([-20.160720261354005, 57.50003722462224])
 
 <style>
 
-  #map {
+  .map {
     position: relative;
     height: 600px;  /* or as desired */
     width: 100%;  /* This means "100% of the width of its container", the .col-md-8 */
