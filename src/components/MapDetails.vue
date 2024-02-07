@@ -8,8 +8,9 @@
     <p>Map details ! Retrouvez toutes les informations relatives au projet Simaps sur GitHub</p><br/>
     <slot name="title"></slot>
     <slot name="description"></slot>
+    <slot name="hosts"></slot>
   </div>
-  
+
 </template>
 
 <style>
