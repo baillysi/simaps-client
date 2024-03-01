@@ -29,7 +29,7 @@
 <style>
 
   .navbar-brand {
-    color: #226d68 !important;
+    color: #2d728f !important;
     font-weight: bold;
     font-size: 35px !important;
     padding: 2%;

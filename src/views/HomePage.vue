@@ -12,7 +12,7 @@
     
     <div class="btn-group btn-group-lg" role="group" aria-label="Basic mixed styles example">
       <router-link class="btn btn-outline-secondary" to="/maps">Maps</router-link>
-      <router-link class="btn btn-outline-secondary" to="/about">Hosts</router-link>
+      <router-link class="btn btn-outline-secondary" to="/about">About</router-link>
     </div>
   </div>
   
@@ -28,14 +28,14 @@
   }
 
   .btn-outline-secondary {
-    color:#d6955b !important;
+    color:#f49e4c !important;
     font-weight: bold !important;
     padding-right: 50px !important;
     padding-left: 50px !important;
   }
 
   .btn-outline-secondary:hover {
-    background-color:#226d68 !important;
+    background-color:#3b8ea5 !important;
   }
 
 </style>
