@@ -8,9 +8,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
+    "@vueuse/core": "^10.9.0",
     "axios": "^1.6.7",
-    "bootstrap": "^5.2.3",
+    "bootstrap": "^5.3.3",
+    "bootstrap-vue": "^2.23.1",
     "leaflet": "^1.9.4",
     "primeicons": "^6.0.1",
     "vue": "^3.2.47",

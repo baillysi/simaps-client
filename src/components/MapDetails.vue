@@ -2,8 +2,9 @@
 
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet';
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
+import ModalComponent from './ModalComponent.vue';
 
 const props = defineProps({
   id: String
@@ -12,10 +13,6 @@ const props = defineProps({
 const hikes = ref('')
 const hikeDetails = ref('')
 const showDetails = ref(false)
-
-const name = ref('')
-const distance = ref('')
-const hosts = ref('')
 
 const mapcenter = ref('')
 const ismapdata = ref(false)
@@ -26,7 +23,7 @@ watch(mapcenter, () => {
 
 onMounted(async () => {
   getZoneDetails()
- })
+})
 
 async function getZoneDetails() {
   const response = await axios.get('http://localhost:5001/zones/' + props.id)
@@ -38,25 +35,6 @@ async function getHikeDetails(hike) {
   const response = await axios.get('http://localhost:5001/hikes/' + hike.id)
   hikeDetails.value = response.data
   showDetails.value = true
-}
-
-async function addNewHike() {
-  const payload = {
-    name: name.value,
-    distance: distance.value,
-    hosts: hosts.value,
-    zone_id: props.id,
-  }
-  await axios.post('http://localhost:5001/hikes', payload)
-      .then((res) => {
-          console.log(res.status);
-          getZoneDetails();
-      })
-      .catch((error) => {
-          console.log(error);
-      })
-  name.value = ''
-  distance.value = ''
 }
 
 async function deleteHike(hike) {
@@ -104,6 +82,9 @@ async function deleteHike(hike) {
                   <i class="pi pi-trash" style="color:226D68;"></i>
                 </button>
                 <button class="btn btn-light" @click="getHikeDetails(hike)">
+                  <i class="pi pi-eye" style="color:226D68;"></i>
+                </button>
+                <button class="btn btn-light" @click="getHikeDetails(hike)">
                   <i class="pi pi-file-edit" style="color:226D68;"></i>
                 </button>
               </div>
@@ -124,24 +105,16 @@ async function deleteHike(hike) {
       <br/>
 
       <div class="row" style="margin-left: 10px; margin-right: 10px;">
-        <form @submit.prevent="addNewHike">
-          <div class="form-group">
-            <label for="InputName">Nom de la randonnée</label>
-            <input v-model="name" class="form-control" id="InputName" placeholder="nom">
-          </div>
-          <div class="form-group">
-            <label for="InputDistance">Distance</label>
-            <input v-model="distance" class="form-control" id="InputDistance" placeholder="distance">
-            <small class="form-text text-muted">Renseignez la distance en km</small>
-          </div>
-          <br/>
-          <button class="btn btn-outline-secondary">Ajouter</button>    
-        </form>
+        <!-- Button trigger modal -->
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add new hike</button>
       </div>
     
     </div>
 
   </div>
+
+  <!-- Modal -->
+  <ModalComponent :zoneId="props.id" @exit="getZoneDetails"></ModalComponent>
 
 </template>
 
