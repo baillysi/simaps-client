@@ -2,7 +2,7 @@
 
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
 import ModalComponent from './ModalComponent.vue';
 
@@ -10,9 +10,21 @@ const props = defineProps({
   id: String
 })
 
-const hikes = ref('')
+const hikes = ref([])
 const hikeDetails = ref('')
 const showDetails = ref(false)
+
+const sortedHikes = computed(() => {
+  return hikes.value.sort((a, b) => {
+  if (a.id < b.id) {
+    return -1;
+  }
+  if (a.id > b.id) {
+    return 1;
+  }
+  return 0;
+  })
+})
 
 const mapcenter = ref('')
 const ismapdata = ref(false)
@@ -34,7 +46,6 @@ async function getZoneDetails() {
 async function getHikeDetails(hike) {
   const response = await axios.get('http://localhost:5001/hikes/' + hike.id)
   hikeDetails.value = response.data
-  showDetails.value = true
 }
 
 async function deleteHike(hike) {
@@ -42,7 +53,6 @@ async function deleteHike(hike) {
       .then((res) => {
           console.log(res.status);
           getZoneDetails();
-          showDetails.value = false;
       })
       .catch((error) => {
           console.log(error);
@@ -75,16 +85,16 @@ async function deleteHike(hike) {
       <div class="row" style="margin-left: 10px; margin-right: 10px;">
         <div class="col-md-8" style='padding: 10px;'>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in hikes" :key="hike.id">
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in sortedHikes" :key="hike.id">
               <div class="col-auto">
                 {{ hike.name }}
-                <button class="btn btn-light" @click="deleteHike(hike)">
+                <button class="btn btn-light" @click="deleteHike(hike), showDetails = false">
                   <i class="pi pi-trash" style="color:226D68;"></i>
                 </button>
-                <button class="btn btn-light" @click="getHikeDetails(hike)">
+                <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true">
                   <i class="pi pi-eye" style="color:226D68;"></i>
                 </button>
-                <button class="btn btn-light" @click="getHikeDetails(hike)">
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#putModal" @click="getHikeDetails(hike), showDetails = false">
                   <i class="pi pi-file-edit" style="color:226D68;"></i>
                 </button>
               </div>
@@ -98,7 +108,7 @@ async function deleteHike(hike) {
         </div>
         <div class="col-md-4" style='padding: 18px;' v-if="showDetails">
           <li>Distance : {{ hikeDetails.distance }} km</li>
-          <li>Nom : {{ hikeDetails.name }}</li>
+          <li>Name : {{ hikeDetails.name }}</li>
         </div>
       </div>
 
@@ -106,15 +116,15 @@ async function deleteHike(hike) {
 
       <div class="row" style="margin-left: 10px; margin-right: 10px;">
         <!-- Button trigger modal -->
-        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add new hike</button>
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create new hike</button>
       </div>
-    
+
     </div>
 
   </div>
 
   <!-- Modal -->
-  <ModalComponent :zoneId="props.id" @exit="getZoneDetails"></ModalComponent>
+  <ModalComponent :zoneId="props.id" :currentName="hikeDetails.name" :currentDistance="hikeDetails.distance" :hikeId="String(hikeDetails.id)" @exit="getZoneDetails(), showDetails = false"></ModalComponent>
 
 </template>
 
