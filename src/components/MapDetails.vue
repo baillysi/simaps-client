@@ -1,7 +1,9 @@
 <script setup>
 
 import 'leaflet/dist/leaflet.css';
-import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet';
+
+import { LMap, LTileLayer, LMarker, LPolyline, LGeoJson } from '@vue-leaflet/vue-leaflet';
+
 import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
 import ModalComponent from './ModalComponent.vue';
@@ -13,6 +15,8 @@ const props = defineProps({
 const hikes = ref([])
 const hikeDetails = ref('')
 const showDetails = ref(false)
+
+const selectedHike = ref(0)
 
 const sortedHikes = computed(() => {
   return hikes.value.sort((a, b) => {
@@ -74,8 +78,7 @@ async function deleteHike(hike) {
             layer-type="base"
             name="OpenStreetMap"
           ></l-tile-layer>
-          <l-marker :lat-lng="[-21.019387053324387, 55.424319458353594]"></l-marker>
-          <l-marker :lat-lng="[-21.1021375601261, 55.434908934125886]"></l-marker>
+          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.4" :color="'red'"></l-polyline>
         </l-map>
       </div>
     </div>
@@ -86,12 +89,12 @@ async function deleteHike(hike) {
         <div class="col-md-8" style='padding: 10px;'>
           <ul class="list-group list-group-flush">
             <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in sortedHikes" :key="hike.id">
-              <div class="col-auto">
+             <div class="col-auto">
                 {{ hike.name }}
                 <button class="btn btn-light" @click="deleteHike(hike), showDetails = false">
                   <i class="pi pi-trash" style="color:226D68;"></i>
                 </button>
-                <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true">
+                <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true, selectedHike = hike.id">
                   <i class="pi pi-eye" style="color:226D68;"></i>
                 </button>
                 <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#putModal" @click="getHikeDetails(hike), showDetails = false">
