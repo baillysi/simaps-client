@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { ref, toRef, watch } from 'vue';
 
-const emit = defineEmits(['exit'])
+const emit = defineEmits(['exitCreated', 'exitUpdated', 'exitDeleted'])
 
 const props = defineProps({
   zoneId: String,
@@ -14,7 +14,10 @@ const props = defineProps({
 
 const name = ref('')
 const distance = ref('')
+
+// Dummy data
 const hosts = ref('')
+const gpx = ref('')
 
 const updatedName = ref('')
 const updatedDistance = ref('')
@@ -33,11 +36,12 @@ async function addNewHike() {
     distance: distance.value,
     hosts: hosts.value,
     zone_id: props.zoneId,
+    gpx: gpx.value,
   }
   await axios.post('http://localhost:5001/hikes', payload)
       .then((res) => {
           console.log(res.status);
-          emit('exit');
+          emit('exitCreated');
       })
       .catch((error) => {
           console.log(error);
@@ -54,7 +58,7 @@ async function updateHike() {
   await axios.put('http://localhost:5001/hikes/' + props.hikeId, payload)
       .then((res) => {
           console.log(res.status);
-          emit('exit');
+          emit('exitUpdated');
       })
       .catch((error) => {
           console.log(error);
@@ -63,11 +67,22 @@ async function updateHike() {
   distance.value = ''
 }
 
+async function deleteHike() {
+  await axios.delete('http://localhost:5001/hikes/' + props.hikeId)
+      .then((res) => {
+          console.log(res.status);
+          emit('exitDeleted');
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+}
+
 </script>
 
 <template>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -114,6 +129,24 @@ async function updateHike() {
           <br/>
           <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Update</button>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-confirm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure ?</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to delete these records? This process cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" data-bs-dismiss="modal" @click="deleteHike">Delete</button>
       </div>
     </div>
   </div>

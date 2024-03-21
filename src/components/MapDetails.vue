@@ -2,11 +2,12 @@
 
 import 'leaflet/dist/leaflet.css';
 
-import { LMap, LTileLayer, LMarker, LPolyline, LGeoJson } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LPolyline } from '@vue-leaflet/vue-leaflet';
 
 import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
 import ModalComponent from './ModalComponent.vue';
+import AlertComponent from './AlertComponent.vue';
 
 const props = defineProps({
   id: String
@@ -17,6 +18,9 @@ const hikeDetails = ref('')
 const showDetails = ref(false)
 
 const selectedHike = ref(0)
+
+const message = ref('')
+const showMessage = ref(false)
 
 const sortedHikes = computed(() => {
   return hikes.value.sort((a, b) => {
@@ -52,17 +56,6 @@ async function getHikeDetails(hike) {
   hikeDetails.value = response.data
 }
 
-async function deleteHike(hike) {
-  await axios.delete('http://localhost:5001/hikes/' + hike.id)
-      .then((res) => {
-          console.log(res.status);
-          getZoneDetails();
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-}
-
 </script>
 
 <template>
@@ -86,12 +79,12 @@ async function deleteHike(hike) {
     <div class="col-md-5" style='border: 2px solid #226d68;padding: 15px;'>
 
       <div class="row" style="margin-left: 10px; margin-right: 10px;">
-        <div class="col-md-8" style='padding: 10px;'>
+        <div class="col-lg-7" style='padding: 10px;'>
           <ul class="list-group list-group-flush">
             <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in sortedHikes" :key="hike.id">
-             <div class="col-auto">
+             <div class="col-auto overflow-hidden">
                 {{ hike.name }}
-                <button class="btn btn-light" @click="deleteHike(hike), showDetails = false">
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#deleteModal" @click="getHikeDetails(hike), showDetails = false">
                   <i class="pi pi-trash" style="color:226D68;"></i>
                 </button>
                 <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true, selectedHike = hike.id">
@@ -109,7 +102,8 @@ async function deleteHike(hike) {
             </li>
           </ul>
         </div>
-        <div class="col-md-4" style='padding: 18px;' v-if="showDetails">
+
+        <div class="col-lg-5" style='padding: 18px;' v-if="showDetails">
           <li>Distance : {{ hikeDetails.distance }} km</li>
           <li>Name : {{ hikeDetails.name }}</li>
         </div>
@@ -119,15 +113,21 @@ async function deleteHike(hike) {
 
       <div class="row" style="margin-left: 10px; margin-right: 10px;">
         <!-- Button trigger modal -->
-        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create new hike</button>
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addModal">Create new hike</button>
+      </div>
+
+      <br/>
+
+      <div class="row" style="margin-left: 10px; margin-right: 10px;">
+        <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
       </div>
 
     </div>
 
   </div>
-
+  
   <!-- Modal -->
-  <ModalComponent :zoneId="props.id" :currentName="hikeDetails.name" :currentDistance="hikeDetails.distance" :hikeId="String(hikeDetails.id)" @exit="getZoneDetails(), showDetails = false"></ModalComponent>
+  <ModalComponent :zoneId="props.id" :currentName="hikeDetails.name" :currentDistance="hikeDetails.distance" :hikeId="String(hikeDetails.id)" @exitCreated="getZoneDetails(), showDetails = false, message = 'Hike created!', showMessage = true" @exitUpdated="getZoneDetails(), showDetails = false, message = 'Hike updated!', showMessage = true" @exitDeleted="getZoneDetails(), showDetails = false, message = 'Hike deleted!', showMessage = true"></ModalComponent>
 
 </template>
 
@@ -136,7 +136,7 @@ async function deleteHike(hike) {
   .map {
       position: relative;
       height: 600px;  /* or as desired */
-      width: 100%;  /* This means "100% of the width of its container", the .col-md-8 */
+      width: 100%;  /* This means "100% of the width of its container", the .col-md-7 */
   }
 
   .btn-outline-secondary {
