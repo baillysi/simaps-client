@@ -2,7 +2,7 @@
 
 import 'leaflet/dist/leaflet.css';
 
-import { LMap, LTileLayer, LPolyline } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LPolyline, LPopup} from '@vue-leaflet/vue-leaflet';
 
 import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
@@ -16,6 +16,7 @@ const props = defineProps({
 const hikes = ref([])
 const hikeDetails = ref('')
 const showDetails = ref(false)
+const interest = ref(2)
 
 const selectedHike = ref(0)
 
@@ -62,51 +63,49 @@ async function getHikeDetails(hike) {
 
   <div class="row" style="margin-left: 40px; margin-right: 40px;">
 
-    <div class="col-md-7" style='border: 2px solid #226d68; border-right: 0;padding: 15px;'>
+    <div class="col-lg-7" style='padding: 10px;'>
 
-      <div class="map" v-if="ismapdata">
+      <div class="map" v-if="ismapdata" style='border: 2px solid #226d68;'>
         <l-map ref="map" :zoom="13" :center="mapcenter" :use-global-leaflet="false">
           <l-tile-layer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             layer-type="base"
             name="OpenStreetMap"
           ></l-tile-layer>
-          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.4" :color="'red'"></l-polyline>
+          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.4" :color="'red'">
+            <l-popup>{{ hike.name }} <br> {{ hike.distance }}km </l-popup>
+          </l-polyline>
         </l-map>
       </div>
     </div>
 
-    <div class="col-md-5" style='border: 2px solid #226d68;padding: 15px;'>
+    <div class="col-lg-5 overflow-auto" style='padding: 10px; max-height: 680px;'>
 
-      <div class="row" style="margin-left: 10px; margin-right: 10px;">
-        <div class="col-lg-7" style='padding: 10px;'>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in sortedHikes" :key="hike.id">
-             <div class="col-auto overflow-hidden">
-                {{ hike.name }}
-                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#deleteModal" @click="getHikeDetails(hike), showDetails = false">
-                  <i class="pi pi-trash" style="color:226D68;"></i>
-                </button>
-                <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true, selectedHike = hike.id">
-                  <i class="pi pi-eye" style="color:226D68;"></i>
-                </button>
-                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#putModal" @click="getHikeDetails(hike), showDetails = false">
-                  <i class="pi pi-file-edit" style="color:226D68;"></i>
-                </button>
-              </div>
-              <div class="col-auto">
-                <i class="pi pi-star-fill" style="font-size: 1rem; color:226D68;"></i>
-                <i class="pi pi-star" style="font-size: 1rem; color:226D68;"></i>
-                <i class="pi pi-star" style="font-size: 1rem; color:226D68;"></i>
-              </div>
-            </li>
-          </ul>
-        </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in sortedHikes" :key="hike.id">
+          <div class="col-6">
+            {{ hike.name }}
+          </div>
+          <div class="col-4 offset-2">
+            <i v-for="toto in interest" class="pi pi-star-fill" style="font-size: 1rem; color:226D68;"></i>
+            <i v-for="toto in (3-interest)" class="pi pi-star" style="font-size: 1rem; color:226D68;"></i>
+          
+            <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true, selectedHike = hike.id">
+              <i class="pi pi-info-circle" style="color:226D68;"></i>
+            </button>
+            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#putModal" @click="getHikeDetails(hike), showDetails = false">
+              <i class="pi pi-file-edit" style="color:226D68;"></i>
+            </button>
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#deleteModal" @click="getHikeDetails(hike), showDetails = false">
+              <i class="pi pi-trash" style="color:226D68;"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
 
-        <div class="col-lg-5" style='padding: 18px;' v-if="showDetails">
-          <li>Distance : {{ hikeDetails.distance }} km</li>
-          <li>Name : {{ hikeDetails.name }}</li>
-        </div>
+      <div style='padding: 18px;' v-if="showDetails">
+        <li>Distance : {{ hikeDetails.distance }} km</li>
+        <li>Name : {{ hikeDetails.name }}</li>
       </div>
 
       <br/>
@@ -135,8 +134,8 @@ async function getHikeDetails(hike) {
 
   .map {
       position: relative;
-      height: 600px;  /* or as desired */
-      width: 100%;  /* This means "100% of the width of its container", the .col-md-7 */
+      height: 680px;  /* or as desired */
+      width: 100%;  /* This means "100% of the width of its container", the .col-lg-7 */
   }
 
   .btn-outline-secondary {
@@ -149,5 +148,10 @@ async function getHikeDetails(hike) {
   .btn-outline-secondary:hover {
     background-color:#3b8ea5 !important;
   }
+
+  .leaflet-popup-content-wrapper {
+    border-radius: 0.5 !important;
+    font-size:small;
+}
 
 </style>

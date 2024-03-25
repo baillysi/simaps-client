@@ -90,7 +90,7 @@ async function deleteHike() {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form @submit.prevent="addNewHike">
+        <form @submit.prevent="addNewHike" novalidate>
           <div class="form-group">
             <label for="InputName">Hike name</label>
             <input v-model="name" class="form-control" id="InputName" placeholder="nom">
