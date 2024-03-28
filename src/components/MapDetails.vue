@@ -166,20 +166,9 @@ async function getHikeDetails(hike) {
 <style>
 
   .map {
-      position: relative;
-      height: 680px;  /* or as desired */
-      width: 100%;  /* This means "100% of the width of its container", the .col-lg-7 */
-  }
-
-  .btn-outline-secondary {
-    color:#f49e4c !important;
-    font-weight: bold !important;
-    padding-right: 50px !important;
-    padding-left: 50px !important;
-  }
-
-  .btn-outline-secondary:hover {
-    background-color:#3b8ea5 !important;
+    position: relative;
+    height: 680px;  /* or as desired */
+    width: 100%;  /* This means "100% of the width of its container", the .col-lg-7 */
   }
 
   .leaflet-popup-content-wrapper {

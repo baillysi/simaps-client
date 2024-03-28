@@ -5,10 +5,10 @@
 <template>
   
   <div id="header">
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-md navbar-light">
       <div class="container-fluid">
         <a class="navbar-brand">Simaps</a>
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav me-auto"> 
           <li class="nav-item">
             <router-link class="nav-link" to="/home">Home</router-link>
           </li>
@@ -19,6 +19,9 @@
             <router-link class="nav-link" to="/maps">Maps</router-link>
           </li>
         </ul>
+        <form class="form-inline">
+          <button class="btn btn-outline-secondary" type="button">Login</button>
+        </form>
       </div>
     </nav>
     <hr>
@@ -29,22 +32,23 @@
 <style>
 
   .navbar-brand {
-    color: #2d728f !important;
+    color: #226D68 !important;
     font-weight: bold;
     font-size: 35px !important;
-    padding: 2%;
     margin-bottom: 8px;
+    padding-right: 30px;
   }
 
   #header {
-    margin-top: 50px;
+    margin-top:30px;
     padding-left: 40px;
     padding-right: 40px;
   }
 
-  .nav-link .active {
-    color: red !important;
+  .nav-link {
+    color: #18534F !important;
   }
+  
 
 </style>
 

@@ -159,15 +159,4 @@
 
 <style>
 
-  .btn-outline-secondary {
-    color:#f49e4c !important;
-    font-weight: bold !important;
-    padding-right: 50px !important;
-    padding-left: 50px !important;
-  }
-
-  .btn-outline-secondary:hover {
-    background-color:#3b8ea5 !important;
-  }
-
 </style>
