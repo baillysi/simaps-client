@@ -23,8 +23,21 @@ const selectedHike = ref(0)
 const message = ref('')
 const showMessage = ref(false)
 
+const search = ref('')
+const currentOrder = ref('') 
 const sortedHikes = computed(() => {
-  return hikes.value.sort((a, b) => {
+  return currentOrder.value == 'Name' ?
+  hikes.value.sort((a, b) => {
+  let fa = a.name.toLowerCase(), fb = b.name.toLowerCase();
+  if (fa < fb) {
+    return -1;
+  }
+  if (fa > fb) {
+    return 1;
+  }
+  return 0;
+  }):
+  hikes.value.sort((a, b) => {
   if (a.id < b.id) {
     return -1;
   }
@@ -33,6 +46,13 @@ const sortedHikes = computed(() => {
   }
   return 0;
   })
+})
+const filteredHikes = computed (() => {
+  return sortedHikes.value.filter(
+        (hike) =>
+          hike.name
+            .toLowerCase()
+            .includes(search.value.toLowerCase()))
 })
 
 const mapcenter = ref('')
@@ -81,8 +101,21 @@ async function getHikeDetails(hike) {
 
     <div class="col-lg-5 overflow-auto" style='padding: 10px; max-height: 680px;'>
 
+      <div class="row" style="margin: 10px;">
+        <div class="col-4">
+          <input class="form-control" placeholder="Search" v-model="search"/>
+        </div>
+        <div class="col-4">
+          <select v-model="currentOrder" class="form-select" @change="getZoneDetails()">
+            <option disabled value="">Sort</option>
+            <option>Name</option>
+            <option>Index</option>
+          </select>
+        </div>
+      </div>
+      
       <ul class="list-group list-group-flush">
-        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in sortedHikes" :key="hike.id">
+        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in filteredHikes" :key="hike.id">
           <div class="col-6">
             {{ hike.name }}
           </div>
@@ -96,7 +129,7 @@ async function getHikeDetails(hike) {
             <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#putModal" @click="getHikeDetails(hike), showDetails = false">
               <i class="pi pi-file-edit" style="color:226D68;"></i>
             </button>
-            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#deleteModal" @click="getHikeDetails(hike), showDetails = false">
+            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#deleteModal" @click="getHikeDetails(hike), showDetails = false">
               <i class="pi pi-trash" style="color:226D68;"></i>
             </button>
           </div>
