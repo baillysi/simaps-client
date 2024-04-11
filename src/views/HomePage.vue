@@ -5,7 +5,7 @@
 <template>
 
   <div class="container" style="text-align:center; margin-top: 30px;">
-    <h1 style="font-family:'Courier New', Courier, monospace; font-size:bold; color:#18534F">Maps and Hikes.</h1>
+    <h1 style="font-family:'Courier New', Courier, monospace; font-size:bold; color:#18534F;">Maps and Hikes.</h1>
     <br/>
     <div class="container-fluid">
       <img src="../assets/img.png">

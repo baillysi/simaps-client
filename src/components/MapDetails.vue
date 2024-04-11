@@ -16,9 +16,10 @@ const props = defineProps({
 const hikes = ref([])
 const hikeDetails = ref('')
 const showDetails = ref(false)
-const interest = ref(2)
 
 const selectedHike = ref(0)
+
+const journeys = ref([])
 
 const message = ref('')
 const showMessage = ref(false)
@@ -77,6 +78,11 @@ async function getHikeDetails(hike) {
   hikeDetails.value = response.data
 }
 
+async function getJourneys() {
+  const response = await axios.get('http://localhost:5001/journeys')
+  journeys.value = response.data
+}
+
 </script>
 
 <template>
@@ -113,41 +119,60 @@ async function getHikeDetails(hike) {
           </select>
         </div>
       </div>
-      
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" v-for="hike in filteredHikes" :key="hike.id">
-          <div class="col-6">
-            {{ hike.name }}
-          </div>
-          <div class="col-4 offset-2">
-            <i v-for="toto in interest" class="pi pi-star-fill" style="font-size: 1rem; color:226D68;"></i>
-            <i v-for="toto in (3-interest)" class="pi pi-star" style="font-size: 1rem; color:226D68;"></i>
-          
-            <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true, selectedHike = hike.id">
-              <i class="pi pi-info-circle" style="color:226D68;"></i>
-            </button>
-            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#putModal" @click="getHikeDetails(hike), showDetails = false">
-              <i class="pi pi-file-edit" style="color:226D68;"></i>
-            </button>
-            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#deleteModal" @click="getHikeDetails(hike), showDetails = false">
-              <i class="pi pi-trash" style="color:226D68;"></i>
-            </button>
-          </div>
-        </li>
-      </ul>
-
-      <div style='padding: 18px;' v-if="showDetails">
-        <li>Distance : {{ hikeDetails.distance }} km</li>
-        <li>Name : {{ hikeDetails.name }}</li>
-      </div>
-
       <br/>
 
       <div class="row" style="margin-left: 10px; margin-right: 10px;">
         <!-- Button trigger modal -->
-        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addModal">Create new hike</button>
+        <button class="btn btn-outline-secondary" @click="getJourneys()" data-bs-toggle="modal" data-bs-target="#addModal">Create your own hike</button>
       </div>
+      <br/>
 
+      <div class="accordion accordion-flush" id="accordionFlushParent">
+        <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
+          <h2 class="accordion-header" id="flush-headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
+              <div class="col-6">
+                {{ hike.name}}
+              </div>
+              <div class="col-3">
+                <span v-if="hike.difficulty == 1" class="badge bg-success">Easy</span>
+                <span v-if="hike.difficulty == 2" class="badge bg-primary">Medium</span>
+                <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficult</span>
+                <span v-if="hike.difficulty == 4" class="badge bg-dark">Extreme</span>
+              </div>
+              <div class="col-3">
+                <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i>
+                <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
+              </div>
+            </button>
+          </h2>
+          <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
+            <div class="accordion-body">
+              <span class="badge bg-info">{{ hike.distance }} km</span>
+              <span class="badge bg-info">{{ hike.elevation }} m+</span> 
+              <span class="badge bg-info">{{ hike.duration }} hours</span>
+              <span class="badge bg-info">{{ hike.journey.name }}</span>
+              <br/><br/>
+              {{ hike.description }}
+              <br/><br/>
+              <div class="col text-end">
+                <button class="btn btn-light" @click="getHikeDetails(hike), showDetails = true, selectedHike = hike.id" data-toggle="tooltip" title="see on map">
+                  <i class="pi pi-eye" style="color:#226D68;"></i>
+                </button>
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#putModal" @click="getHikeDetails(hike), getJourneys(), showDetails = false" data-toggle="tooltip" title="update data">
+                  <i class="pi pi-file-edit" style="color:#226D68;"></i>
+                </button>
+                <button class="btn btn-light" data-toggle="tooltip" title="upload gpx">
+                  <i class="pi pi-upload" style="color:#226D68;"></i>
+                </button>
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#deleteModal" @click="getHikeDetails(hike), showDetails = false" data-toggle="tooltip" title="delete hike">
+                  <i class="pi pi-trash" style="color:#D6955B;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <br/>
 
       <div class="row" style="margin-left: 10px; margin-right: 10px;">
@@ -155,11 +180,10 @@ async function getHikeDetails(hike) {
       </div>
 
     </div>
-
   </div>
   
   <!-- Modal -->
-  <ModalComponent :zoneId="props.id" :currentName="hikeDetails.name" :currentDistance="hikeDetails.distance" :hikeId="String(hikeDetails.id)" @exitCreated="getZoneDetails(), showDetails = false, message = 'Hike created!', showMessage = true" @exitUpdated="getZoneDetails(), showDetails = false, message = 'Hike updated!', showMessage = true" @exitDeleted="getZoneDetails(), showDetails = false, message = 'Hike deleted!', showMessage = true"></ModalComponent>
+  <ModalComponent :hikeId="String(hikeDetails.id)" :zoneId="props.id" :currentName="hikeDetails.name" :currentDistance="hikeDetails.distance" :currentElevation="hikeDetails.elevation" :currentDifficulty="hikeDetails.difficulty" :currentDuration="hikeDetails.duration" :currentJourney="hikeDetails.journey" :currentRates="hikeDetails.rates" :currentDescription="hikeDetails.description" :journeys="journeys" @exitCreated="getZoneDetails(), showDetails = false, message = 'Hike created!', showMessage = true" @exitUpdated="getZoneDetails(), showDetails = false, message = 'Hike updated!', showMessage = true" @exitDeleted="getZoneDetails(), showDetails = false, message = 'Hike deleted!', showMessage = true"></ModalComponent>
 
 </template>
 
@@ -174,6 +198,12 @@ async function getHikeDetails(hike) {
   .leaflet-popup-content-wrapper {
     border-radius: 0.5 !important;
     font-size:small;
-}
+  }
+
+  .badge.bg-info {
+    background-color:#226D68 !important; 
+    margin-left: 5px;
+    margin-right: 5px;
+  }
 
 </style>
