@@ -3,7 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 import { Modal } from 'bootstrap';
 
-import { LMap, LTileLayer, LPolyline, LPopup} from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker} from '@vue-leaflet/vue-leaflet';
 
 import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
@@ -61,6 +61,32 @@ const filteredHikes = computed (() => {
 
 const mapcenter = ref('')
 const ismapdata = ref(false)
+const tileProviders = ref([
+  {
+    name: 'OpenStreetMap',
+    visible: true,
+    attribution:
+      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  },
+  {
+    name: 'OpenTopoMap',
+    visible: false,
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution:
+      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+  },
+])
+const hosts = ref([
+  {
+    coordinates: [-21.112570146489052, 55.43275004423846],
+    content : "popup content",
+  },
+  {
+    coordinates: [-21.102822430867704, 55.43727970253807],
+    content : "popup content",
+  },
+])
 
 watch(mapcenter, () => {
   ismapdata.value = true
@@ -130,14 +156,36 @@ async function hideDelete() {
 
       <div class="map" v-if="ismapdata" style='border: 2px solid #226d68;'>
         <l-map ref="map" :zoom="13" :center="mapcenter" :use-global-leaflet="false">
+
+          <l-control-layers position="topright"></l-control-layers>
+
           <l-tile-layer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            layer-type="base"
-            name="OpenStreetMap"
-          ></l-tile-layer>
-          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.4" :color="'red'">
-            <l-popup>{{ hike.name }} <br> {{ hike.distance }}km </l-popup>
+          v-for="tileProvider in tileProviders"
+          :key="tileProvider.name"
+          :name="tileProvider.name"
+          :visible="tileProvider.visible"
+          :url="tileProvider.url"
+          :attribution="tileProvider.attribution"
+          layer-type="base"/>
+
+          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.3" :color="'blue'" :weight="4">
+            <l-popup>{{ hike.name }}</l-popup>
           </l-polyline>
+
+          <l-layer-group 
+            :visible="false"
+            layerType="overlay"
+            name="Hosts">
+            <l-marker
+              v-for="(item, index) in hosts"
+              :key="index"
+              :lat-lng="[item.coordinates[0], item.coordinates[1]]">
+              <l-popup>{{ item.content }}</l-popup>
+            </l-marker>
+          </l-layer-group>
+
+          <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
+
         </l-map>
       </div>
     </div>
