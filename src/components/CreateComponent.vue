@@ -1,0 +1,168 @@
+<script setup>
+
+import axios from 'axios';
+import { ref, toRef, watch } from 'vue';
+
+const emit = defineEmits(['exit'])
+
+const props = defineProps({
+  zoneId: String,
+  journeys: Object,
+})
+
+const name = ref('')
+const distance = ref('')
+const elevation = ref('')
+const difficulty = ref(2)
+const duration = ref('')
+const journey = ref([])
+const rates = ref(2)
+const description = ref('Add description here.')
+
+// Dummy data to create new hike
+const hosts = ref('')
+const gpx = ref('')
+
+async function createHike() {
+  const payload = {
+    zone_id: props.zoneId,
+    name: name.value,
+    distance: distance.value,
+    elevation: elevation.value,
+    difficulty: difficulty.value,
+    duration: duration.value,
+    journey: journey.value,
+    rates: rates.value,
+    description: description.value,
+    hosts: hosts.value,
+    gpx: gpx.value,
+  }
+
+  await axios.post('http://localhost:5001/hikes', payload)
+      .then((res) => {
+          console.log(res.status);
+          resetData();
+          emit('exit');
+      })
+      .catch((error) => {
+          console.log(error);
+          resetData();
+      })
+}
+
+async function resetData() {
+  name.value = ''
+  distance.value = ''
+  elevation.value = ''
+  difficulty.value = 2
+  duration.value = ''
+  journey.value = ''
+  rates.value = 2
+  description.value = 'Add description here.'
+  hosts.value = ''
+  gpx.value = ''
+  errors.value = []
+}
+
+// custom form validation
+const errors = ref([])
+async function onSubmit() {
+  errors.value = []
+  if (!name.value) {
+    errors.value.push('Name is required.')
+  }
+  if (!distance.value) {
+    errors.value.push('Distance is required.')
+  }
+  if (!elevation.value) {
+    errors.value.push('Positive elevation is required.')
+  }
+  if (!duration.value) {
+    errors.value.push('Duration is required.')
+  }
+  if (!journey.value.name) {
+    errors.value.push('Journey type is required.')
+  }
+  if (errors.value.length == 0) {
+    createHike()
+  }
+}
+
+</script>
+
+<template>
+
+<div class="modal fade" data-bs-backdrop="static" id="#create" tabindex="-1" aria-labelledby="#create" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="#create">Create your own hike</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
+      </div>
+      <div class="modal-body">
+        <form @submit.prevent="onSubmit()" novalidate> 
+          <p v-if="errors.length">
+            <b>Please correct the following error(s):</b>
+            <ul>
+              <li v-for="error in errors" style="color:#D6955B;">{{ error }}</li>
+            </ul>
+          </p>
+          <div class="form-group">
+            <label for="InputName">Name</label>
+            <input type="text" v-model="name" class="form-control" id="InputName">
+          </div>
+          <div class="form-group">
+            <label for="InputDescription">Description</label>
+            <textarea type="text" v-model="description" class="form-control" id="InputDescription" rows="4"></textarea>
+          </div>
+          <br/>
+          <div class="row">
+            <div class="form-group col">
+              <label for="InputDistance">Distance</label>
+              <input type="number" v-model="distance" class="form-control" id="InputDistance" placeholder="km">
+            </div>
+            <div class="form-group col">
+              <label for="InputElevation">Positive elevation</label>
+              <input type="number" v-model="elevation" class="form-control" id="InputElevation" placeholder="m+">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col">
+              <label for="InputDuration">Duration</label>
+              <input type="number" v-model="duration" class="form-control" id="InputDuration" placeholder="hours">
+            </div>
+            <div class="form-group col">
+              <label for="InputJourney">Journey type</label>
+              <select v-model="journey" class="form-select" id="InputJourney">
+                <option v-for="option in journeys" :value="option">
+                  {{ option.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <br/>
+          <div class="form-group">
+            <label for="InputDifficulty">Difficulty</label>
+            <input v-model="difficulty" type="range" class="form-range" min="0" max="4" id="InputDifficulty">
+          </div>
+          <div class="form-group">
+            <label for="InputRates">Interest</label>
+            <input v-model="rates" type="range" class="form-range" min="0" max="4" id="InputRates">
+          </div>
+          <br/>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<style>
+
+</style>
+
+

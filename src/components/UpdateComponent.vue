@@ -1,0 +1,197 @@
+<script setup>
+
+import axios from 'axios';
+import { ref, toRef, watch } from 'vue';
+
+const emit = defineEmits(['exit'])
+
+const props = defineProps({
+  zoneId: String,
+  hikeId: String,
+  currentName: String,
+  currentDistance: Number,
+  currentElevation: Number,
+  currentDifficulty: Number,
+  currentDuration: Number,
+  currentJourney: Object,
+  currentRates: Number,
+  currentDescription: String,
+  journeys: Object,
+})
+
+const updatedName = ref('')
+const updatedDistance = ref('')
+const updatedElevation = ref('')
+const updatedDifficulty = ref('')
+const updatedDuration = ref('')
+const updatedJourney = ref([])
+const updatedRates = ref('')
+const updatedDescription = ref('')
+
+watch(toRef(props, 'currentName'), (value) => {
+  updatedName.value = toRef(props, 'currentName').value; 
+});
+
+watch(toRef(props, 'currentDistance'), (value) => {
+  updatedDistance.value = toRef(props, 'currentDistance').value; 
+});
+
+watch(toRef(props, 'currentElevation'), (value) => {
+  updatedElevation.value = toRef(props, 'currentElevation').value; 
+});
+
+watch(toRef(props, 'currentDifficulty'), (value) => {
+  updatedDifficulty.value = toRef(props, 'currentDifficulty').value; 
+});
+
+watch(toRef(props, 'currentDuration'), (value) => {
+  updatedDuration.value = toRef(props, 'currentDuration').value; 
+});
+
+watch(toRef(props, 'currentJourney'), (value) => {
+  updatedJourney.value = toRef(props, 'currentJourney').value; 
+});
+
+watch(toRef(props, 'currentRates'), (value) => {
+  updatedRates.value = toRef(props, 'currentRates').value; 
+});
+
+watch(toRef(props, 'currentDescription'), (value) => {
+  updatedDescription.value = toRef(props, 'currentDescription').value; 
+});
+
+async function updateHike() {
+  const payload = {
+    name: updatedName.value,
+    distance: updatedDistance.value,
+    elevation: updatedElevation.value,
+    difficulty: updatedDifficulty.value,
+    duration: updatedDuration.value,
+    journey: updatedJourney.value,
+    rates: updatedRates.value,
+    description: updatedDescription.value,
+  }
+  await axios.put('http://localhost:5001/hikes/' + props.hikeId, payload)
+      .then((res) => {
+          console.log(res.status);
+          emit('exit');
+      })
+      .catch((error) => {
+          console.log(error);
+      })
+}
+
+async function resetData() {
+  updatedName.value = toRef(props, 'currentName').value
+  updatedDistance.value = toRef(props, 'currentDistance').value
+  updatedElevation.value = toRef(props, 'currentElevation').value
+  updatedDifficulty.value = toRef(props, 'currentDifficulty').value
+  updatedDuration.value = toRef(props, 'currentDuration').value
+  updatedJourney.value = toRef(props, 'currentJourney').value
+  updatedRates.value = toRef(props, 'currentRates').value
+  updatedDescription.value = toRef(props, 'currentDescription').value
+  errors.value = []
+}
+
+// custom form validation
+const errors = ref([])
+async function onSubmit() {
+  errors.value = []
+  if (!updatedName.value) {
+    errors.value.push('Name is required.')
+  }
+  if (!updatedDistance.value) {
+    errors.value.push('Distance is required.')
+  }
+  if (!updatedElevation.value) {
+    errors.value.push('Positive elevation is required.')
+  }
+  if (!updatedDuration.value) {
+    errors.value.push('Duration is required.')
+  }
+  if (!updatedJourney.value.name) {
+    errors.value.push('Journey type is required.')
+  }
+  if (errors.value.length == 0) {
+    updateHike()
+  }
+}
+
+</script>
+
+<template>
+
+<div class="modal fade" data-bs-backdrop="static" id="#update" tabindex="-1" aria-labelledby="#update" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="#update">Update hike</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
+      </div>
+      <div class="modal-body">
+        <form @submit.prevent="onSubmit()" novalidate>
+          <p v-if="errors.length">
+            <b>Please correct the following error(s):</b>
+            <ul>
+              <li v-for="error in errors" style="color:#D6955B;">{{ error }}</li>
+            </ul>
+          </p>
+          <div class="form-group">
+            <label for="InputName">Name</label>
+            <input type="text" v-model="updatedName" class="form-control" id="InputName">
+          </div>
+          <div class="form-group">
+            <label for="InputDescription">Description</label>
+            <textarea type="text" v-model="updatedDescription" class="form-control" id="InputDescription" rows="4"></textarea>
+          </div>
+          <br/>
+          <div class="row">
+            <div class="form-group col">
+              <label for="InputDistance">Distance</label>
+              <input type="number" v-model="updatedDistance" class="form-control" id="InputDistance" placeholder="km">
+            </div>
+            <div class="form-group col">
+              <label for="InputElevation">Positive elevation</label>
+              <input type="number" v-model="updatedElevation" class="form-control" id="InputElevation" placeholder="m+">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col">
+              <label for="InputDuration">Duration</label>
+              <input type="number" v-model="updatedDuration" class="form-control" id="InputDuration" placeholder="hours">
+            </div>
+            <div class="form-group col">
+              <label for="InputJourney">Journey type</label>
+              <select v-model="updatedJourney" class="form-select" id="InputJourney">
+                <option v-for="option in journeys" :value="option">
+                  {{ option.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <br/>
+          <div class="form-group">
+            <label for="InputDifficulty">Difficulty</label>
+            <input v-model="updatedDifficulty" type="range" class="form-range" min="0" max="4" id="InputDifficulty">
+          </div>
+          <div class="form-group">
+            <label for="InputRates">Interest</label>
+            <input v-model="updatedRates" type="range" class="form-range" min="0" max="4" id="InputRates">
+          </div>
+          <br/>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<style>
+
+</style>
+
+
