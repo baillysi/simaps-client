@@ -3,7 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 import { Modal } from 'bootstrap';
 
-import { LMap, LTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker} from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LWmsTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker } from '@vue-leaflet/vue-leaflet';
 
 import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
@@ -76,7 +76,39 @@ const tileProviders = ref([
     attribution:
       'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   },
+  {
+    name: 'BD Ortho IGN',
+    visible: false,
+    url : "https://data.geopf.fr/wmts?" +
+        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
+        "&STYLE=normal" +
+        "&TILEMATRIXSET=PM" +
+        "&FORMAT=image/jpeg"+
+        "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS"+
+	      "&TILEMATRIX={z}" +
+        "&TILEROW={y}" +
+        "&TILECOL={x}",
+    attribution : "Orthophotos - © IGN",
+    maxZoom: 18,
+	},
+  {
+    name: 'Plan IGN',
+    visible: false,
+    url :"https://data.geopf.fr/wmts?" +
+        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
+        "&STYLE=normal" +
+        "&TILEMATRIXSET=PM" +
+        "&FORMAT=image/png"+
+        "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2"+
+	      "&TILEMATRIX={z}" +
+        "&TILEROW={y}" +
+        "&TILECOL={x}",
+    attribution: 'Plan IGNV2 - Carte © IGN/Geoportail',
+    maxNativeZoom: 19,
+    maxZoom: 22,
+	}
 ])
+
 const hosts = ref([
   {
     coordinates: [-21.112570146489052, 55.43275004423846],
@@ -168,7 +200,7 @@ async function hideDelete() {
           :attribution="tileProvider.attribution"
           layer-type="base"/>
 
-          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.3" :color="'blue'" :weight="4">
+          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.7" :color="'#F27438'" :weight="4">
             <l-popup>{{ hike.name }}</l-popup>
           </l-polyline>
 
@@ -308,5 +340,14 @@ async function hideDelete() {
     margin-left: 5px;
     margin-right: 5px;
   }
+
+  
+  /* .leaflet-layer,
+  .leaflet-control-zoom-in,
+  .leaflet-control-zoom-out,
+  .leaflet-control-attribution {
+    filter: brightness(85%) contrast(180%);
+  }  */
+ 
 
 </style>
