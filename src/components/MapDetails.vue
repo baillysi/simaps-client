@@ -1,11 +1,18 @@
 <script setup>
 
+import L from 'leaflet'
+globalThis.L = L
+
 import 'leaflet/dist/leaflet.css';
+import 'vue-leaflet-markercluster/dist/style.css';
+
 import { Modal } from 'bootstrap';
 
-import { LMap, LTileLayer, LWmsTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker } from '@vue-leaflet/vue-leaflet';
+// vue components for Leaflet Maps - vue3
+// regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
+import { LMap, LTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LControl, LIcon } from '@vue-leaflet/vue-leaflet';
+import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
 
-import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
 
 import CreateComponent from './CreateComponent.vue';
@@ -13,6 +20,15 @@ import UpdateComponent from './UpdateComponent.vue';
 import DeleteComponent from './DeleteComponent.vue';
 import AlertComponent from './AlertComponent.vue';
 
+import { ref, onMounted, watch, computed } from 'vue';
+
+// workaround to provide map fullscreen mode (vue-leaflet-fullscreen not compatible with vue3 yet)
+import { useFullscreen } from '@vueuse/core'
+
+import hostCustomMarker from './icons/host.png'
+
+
+// hikes data form
 const props = defineProps({
   id: String
 })
@@ -20,7 +36,7 @@ const props = defineProps({
 const hikes = ref([])
 const hikeDetails = ref('')
 
-const selectedHike = ref(0)
+const selectedHike = ref('')
 
 const journeys = ref([])
 
@@ -59,8 +75,33 @@ const filteredHikes = computed (() => {
             .includes(search.value.toLowerCase()))
 })
 
+async function getZoneDetails() {
+  const response = await axios.get('http://localhost:5001/zones/' + props.id)
+  mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
+  hikes.value = response.data['hikes']
+}
+
+async function getHikeDetails(hike) {
+  const response = await axios.get('http://localhost:5001/hikes/' + hike.id)
+  hikeDetails.value = response.data
+}
+
+async function getJourneys() {
+  const response = await axios.get('http://localhost:5001/journeys')
+  journeys.value = response.data
+}
+
+
+// leaflet map
+const myMap = ref(null)
+const { toggle } = useFullscreen(myMap)
 const mapcenter = ref('')
 const ismapdata = ref(false)
+
+watch(mapcenter, () => {
+  ismapdata.value = true
+})
+
 const tileProviders = ref([
   {
     name: 'OpenStreetMap',
@@ -74,10 +115,13 @@ const tileProviders = ref([
     visible: false,
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     attribution:
-      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>,'+
+      ' <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy;'+
+      ' <a href="https://opentopomap.org">OpenTopoMap</a>'+ 
+      ' (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   },
   {
-    name: 'BD Ortho IGN',
+    name: 'Satellite IGN',
     visible: false,
     url : "https://data.geopf.fr/wmts?" +
         "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
@@ -112,43 +156,17 @@ const tileProviders = ref([
 const hosts = ref([
   {
     coordinates: [-21.112570146489052, 55.43275004423846],
-    content : "popup content",
+    content : "Col du Taïbit",
   },
   {
     coordinates: [-21.102822430867704, 55.43727970253807],
-    content : "popup content",
+    content : "Chez Jimmy",
   },
 ])
-
-watch(mapcenter, () => {
-  ismapdata.value = true
-})
-
-onMounted(async () => {
-  getZoneDetails()
-})
-
-async function getZoneDetails() {
-  const response = await axios.get('http://localhost:5001/zones/' + props.id)
-  mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
-  hikes.value = response.data['hikes']
-}
-
-async function getHikeDetails(hike) {
-  const response = await axios.get('http://localhost:5001/hikes/' + hike.id)
-  hikeDetails.value = response.data
-}
-
-async function getJourneys() {
-  const response = await axios.get('http://localhost:5001/journeys')
-  journeys.value = response.data
-}
 
 // custom validation 
 // check bootstrap native validation or third part library like veevalidate + server side validation
 // use of js functions to show or hide modals instead of native data-bs-dismiss to add form validation logic
-// TODO refacto
-
 async function showCreate() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#create'));
   myModal.show();
@@ -178,6 +196,11 @@ async function hideDelete() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#delete'));
   myModal.hide();
 }
+
+onMounted(async () => {
+  getZoneDetails()
+})
+
 </script>
 
 <template>
@@ -187,20 +210,21 @@ async function hideDelete() {
     <div class="col-lg-7" style='padding: 10px;'>
 
       <div class="map" v-if="ismapdata" style='border: 2px solid #226d68;'>
-        <l-map ref="map" :zoom="13" :center="mapcenter" :use-global-leaflet="false">
+        <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" fullscreenControl="true">
 
           <l-control-layers position="topright"></l-control-layers>
 
           <l-tile-layer
-          v-for="tileProvider in tileProviders"
-          :key="tileProvider.name"
-          :name="tileProvider.name"
-          :visible="tileProvider.visible"
-          :url="tileProvider.url"
-          :attribution="tileProvider.attribution"
-          layer-type="base"/>
+            v-for="tileProvider in tileProviders"
+            :key="tileProvider.name"
+            :name="tileProvider.name"
+            :visible="tileProvider.visible"
+            :url="tileProvider.url"
+            :attribution="tileProvider.attribution"
+            layer-type="base"
+          />
 
-          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :opacity="selectedHike == hike.id ? 1 : 0.7" :color="'#F27438'" :weight="4">
+          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :color="selectedHike == hike.id ? '#226D68' : '#D6955B'" :weight="4">
             <l-popup>{{ hike.name }}</l-popup>
           </l-polyline>
 
@@ -208,15 +232,27 @@ async function hideDelete() {
             :visible="false"
             layerType="overlay"
             name="Hosts">
-            <l-marker
-              v-for="(item, index) in hosts"
-              :key="index"
-              :lat-lng="[item.coordinates[0], item.coordinates[1]]">
-              <l-popup>{{ item.content }}</l-popup>
-            </l-marker>
+            <l-marker-cluster-group>
+              <l-marker
+                v-for="(item, index) in hosts"
+                :key="index"
+                :lat-lng="[item.coordinates[0], item.coordinates[1]]">
+                <l-popup>{{ item.content }}</l-popup>
+                <l-icon
+                  :iconSize="[30, 30]"
+                  :icon-url="hostCustomMarker"
+                />
+              </l-marker>
+            </l-marker-cluster-group>
           </l-layer-group>
 
           <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
+
+          <l-control position="bottomright" >
+            <button class="btn btn-light" @click="toggle" data-toggle="tooltip" title="full screen mode">
+              <i class="pi pi-window-maximize" style="color:#000000;"></i>
+            </button>
+          </l-control>
 
         </l-map>
       </div>
@@ -318,7 +354,6 @@ async function hideDelete() {
   <!-- Delete -->
   <DeleteComponent :hikeId="String(hikeDetails.id)" @exit="getZoneDetails(), message = 'Hike deleted!', showMessage = true, hideDelete()">
   </DeleteComponent>
-  
 
 </template>
 
@@ -341,13 +376,13 @@ async function hideDelete() {
     margin-right: 5px;
   }
 
-  
-  /* .leaflet-layer,
-  .leaflet-control-zoom-in,
-  .leaflet-control-zoom-out,
-  .leaflet-control-attribution {
-    filter: brightness(85%) contrast(180%);
-  }  */
- 
+  .marker-cluster-small {
+    background-color: #49afa5 !important;
+  }
+
+  .marker-cluster-small div {
+    background-color: #1c9489 !important;
+    color: #fff !important;
+  }
 
 </style>
