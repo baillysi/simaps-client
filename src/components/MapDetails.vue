@@ -4,15 +4,25 @@ import L from 'leaflet'
 globalThis.L = L
 
 import 'leaflet/dist/leaflet.css';
-import 'vue-leaflet-markercluster/dist/style.css';
-
-import { Modal } from 'bootstrap';
 
 // vue components for Leaflet Maps - vue3
 // regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
 import { LMap, LTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LControl, LIcon } from '@vue-leaflet/vue-leaflet';
-import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
 
+// wrapper seems to be compatible with vue3
+import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
+import 'vue-leaflet-markercluster/dist/style.css';
+
+// native leaflet plugins
+import 'leaflet.locatecontrol'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
+import 'leaflet.fullscreen'
+import 'leaflet.fullscreen/Control.FullScreen.css'
+
+// custom markers
+import hostCustomMarker from './icons/host.png'
+
+import { Modal } from 'bootstrap';
 import axios from 'axios';
 
 import CreateComponent from './CreateComponent.vue';
@@ -21,11 +31,6 @@ import DeleteComponent from './DeleteComponent.vue';
 import AlertComponent from './AlertComponent.vue';
 
 import { ref, onMounted, watch, computed } from 'vue';
-
-// workaround to provide map fullscreen mode (vue-leaflet-fullscreen not compatible with vue3 yet)
-import { useFullscreen } from '@vueuse/core'
-
-import hostCustomMarker from './icons/host.png'
 
 
 // hikes data form
@@ -94,13 +99,29 @@ async function getJourneys() {
 
 // leaflet map
 const myMap = ref(null)
-const { toggle } = useFullscreen(myMap)
 const mapcenter = ref('')
 const ismapdata = ref(false)
 
 watch(mapcenter, () => {
-  ismapdata.value = true
+  ismapdata.value = true;
 })
+
+async function onReady() {
+  var myLocateControl = L.control.locate({position: "topleft", strings: { title: "Show me where I am, yo!" }})
+  var myFullscreenControl = L.control
+    .fullscreen({
+      position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, default topleft
+      title: 'Show me the fullscreen !', // change the title of the button, default Full Screen
+      titleCancel: 'Exit fullscreen mode', // change the title of the button when fullscreen is on, default Exit Full Screen
+      content: null, // change the content of the button, can be HTML, default null
+      forceSeparateButton: true, // force separate button to detach from zoom buttons, default false
+      forcePseudoFullscreen: true, // force use of pseudo full screen even if full screen API is available, default false
+      fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
+    })
+
+  myLocateControl.addTo(myMap.value.leafletObject)
+  myFullscreenControl.addTo(myMap.value.leafletObject)
+}
 
 const tileProviders = ref([
   {
@@ -209,8 +230,8 @@ onMounted(async () => {
 
     <div class="col-lg-7" style='padding: 10px;'>
 
-      <div class="map" v-if="ismapdata" style='border: 2px solid #226d68;'>
-        <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" fullscreenControl="true">
+      <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #226d68;'>
+        <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()">
 
           <l-control-layers position="topright"></l-control-layers>
 
@@ -224,7 +245,7 @@ onMounted(async () => {
             layer-type="base"
           />
 
-          <l-polyline v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :color="selectedHike == hike.id ? '#226D68' : '#D6955B'" :weight="4">
+          <l-polyline @click="selectedHike=hike.id" v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :color="selectedHike == hike.id ? '#F27438':'#226D68'" :weight="4">
             <l-popup>{{ hike.name }}</l-popup>
           </l-polyline>
 
@@ -247,12 +268,6 @@ onMounted(async () => {
           </l-layer-group>
 
           <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
-
-          <l-control position="bottomright" >
-            <button class="btn btn-light" @click="toggle" data-toggle="tooltip" title="full screen mode">
-              <i class="pi pi-window-maximize" style="color:#000000;"></i>
-            </button>
-          </l-control>
 
         </l-map>
       </div>
@@ -359,7 +374,7 @@ onMounted(async () => {
 
 <style>
 
-  .map {
+  .mapContainer {
     position: relative;
     height: 680px;  /* or as desired */
     width: 100%;  /* This means "100% of the width of its container", the .col-lg-7 */
