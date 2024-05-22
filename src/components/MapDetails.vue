@@ -7,7 +7,7 @@ import 'leaflet/dist/leaflet.css';
 
 // vue components for Leaflet Maps - vue3
 // regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
-import { LMap, LTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LControl, LIcon } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LControl, LIcon, LGeoJson } from '@vue-leaflet/vue-leaflet';
 
 // wrapper seems to be compatible with vue3
 import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
@@ -18,6 +18,8 @@ import 'leaflet.locatecontrol'
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
 import 'leaflet.fullscreen'
 import 'leaflet.fullscreen/Control.FullScreen.css'
+import 'leaflet.heightgraph'
+import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 
 // custom markers
 import hostCustomMarker from './icons/host.png'
@@ -31,7 +33,6 @@ import DeleteComponent from './DeleteComponent.vue';
 import AlertComponent from './AlertComponent.vue';
 
 import { ref, onMounted, watch, computed } from 'vue';
-
 
 // hikes data form
 const props = defineProps({
@@ -96,7 +97,6 @@ async function getJourneys() {
   journeys.value = response.data
 }
 
-
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
@@ -106,8 +106,50 @@ watch(mapcenter, () => {
   ismapdata.value = true;
 })
 
-async function onReady() {
-  var myLocateControl = L.control.locate({position: "topleft", strings: { title: "Show me where I am, yo!" }})
+const selectedStyle = ref(
+  {
+    'color':'#D6955B', 
+    'weight': 4
+  }
+)
+
+const unselectedStyle = ref(
+  {
+    'color':'#226D68',
+  }
+)
+
+// leaflet elevation profile
+const colorMappings = {
+    Simaps: {
+        'Elevation': {
+            text: 'heightgraph',
+            color: '#D6955B'
+        }
+    }
+  }
+
+let options = {
+    mappings: colorMappings,
+    height: 280,
+    expand: false,
+    expandControls : true,
+    graphStyle: {
+      'opacity': 1,
+      'fill-opacity': 0.6,
+      'stroke-width': '3px',
+    },
+    translation: {
+      distance: "distance",
+      elevation: "elevation",
+      segment_length: "total",
+      type: "type",
+      legend: "Height Graph"
+    }
+}
+
+var myHeightGraph = L.control.heightgraph(options)
+var myLocateControl = L.control.locate({position: "topleft", strings: { title: "Show me where I am, yo!" }})
   var myFullscreenControl = L.control
     .fullscreen({
       position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, default topleft
@@ -119,8 +161,14 @@ async function onReady() {
       fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
     })
 
+async function onReady() {
   myLocateControl.addTo(myMap.value.leafletObject)
   myFullscreenControl.addTo(myMap.value.leafletObject)
+  myHeightGraph.addTo(myMap.value.leafletObject)
+}
+
+async function showProfile(geojson) {
+  myHeightGraph.addData([geojson])
 }
 
 const tileProviders = ref([
@@ -174,6 +222,7 @@ const tileProviders = ref([
 	}
 ])
 
+// hosts mock
 const hosts = ref([
   {
     coordinates: [-21.112570146489052, 55.43275004423846],
@@ -245,9 +294,9 @@ onMounted(async () => {
             layer-type="base"
           />
 
-          <l-polyline @click="selectedHike=hike.id" v-for="hike in sortedHikes" :key="hike.id" :lat-lngs="hike.coordinates" :color="selectedHike == hike.id ? '#F27438':'#226D68'" :weight="4">
+          <l-geo-json @click="selectedHike=hike.id, showProfile(hike.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
             <l-popup>{{ hike.name }}</l-popup>
-          </l-polyline>
+          </l-geo-json> 
 
           <l-layer-group 
             :visible="false"
