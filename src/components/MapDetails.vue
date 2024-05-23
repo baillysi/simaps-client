@@ -7,7 +7,7 @@ import 'leaflet/dist/leaflet.css';
 
 // vue components for Leaflet Maps - vue3
 // regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
-import { LMap, LTileLayer, LPolyline, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LControl, LIcon, LGeoJson } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LIcon, LGeoJson } from '@vue-leaflet/vue-leaflet';
 
 // wrapper seems to be compatible with vue3
 import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
@@ -109,13 +109,15 @@ watch(mapcenter, () => {
 const selectedStyle = ref(
   {
     'color':'#D6955B', 
-    'weight': 4
+    'weight': 5
   }
 )
 
 const unselectedStyle = ref(
   {
     'color':'#226D68',
+    'weight': 4,
+    'opacity': 0.8
   }
 )
 
@@ -123,16 +125,17 @@ const unselectedStyle = ref(
 const colorMappings = {
     Simaps: {
         'Elevation': {
-            text: 'heightgraph',
+            text: 'Altitude',
             color: '#D6955B'
         }
     }
   }
 
-let options = {
+
+const options = {
     mappings: colorMappings,
     height: 280,
-    expand: false,
+    expand: true,
     expandControls : true,
     graphStyle: {
       'opacity': 1,
@@ -148,26 +151,26 @@ let options = {
     }
 }
 
-var myHeightGraph = L.control.heightgraph(options)
-var myLocateControl = L.control.locate({position: "topleft", strings: { title: "Show me where I am, yo!" }})
-  var myFullscreenControl = L.control
-    .fullscreen({
-      position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, default topleft
-      title: 'Show me the fullscreen !', // change the title of the button, default Full Screen
-      titleCancel: 'Exit fullscreen mode', // change the title of the button when fullscreen is on, default Exit Full Screen
-      content: null, // change the content of the button, can be HTML, default null
-      forceSeparateButton: true, // force separate button to detach from zoom buttons, default false
-      forcePseudoFullscreen: true, // force use of pseudo full screen even if full screen API is available, default false
-      fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
-    })
+const myHeightGraph = L.control.heightgraph(options)
+const myLocateControl = L.control.locate({position: "topleft", strings: { title: "Show me where I am, yo!" }})
+const myFullscreenControl = L.control
+  .fullscreen({
+    position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, default topleft
+    title: 'Show me the fullscreen!', // change the title of the button, default Full Screen
+    titleCancel: 'Exit fullscreen mode', // change the title of the button when fullscreen is on, default Exit Full Screen
+    content: null, // change the content of the button, can be HTML, default null
+    forceSeparateButton: true, // force separate button to detach from zoom buttons, default false
+    forcePseudoFullscreen: true, // force use of pseudo full screen even if full screen API is available, default false
+    fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
+  })
 
 async function onReady() {
   myLocateControl.addTo(myMap.value.leafletObject)
   myFullscreenControl.addTo(myMap.value.leafletObject)
-  myHeightGraph.addTo(myMap.value.leafletObject)
 }
 
-async function showProfile(geojson) {
+async function showHeightgraph(geojson) {
+  myHeightGraph.addTo(myMap.value.leafletObject)
   myHeightGraph.addData([geojson])
 }
 
@@ -294,8 +297,11 @@ onMounted(async () => {
             layer-type="base"
           />
 
-          <l-geo-json @click="selectedHike=hike.id, showProfile(hike.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
-            <l-popup>{{ hike.name }}</l-popup>
+          <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
+            <l-popup :options="{ closeButton:true, closeOnClick:true }">{{ hike.name }}<br/> 
+              <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i>
+              <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
+            </l-popup>
           </l-geo-json> 
 
           <l-layer-group 
@@ -372,7 +378,7 @@ onMounted(async () => {
               {{ hike.description }}
               <br/><br/>
               <div class="col text-end">
-                <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id" data-toggle="tooltip" title="see on map">
+                <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
                   <i class="pi pi-eye" style="color:#226D68;"></i>
                 </button>
                 <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="update data">
