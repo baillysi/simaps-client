@@ -180,6 +180,11 @@ async function showHeightgraph(geojson) {
   myHeightGraph.addData([geojson])
 }
 
+async function fitBounds(geojson) {
+  let feature = L.geoJSON(geojson)
+  myMap.value.leafletObject.fitBounds(feature.getBounds())
+}
+
 const tileProviders = ref([
   {
     name: 'OpenStreetMap',
@@ -387,7 +392,7 @@ onMounted(async () => {
               {{ hike.description }}
               <br/><br/>
               <div class="col text-end">
-                <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
+                <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson)" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
                   <i class="pi pi-eye" style="color:#226D68;"></i>
                 </button>
                 <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="update data">
