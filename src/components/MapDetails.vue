@@ -116,8 +116,14 @@ const selectedStyle = ref(
 const unselectedStyle = ref(
   {
     'color':'#226D68',
-    'weight': 4,
-    'opacity': 0.8
+    'weight': 5
+  }
+)
+
+const strokeStyle = ref(
+  {
+    'color':'#FFFFFF',
+    'weight': 7
   }
 )
 
@@ -296,6 +302,9 @@ onMounted(async () => {
             :attribution="tileProvider.attribution"
             layer-type="base"
           />
+
+          <l-geo-json v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="function() {return strokeStyle}">
+          </l-geo-json> 
 
           <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
             <l-popup :options="{ closeButton:true, closeOnClick:true }">{{ hike.name }}<br/> 
