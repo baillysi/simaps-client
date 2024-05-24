@@ -311,7 +311,7 @@ onMounted(async () => {
           <l-geo-json v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="function() {return strokeStyle}">
           </l-geo-json> 
 
-          <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
+          <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.geojson), fitBounds(hike.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
             <l-popup :options="{ closeButton:true, closeOnClick:true }">{{ hike.name }}<br/> 
               <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i>
               <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
