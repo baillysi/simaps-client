@@ -22,7 +22,8 @@ import 'leaflet.heightgraph'
 import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 
 // custom markers
-import hostCustomMarker from './icons/host.png'
+// todo use font-awesome
+import hostCustomMarker from './icons/host.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -33,6 +34,7 @@ import DeleteComponent from './DeleteComponent.vue';
 import AlertComponent from './AlertComponent.vue';
 
 import { ref, onMounted, watch, computed } from 'vue';
+import { useResizeObserver } from '@vueuse/core'
 
 // hikes data form
 const props = defineProps({
@@ -50,6 +52,8 @@ const message = ref('')
 const showMessage = ref(false)
 
 const search = ref('')
+const rates = ref('')
+
 const currentOrder = ref('') 
 const sortedHikes = computed(() => {
   return currentOrder.value == 'Name' ?
@@ -78,7 +82,12 @@ const filteredHikes = computed (() => {
         (hike) =>
           hike.name
             .toLowerCase()
-            .includes(search.value.toLowerCase()))
+            .includes(search.value.toLowerCase())
+          &&
+          hike.rates.toString()
+            .toLowerCase()
+            .includes(rates.value.toLowerCase())
+          )
 })
 
 async function getZoneDetails() {
@@ -137,10 +146,10 @@ const colorMappings = {
     }
   }
 
-
-const options = {
+const heightgraphOptions = {
     mappings: colorMappings,
-    height: 280,
+    width: 650,
+    height: 227.5,
     expand: true,
     expandControls : true,
     graphStyle: {
@@ -150,14 +159,14 @@ const options = {
     },
     translation: {
       distance: "distance",
-      elevation: "elevation",
+      elevation: "altitude",
       segment_length: "total",
       type: "type",
       legend: "Height Graph"
     }
 }
 
-const myHeightGraph = L.control.heightgraph(options)
+const myHeightGraph = L.control.heightgraph(heightgraphOptions)
 const myLocateControl = L.control.locate({position: "topleft", strings: { title: "Show me where I am, yo!" }})
 const myFullscreenControl = L.control
   .fullscreen({
@@ -184,6 +193,24 @@ async function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
 }
+
+// make heightgraph responsive
+useResizeObserver(myMap, (entries) => {
+  const entry = entries[0]
+  const { width } = entry.contentRect
+
+  if (myHeightGraph._data) {
+    if (width <= 670 && width > 470) {
+      myHeightGraph.resize({width: 450, height: 157.5})
+    }
+    else if (width <= 470){
+      myHeightGraph.resize({width: 350, height: 157.5})
+    }
+    else {
+      myHeightGraph.resize({width: 650, height: 227.5})
+    }
+  }
+})
 
 const tileProviders = ref([
   {
@@ -346,7 +373,16 @@ onMounted(async () => {
 
       <div class="row" style="margin: 10px;">
         <div class="col-4">
-          <input class="form-control" placeholder="Search" v-model="search"/>
+          <input class="form-control" placeholder="Search by name" v-model="search"/>
+        </div>
+        <div class="col-4">
+          <select class="form-select" v-model="rates">
+            <option selected disabled value="">Select by rates</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+            <option value="4">Four</option>
+          </select>
         </div>
         <div class="col-4">
           <select v-model="currentOrder" class="form-select" @change="getZoneDetails()">
@@ -465,7 +501,7 @@ onMounted(async () => {
   }
 
   .marker-cluster-small div {
-    background-color: #1c9489 !important;
+    background-color: #226D68 !important;
     color: #fff !important;
   }
 
