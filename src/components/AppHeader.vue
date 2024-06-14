@@ -18,6 +18,9 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/maps">Maps</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/about">Books</router-link>
+          </li>
         </ul>
         <form class="form-inline">
           <button class="btn btn-outline-secondary" type="button">Login</button>

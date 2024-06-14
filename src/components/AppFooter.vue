@@ -19,6 +19,9 @@
             <router-link class="nav-link" to="/maps">Maps</router-link>
           </li>
           <li class="nav-item">
+            <router-link class="nav-link" to="/about">Books</router-link>
+          </li>
+          <li class="nav-item">
             <router-link class="nav-link" to="/about">FAQs</router-link>
           </li>
         </ul>

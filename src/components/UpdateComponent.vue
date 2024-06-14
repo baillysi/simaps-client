@@ -17,6 +17,7 @@ const props = defineProps({
   currentRates: Number,
   currentDescription: String,
   journeys: Object,
+  isGeojson: Boolean,
 })
 
 const updatedName = ref('')
@@ -27,6 +28,7 @@ const updatedDuration = ref('')
 const updatedJourney = ref([])
 const updatedRates = ref('')
 const updatedDescription = ref('')
+
 
 watch(toRef(props, 'currentName'), (value) => {
   updatedName.value = toRef(props, 'currentName').value; 
@@ -148,11 +150,11 @@ async function onSubmit() {
           <div class="row">
             <div class="form-group col">
               <label for="InputDistance">Distance</label>
-              <input type="number" v-model="updatedDistance" class="form-control" id="InputDistance" placeholder="km">
+              <input type="number" v-model="updatedDistance" class="form-control" id="InputDistance" placeholder="km" :disabled="props.isGeojson">
             </div>
             <div class="form-group col">
               <label for="InputElevation">Positive elevation</label>
-              <input type="number" v-model="updatedElevation" class="form-control" id="InputElevation" placeholder="m+">
+              <input type="number" v-model="updatedElevation" class="form-control" id="InputElevation" placeholder="m+" :disabled="props.isGeojson">
             </div>
           </div>
           <div class="row">

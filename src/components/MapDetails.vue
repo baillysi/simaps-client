@@ -51,19 +51,30 @@ const journeys = ref([])
 const message = ref('')
 const showMessage = ref(false)
 
-const search = ref('')
-const rates = ref('')
+const searchName = ref('')
+const searchDifficulty = ref('')
 
 const currentOrder = ref('') 
 const sortedHikes = computed(() => {
-  return currentOrder.value == 'Name' ?
+  return currentOrder.value == 'Difficulty' ?
   hikes.value.sort((a, b) => {
-  let fa = a.name.toLowerCase(), fb = b.name.toLowerCase();
+  let fa = a.difficulty, fb = b.difficulty;
   if (fa < fb) {
-    return -1;
+    return 1;
   }
   if (fa > fb) {
+    return -1;
+  }
+  return 0;
+  }): currentOrder.value == 'Rates' ?
+
+  hikes.value.sort((a, b) => {
+  let fa = a.rates, fb = b.rates;
+  if (fa < fb) {
     return 1;
+  }
+  if (fa > fb) {
+    return -1;
   }
   return 0;
   }):
@@ -82,13 +93,19 @@ const filteredHikes = computed (() => {
         (hike) =>
           hike.name
             .toLowerCase()
-            .includes(search.value.toLowerCase())
+            .includes(searchName.value.toLowerCase())
           &&
-          hike.rates.toString()
+          hike.difficulty.toString()
             .toLowerCase()
-            .includes(rates.value.toLowerCase())
+            .includes(searchDifficulty.value.toLowerCase())
           )
 })
+
+async function resetFilters() {
+  searchDifficulty.value = ""
+  searchName.value = ""
+  currentOrder.value = ""
+}
 
 async function getZoneDetails() {
   const response = await axios.get('http://localhost:5001/zones/' + props.id)
@@ -371,86 +388,97 @@ onMounted(async () => {
 
     <div class="col-lg-5 overflow-auto" style='padding: 10px; max-height: 680px;'>
 
-      <div class="row" style="margin: 10px;">
-        <div class="col-4">
-          <input class="form-control" placeholder="Search by name" v-model="search"/>
-        </div>
-        <div class="col-4">
-          <select class="form-select" v-model="rates">
-            <option selected disabled value="">Select by rates</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
-            <option value="4">Four</option>
-          </select>
-        </div>
-        <div class="col-4">
-          <select v-model="currentOrder" class="form-select" @change="getZoneDetails()">
-            <option disabled value="">Sort</option>
-            <option>Name</option>
-            <option>Index</option>
-          </select>
-        </div>
-      </div>
-      <br/>
+      <div class="dataContainer">
 
-      <div class="row" style="margin-left: 10px; margin-right: 10px;">
-        <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()">Create your own hike</button>
-      </div>
-      <br/>
+        <div class="row" style="margin: 10px;">
+          <div class="col-sm-5 col-6">
+            <select class="form-select form-select-sm" v-model="currentOrder" @change="getZoneDetails()">
+              <option disabled value="">Sort</option>
+              <option>Difficulty</option>
+              <option>Rates</option>
+            </select>
+          </div>
+          <div class="col-sm-5 col-6" >
+            <select class="form-select form-select-sm" v-model="searchDifficulty">
+              <option selected disabled value="">Difficulty</option>
+              <option value="1">Easy</option>
+              <option value="2">Medium</option>
+              <option value="3">Difficult</option>
+              <option value="4">Extreme</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="accordion accordion-flush" id="accordionFlushParent">
-        <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
-          <h2 class="accordion-header" id="flush-headingOne">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
-              <div class="col-6">
-                {{ hike.name}}
-              </div>
-              <div class="col-3">
-                <span v-if="hike.difficulty == 1" class="badge bg-success">Easy</span>
-                <span v-if="hike.difficulty == 2" class="badge bg-primary">Medium</span>
-                <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficult</span>
-                <span v-if="hike.difficulty == 4" class="badge bg-dark">Extreme</span>
-              </div>
-              <div class="col-3">
-                <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i>
-                <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
-              </div>
+        <div class="row" style="margin: 10px;">
+          <div class="col-sm-5 col-6">
+            <input class="form-control form-control-sm" placeholder="Name" v-model="searchName"/>
+          </div>
+          <div class="col-2">
+            <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="reset filters">
+              <i class="pi pi-filter-slash" style="color:#226D68;"></i>
             </button>
-          </h2>
-          <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
-            <div class="accordion-body">
-              <span class="badge bg-info">{{ hike.distance }} km</span>
-              <span class="badge bg-info">{{ hike.elevation }} m+</span> 
-              <span class="badge bg-info">{{ hike.duration }} hours</span>
-              <span class="badge bg-info">{{ hike.journey.name }}</span>
-              <br/><br/>
-              {{ hike.description }}
-              <br/><br/>
-              <div class="col text-end">
-                <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson)" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
-                  <i class="pi pi-eye" style="color:#226D68;"></i>
-                </button>
-                <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="update data">
-                  <i class="pi pi-file-edit" style="color:#226D68;"></i>
-                </button>
-                <button class="btn btn-light" data-toggle="tooltip" title="upload gpx">
-                  <i class="pi pi-upload" style="color:#226D68;"></i>
-                </button>
-                <button class="btn btn-light" @click="getHikeDetails(hike), showDelete()" data-toggle="tooltip" title="delete hike">
-                  <i class="pi pi-trash" style="color:#D6955B;"></i>
-                </button>
+          </div>
+        </div>
+        <br/>
+
+        <div class="row" style="margin-left: 80px; margin-right: 80px;">
+          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()">Create your own hike</button>
+        </div>
+        <br/>
+
+        <div class="accordion accordion-flush" id="accordionFlushParent">
+          <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
+            <h2 class="accordion-header" id="flush-headingOne">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
+                <div class="col-6">
+                  {{ hike.name}}
+                </div>
+                <div class="col-3">
+                  <span v-if="hike.difficulty == 1" class="badge bg-success">Easy</span>
+                  <span v-if="hike.difficulty == 2" class="badge bg-primary">Medium</span>
+                  <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficult</span>
+                  <span v-if="hike.difficulty == 4" class="badge bg-dark">Extreme</span>
+                </div>
+                <div class="col-2">
+                  <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i> 
+                  <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
+                </div>
+              </button>
+            </h2>
+            <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
+              <div class="accordion-body">
+                <span class="badge bg-info">{{ hike.distance }} km</span>
+                <span class="badge bg-info">{{ hike.elevation }} m+</span> 
+                <span class="badge bg-info">{{ hike.duration }} hours</span>
+                <span class="badge bg-info">{{ hike.journey.name }}</span>
+                <br/><br/>
+                {{ hike.description }}
+                <br/><br/>
+                <div class="col text-end">
+                  <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson)" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
+                    <i class="pi pi-eye" style="color:#226D68;"></i>
+                  </button>
+                  <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="update data">
+                    <i class="pi pi-file-edit" style="color:#226D68;"></i>
+                  </button>
+                  <button class="btn btn-light" data-toggle="tooltip" title="upload gpx">
+                    <i class="pi pi-upload" style="color:#226D68;"></i>
+                  </button>
+                  <button class="btn btn-light" @click="getHikeDetails(hike), showDelete()" data-toggle="tooltip" title="delete hike">
+                    <i class="pi pi-trash" style="color:#D6955B;"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <br/>
+        <br/>
 
-      <div class="row" style="margin-left: 10px; margin-right: 10px;">
-        <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
-      </div>
+        <div class="row" style="margin-left: 10px; margin-right: 10px;">
+          <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
+        </div>
 
+      </div>
     </div>
   </div>
   
@@ -467,7 +495,8 @@ onMounted(async () => {
   :currentDuration="hikeDetails.duration" 
   :currentJourney="hikeDetails.journey" 
   :currentRates="hikeDetails.rates" 
-  :currentDescription="hikeDetails.description" 
+  :currentDescription="hikeDetails.description"
+  :isGeojson="hikeDetails.geojson ? true : false"
   @exit="getZoneDetails(), message = 'Hike updated!', showMessage = true, hideUpdate()" >
   </UpdateComponent>
 
@@ -483,6 +512,12 @@ onMounted(async () => {
     position: relative;
     height: 680px;  /* or as desired */
     width: 100%;  /* This means "100% of the width of its container", the .col-lg-7 */
+  }
+
+  .dataContainer {
+    position: relative;
+    height: 680px;  /* or as desired */
+    width: 100%;  /* This means "100% of the width of its container", the .col-lg-5 */
   }
 
   .leaflet-popup-content-wrapper {
