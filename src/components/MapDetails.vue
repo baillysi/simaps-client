@@ -27,6 +27,7 @@ import hostCustomMarker from './icons/host.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
+import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
 
 import CreateComponent from './CreateComponent.vue';
 import UpdateComponent from './UpdateComponent.vue';
@@ -209,6 +210,34 @@ async function showHeightgraph(geojson) {
 async function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
+}
+
+async function downloadGPX(geojson, name) {
+
+  const options = {
+    metadata: {
+      name: name,
+      author: {
+        name: 'Simon Bailly (based on Dwayne Parton\' work)',
+        link: {
+          href: 'https://www.dwayneparton.com'
+        }
+      }
+    }
+  }
+
+  // Will convert geojson into xml document
+  const gpx = GeoJsonToGpx(geojson, options);
+
+  // convert document to string or post process it
+  const gpxString = new XMLSerializer().serializeToString(gpx);
+
+  // @see https://stackoverflow.com/questions/10654971/create-text-file-from-string-using-js-and-html5
+  const link = document.createElement('a');
+  link.download = name.concat(".gpx");
+  const blob = new Blob([gpxString], {type: 'text/xml'});
+  link.href = window.URL.createObjectURL(blob);
+  link.click();
 }
 
 // make heightgraph responsive
@@ -455,14 +484,14 @@ onMounted(async () => {
                 {{ hike.description }}
                 <br/><br/>
                 <div class="col text-end">
-                  <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson)" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
-                    <i class="pi pi-eye" style="color:#226D68;"></i>
+                  <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson), showHeightgraph(hike.geojson)" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
+                    <i class="pi pi-map" style="color:#226D68;"></i>
                   </button>
                   <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="update data">
                     <i class="pi pi-file-edit" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" data-toggle="tooltip" title="upload gpx">
-                    <i class="pi pi-upload" style="color:#226D68;"></i>
+                  <button class="btn btn-light"  @click="getHikeDetails(hike), downloadGPX(hike.geojson, hike.name)" data-toggle="tooltip" title="download gpx" :disabled="!hike.geojson">
+                    <i class="pi pi-download" style="color:#226D68;"></i>
                   </button>
                   <button class="btn btn-light" @click="getHikeDetails(hike), showDelete()" data-toggle="tooltip" title="delete hike">
                     <i class="pi pi-trash" style="color:#D6955B;"></i>
