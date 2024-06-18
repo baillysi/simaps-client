@@ -212,6 +212,10 @@ async function fitBounds(geojson) {
   myMap.value.leafletObject.fitBounds(feature.getBounds())
 }
 
+async function fitBoundsZone(mapcenter) {
+  myMap.value.leafletObject.setView(mapcenter, 13)
+}
+
 async function downloadGPX(geojson, name) {
 
   const options = {
@@ -526,7 +530,7 @@ onMounted(async () => {
   :currentRates="hikeDetails.rates" 
   :currentDescription="hikeDetails.description"
   :isGeojson="hikeDetails.geojson ? true : false"
-  @exit="getZoneDetails(), message = 'Hike updated!', showMessage = true, hideUpdate()" >
+  @exit="getZoneDetails(), message = 'Hike updated!', showMessage = true, hideUpdate(), fitBoundsZone(mapcenter)">
   </UpdateComponent>
 
   <!-- Delete -->
