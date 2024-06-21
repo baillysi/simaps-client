@@ -10,20 +10,17 @@
         <a class="navbar-brand">Simaps</a>
         <ul class="navbar-nav me-auto"> 
           <li class="nav-item">
-            <router-link class="nav-link" to="/home">Home</router-link>
+            <router-link class="nav-link" to="/home">Accueil</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/about">About</router-link>
+            <router-link class="nav-link" to="/maps">Cartes</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/maps">Maps</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/about">Books</router-link>
+            <router-link class="nav-link" to="/about">À propos</router-link>
           </li>
         </ul>
         <form class="form-inline">
-          <button class="btn btn-outline-secondary" type="button">Login</button>
+          <button class="btn btn-outline-secondary" type="button">Se connecter</button>
         </form>
       </div>
     </nav>

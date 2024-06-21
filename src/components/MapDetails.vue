@@ -180,17 +180,17 @@ const heightgraphOptions = {
       elevation: "altitude",
       segment_length: "total",
       type: "type",
-      legend: "Height Graph"
+      legend: "Profil Altimétrique"
     }
 }
 
 const myHeightGraph = L.control.heightgraph(heightgraphOptions)
-const myLocateControl = L.control.locate({position: "topleft", strings: { title: "Show me where I am, yo!" }})
+const myLocateControl = L.control.locate({position: "topleft", strings: { title: "localisation" }})
 const myFullscreenControl = L.control
   .fullscreen({
     position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, default topleft
-    title: 'Show me the fullscreen!', // change the title of the button, default Full Screen
-    titleCancel: 'Exit fullscreen mode', // change the title of the button when fullscreen is on, default Exit Full Screen
+    title: 'mode plein écran', // change the title of the button, default Full Screen
+    titleCancel: 'sortir plein écran', // change the title of the button when fullscreen is on, default Exit Full Screen
     content: null, // change the content of the button, can be HTML, default null
     forceSeparateButton: true, // force separate button to detach from zoom buttons, default false
     forcePseudoFullscreen: true, // force use of pseudo full screen even if full screen API is available, default false
@@ -316,12 +316,20 @@ const tileProviders = ref([
 // hosts mock
 const hosts = ref([
   {
-    coordinates: [-21.112570146489052, 55.43275004423846],
-    content : "Col du Taïbit",
+    coordinates: [-21.102668429846773, 55.43360219548072],
+    content : "Gîte Expédit Orchidée Sauvage",
   },
   {
-    coordinates: [-21.102822430867704, 55.43727970253807],
-    content : "Chez Jimmy",
+    coordinates: [-21.039630277641255, 55.42612640797504],
+    content : "Gîte de l'Îlet à Bourse",
+  },
+  {
+    coordinates: [-21.02746246920337, 55.42801488437272],
+    content : "Chez Rudy",
+  },
+  {
+    coordinates: [-21.079125627796877, 55.423750907575055],
+    content : "Chez Marie France et Crissou",
   },
 ])
 
@@ -398,7 +406,7 @@ onMounted(async () => {
           <l-layer-group 
             :visible="false"
             layerType="overlay"
-            name="Hosts">
+            name="Gîtes">
             <l-marker-cluster-group>
               <l-marker
                 v-for="(item, index) in hosts"
@@ -406,7 +414,7 @@ onMounted(async () => {
                 :lat-lng="[item.coordinates[0], item.coordinates[1]]">
                 <l-popup>{{ item.content }}</l-popup>
                 <l-icon
-                  :iconSize="[30, 30]"
+                  :iconSize="[25, 25]"
                   :icon-url="hostCustomMarker"
                 />
               </l-marker>
@@ -426,28 +434,28 @@ onMounted(async () => {
         <div class="row" style="margin: 10px;">
           <div class="col-sm-5 col-6">
             <select class="form-select form-select-sm" v-model="currentOrder" @change="getZoneDetails()">
-              <option disabled value="">Sort</option>
-              <option>Difficulty</option>
-              <option>Rates</option>
+              <option disabled value="">Trier par</option>
+              <option>Difficulté</option>
+              <option>Notes</option>
             </select>
           </div>
           <div class="col-sm-5 col-6" >
             <select class="form-select form-select-sm" v-model="searchDifficulty">
-              <option selected disabled value="">Difficulty</option>
-              <option value="1">Easy</option>
-              <option value="2">Medium</option>
-              <option value="3">Difficult</option>
-              <option value="4">Extreme</option>
+              <option selected disabled value="">Difficulté</option>
+              <option value="1">Facile</option>
+              <option value="2">Moyen</option>
+              <option value="3">Difficile</option>
+              <option value="4">Très difficile</option>
             </select>
           </div>
         </div>
 
         <div class="row" style="margin: 10px;">
           <div class="col-sm-5 col-6">
-            <input class="form-control form-control-sm" placeholder="Name" v-model="searchName"/>
+            <input class="form-control form-control-sm" placeholder="Nom" v-model="searchName"/>
           </div>
           <div class="col-2">
-            <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="reset filters">
+            <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser">
               <i class="pi pi-filter-slash" style="color:#226D68;"></i>
             </button>
           </div>
@@ -455,7 +463,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()">Create your own hike</button>
+          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()">Créer un itinéraire</button>
         </div>
         <br/>
 
@@ -467,10 +475,10 @@ onMounted(async () => {
                   {{ hike.name}}
                 </div>
                 <div class="col-3">
-                  <span v-if="hike.difficulty == 1" class="badge bg-success">Easy</span>
-                  <span v-if="hike.difficulty == 2" class="badge bg-primary">Medium</span>
-                  <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficult</span>
-                  <span v-if="hike.difficulty == 4" class="badge bg-dark">Extreme</span>
+                  <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
+                  <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
+                  <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
+                  <span v-if="hike.difficulty == 4" class="badge bg-dark">Très difficile</span>
                 </div>
                 <div class="col-2">
                   <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i> 
@@ -482,22 +490,22 @@ onMounted(async () => {
               <div class="accordion-body">
                 <span class="badge bg-info">{{ hike.distance }} km</span>
                 <span class="badge bg-info">{{ hike.elevation }} m+</span> 
-                <span class="badge bg-info">{{ hike.duration }} hours</span>
+                <span class="badge bg-info">{{ hike.duration }} heures</span>
                 <span class="badge bg-info">{{ hike.journey.name }}</span>
                 <br/><br/>
                 {{ hike.description }}
                 <br/><br/>
                 <div class="col text-end">
-                  <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson), showHeightgraph(hike.geojson)" data-toggle="tooltip" title="see on map" :disabled="!hike.geojson">
+                  <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson), showHeightgraph(hike.geojson)" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.geojson">
                     <i class="pi pi-map" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="update data">
+                  <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light"  @click="getHikeDetails(hike), downloadGPX(hike.geojson, hike.name)" data-toggle="tooltip" title="download gpx" :disabled="!hike.geojson">
+                  <button class="btn btn-light"  @click="getHikeDetails(hike), downloadGPX(hike.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.geojson">
                     <i class="pi pi-download" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="getHikeDetails(hike), showDelete()" data-toggle="tooltip" title="delete hike">
+                  <button class="btn btn-light" @click="getHikeDetails(hike), showDelete()" data-toggle="tooltip" title="supprimer l'itinéraire">
                     <i class="pi pi-trash" style="color:#D6955B;"></i>
                   </button>
                 </div>
@@ -516,7 +524,7 @@ onMounted(async () => {
   </div>
   
   <!-- Create -->
-  <CreateComponent :zoneId="props.id" :journeys="journeys" @exit="getZoneDetails(), message = 'Hike created!', showMessage = true, hideCreate()">
+  <CreateComponent :zoneId="props.id" :journeys="journeys" @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, hideCreate()">
   </CreateComponent>
 
   <!-- Update -->
@@ -530,11 +538,11 @@ onMounted(async () => {
   :currentRates="hikeDetails.rates" 
   :currentDescription="hikeDetails.description"
   :isGeojson="hikeDetails.geojson ? true : false"
-  @exit="getZoneDetails(), message = 'Hike updated!', showMessage = true, hideUpdate(), fitBoundsZone(mapcenter)">
+  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, hideUpdate(), fitBoundsZone(mapcenter)">
   </UpdateComponent>
 
   <!-- Delete -->
-  <DeleteComponent :hikeId="String(hikeDetails.id)" @exit="getZoneDetails(), message = 'Hike deleted!', showMessage = true, hideDelete()">
+  <DeleteComponent :hikeId="String(hikeDetails.id)" @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hideDelete()">
   </DeleteComponent>
 
 </template>
@@ -565,11 +573,11 @@ onMounted(async () => {
   }
 
   .marker-cluster-small {
-    background-color: #49afa5 !important;
+    background-color: #D6955B !important;
   }
 
   .marker-cluster-small div {
-    background-color: #226D68 !important;
+    background-color: #D6955B !important;
     color: #fff !important;
   }
 

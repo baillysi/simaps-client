@@ -127,19 +127,19 @@ async function onSubmit() {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="#update">Update hike</h1>
+        <h1 class="modal-title fs-5" id="#update">Mettre à jour l'itinéraire</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
       </div>
       <div class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate>
           <p v-if="errors.length">
-            <b>Please correct the following error(s):</b>
+            <b>Veuillez corriger les erreurs suivantes :</b>
             <ul>
               <li v-for="error in errors" style="color:#D6955B;">{{ error }}</li>
             </ul>
           </p>
           <div class="form-group">
-            <label for="InputName">Name</label>
+            <label for="InputName">Nom</label>
             <input type="text" v-model="updatedName" class="form-control" id="InputName">
           </div>
           <div class="form-group">
@@ -153,17 +153,17 @@ async function onSubmit() {
               <input type="number" v-model="updatedDistance" class="form-control" id="InputDistance" placeholder="km" :disabled="props.isGeojson">
             </div>
             <div class="form-group col">
-              <label for="InputElevation">Positive elevation</label>
+              <label for="InputElevation">Dénivelé positif cumulé</label>
               <input type="number" v-model="updatedElevation" class="form-control" id="InputElevation" placeholder="m+" :disabled="props.isGeojson">
             </div>
           </div>
           <div class="row">
             <div class="form-group col">
-              <label for="InputDuration">Duration</label>
-              <input type="number" v-model="updatedDuration" class="form-control" id="InputDuration" placeholder="hours">
+              <label for="InputDuration">Durée</label>
+              <input type="number" v-model="updatedDuration" class="form-control" id="InputDuration" placeholder="heures">
             </div>
             <div class="form-group col">
-              <label for="InputJourney">Journey type</label>
+              <label for="InputJourney">Type d'itinéraire</label>
               <select v-model="updatedJourney" class="form-select" id="InputJourney">
                 <option v-for="option in journeys" :value="option">
                   {{ option.name }}
@@ -173,16 +173,16 @@ async function onSubmit() {
           </div>
           <br/>
           <div class="form-group">
-            <label for="InputDifficulty">Difficulty</label>
+            <label for="InputDifficulty">Difficulté</label>
             <input v-model="updatedDifficulty" type="range" class="form-range" min="0" max="4" id="InputDifficulty">
           </div>
           <div class="form-group">
-            <label for="InputRates">Interest</label>
+            <label for="InputRates">Intérêt</label>
             <input v-model="updatedRates" type="range" class="form-range" min="0" max="4" id="InputRates">
           </div>
           <br/>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary">Mettre à jour</button>
           </div>
         </form>
       </div>

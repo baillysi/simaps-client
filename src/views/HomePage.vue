@@ -5,15 +5,15 @@
 <template>
 
   <div class="container" style="text-align:center; margin-top: 30px;">
-    <h1 style="font-family:'Courier New', Courier, monospace; font-size:bold; color:#18534F;">Maps, Books and Hikes.</h1>
+    <h1 style="font-family: Helvetica, Arial, sans-serif; font-size:bold; color:#18534F;">Maps & Hikes.</h1>
     <br/>
 
     <figure class="text-center">
       <blockquote class="blockquote">
-        <h6 style="font-size:bold; color:#18534F;">Ce qui sauve, c’est de faire un pas. Encore un pas. C’est toujours le même pas que l’on recommence.</h6>
+        <h6 style="font-size:bold; color:#18534F;">Quelle que soit la direction prise, marcher conduit à l'essentiel.</h6>
       </blockquote>
       <figcaption class="blockquote-footer">
-        Antoine de Saint-Exupéry <cite title="Source Title">Terre des Hommes</cite>
+        Sylvain Tesson <cite title="Source Title">Sur les chemins noirs</cite>
       </figcaption>
     </figure>
     <br/>
@@ -23,10 +23,8 @@
     </div>
     <br/><br/>
     
-    <div class="btn-group btn-group-lg" role="group" aria-label="Basic mixed styles example">
-      <router-link class="btn btn-outline-secondary" to="/maps">Maps</router-link>
-      <router-link class="btn btn-outline-secondary" to="/about">About</router-link>
-    </div>
+    <router-link class="btn btn-outline-secondary btn-lg" to="/maps">Accès aux Cartes</router-link>
+    
   </div>
   
 </template>
