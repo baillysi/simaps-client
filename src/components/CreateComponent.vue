@@ -20,7 +20,6 @@ const rates = ref(2)
 const description = ref('')
 
 // Dummy data to create new hike
-const hosts = ref('')
 const gpx = ref('')
 
 async function createHike() {
@@ -34,7 +33,6 @@ async function createHike() {
     journey: journey.value,
     rates: rates.value,
     description: description.value,
-    hosts: hosts.value,
     gpx: gpx.value,
   }
 
@@ -59,7 +57,6 @@ async function resetData() {
   journey.value = ''
   rates.value = 2
   description.value = ''
-  hosts.value = ''
   gpx.value = ''
   errors.value = []
 }
