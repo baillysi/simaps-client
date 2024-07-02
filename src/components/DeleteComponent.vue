@@ -10,7 +10,7 @@ const props = defineProps({
 })
 
 async function deleteHike() {
-  await axios.delete('http://localhost:5001/hikes/' + props.hikeId)
+  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId)
       .then((res) => {
           console.log(res.status);
           emit('exit');

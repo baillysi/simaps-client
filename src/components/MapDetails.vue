@@ -109,18 +109,18 @@ async function resetFilters() {
 }
 
 async function getZoneDetails() {
-  const response = await axios.get('http://localhost:5001/zones/' + props.id)
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
 }
 
 async function getHikeDetails(hike) {
-  const response = await axios.get('http://localhost:5001/hikes/' + hike.id)
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + hike.id)
   hikeDetails.value = response.data
 }
 
 async function getJourneys() {
-  const response = await axios.get('http://localhost:5001/journeys')
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/journeys')
   journeys.value = response.data
 }
 
