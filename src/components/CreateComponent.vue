@@ -38,7 +38,7 @@ async function createHike() {
     gpx: gpx.value,
   }
 
-  await axios.post('http://localhost:5001/hikes', payload)
+  await axios.post(import.meta.env.VITE_APP_ROOT_API + '/hikes', payload)
       .then((res) => {
           console.log(res.status);
           resetData();

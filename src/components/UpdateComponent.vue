@@ -73,7 +73,7 @@ async function updateHike() {
     rates: updatedRates.value,
     description: updatedDescription.value,
   }
-  await axios.put('http://localhost:5001/hikes/' + props.hikeId, payload)
+  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, payload)
       .then((res) => {
           console.log(res.status);
           emit('exit');
