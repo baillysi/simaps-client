@@ -111,7 +111,7 @@ async function resetFilters() {
 async function getZoneDetails() {
   isloadingzone.value = true
   const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
-  isloadingzone.value = false
+  isloadingzone.value = sleep(5).false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
 }
@@ -378,7 +378,7 @@ onMounted(async () => {
 <template>
 
   <div v-if="isloadingzone" class="loader">
-    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem"></i>
   </div>
 
   <div class="row" style="margin-left: 40px; margin-right: 40px;">
@@ -557,12 +557,10 @@ onMounted(async () => {
 <style>
 
   .loader {
-    background-color: #EFEFEF;
     position: absolute;
     left: 50%;
     top: 50%;
     opacity: .5;
-    filter: alpha(opacity=50);
   }
 
   .mapContainer {
