@@ -111,7 +111,7 @@ async function resetFilters() {
 async function getZoneDetails() {
   isloadingzone.value = true
   const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
-  isloadingzone.value = sleep(5).false
+  isloadingzone.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
 }
