@@ -7,7 +7,7 @@
   <div id="header">
     <nav class="navbar navbar-expand-md navbar-light">
       <div class="container-fluid">
-        <a class="navbar-brand">Simaps</a>
+        <a class="navbar-brand">Kavalé</a>
         <ul class="navbar-nav me-auto"> 
           <li class="nav-item">
             <router-link class="nav-link" to="/home">Accueil</router-link>
