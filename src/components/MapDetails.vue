@@ -109,7 +109,9 @@ async function resetFilters() {
 }
 
 async function getZoneDetails() {
+  isloadingzone.value = true
   const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
+  isloadingzone.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
 }
@@ -128,6 +130,7 @@ async function getJourneys() {
 const myMap = ref(null)
 const mapcenter = ref('')
 const ismapdata = ref(false)
+const isloadingzone = ref(false)
 
 watch(mapcenter, () => {
   ismapdata.value = true;
@@ -374,6 +377,10 @@ onMounted(async () => {
 
 <template>
 
+  <div v-if="isloadingzone" class="loader">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+  </div>
+
   <div class="row" style="margin-left: 40px; margin-right: 40px;">
 
     <div class="col-lg-7" style='padding: 10px;'>
@@ -548,6 +555,15 @@ onMounted(async () => {
 </template>
 
 <style>
+
+  .loader {
+    background-color: #EFEFEF;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    opacity: .5;
+    filter: alpha(opacity=50);
+  }
 
   .mapContainer {
     position: relative;
