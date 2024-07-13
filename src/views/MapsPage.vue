@@ -23,7 +23,7 @@ onMounted(async () => {
   <div class="row row-cols-1 row-cols-md-4">
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/mafate.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Mafate</h5>
@@ -34,7 +34,7 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/cilaos.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Cilaos</h5>
@@ -45,7 +45,7 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/salazie.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Salazie</h5>
@@ -67,7 +67,7 @@ onMounted(async () => {
     </div> 
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/plaines.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Plaines</h5>
@@ -78,7 +78,7 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/piton.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Piton des neiges</h5>
@@ -89,7 +89,7 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/nord.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Nord</h5>
@@ -100,7 +100,7 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/sud.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Sud</h5>
@@ -111,7 +111,7 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/est.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Est</h5>
@@ -122,7 +122,7 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
+      <div class="card h-100">
         <img src="../assets/ouest.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Ouest</h5>
