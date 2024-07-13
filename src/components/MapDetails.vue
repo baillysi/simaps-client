@@ -434,7 +434,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="col-lg-5 overflow-auto" style='padding: 10px; max-height: 680px;'>
+    <div class="col-lg-5 overflow-auto" style='padding: 10px'>
 
       <div class="dataContainer">
 
@@ -565,13 +565,15 @@ onMounted(async () => {
 
   .mapContainer {
     position: relative;
-    height: 680px;  /* or as desired */
+    min-height: 800px;
+    height: 100%;
     width: 100%;  /* This means "100% of the width of its container", the .col-lg-7 */
   }
 
   .dataContainer {
     position: relative;
-    height: 680px;  /* or as desired */
+    
+    max-height: 800px;
     width: 100%;  /* This means "100% of the width of its container", the .col-lg-5 */
   }
 
