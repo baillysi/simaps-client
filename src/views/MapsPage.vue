@@ -23,8 +23,8 @@ onMounted(async () => {
   <div class="row row-cols-1 row-cols-md-4">
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/mafate.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/mafate.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Mafate</h5>
           <p class="card-text">Le cirque le plus sauvage, aucune route n'y mène, un monde à part.</p>
@@ -34,8 +34,8 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/cilaos.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/cilaos.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Cilaos</h5>
           <p class="card-text">Au pied du Piton des Neiges, des possibilités infinies d'excursions.</p>
@@ -45,8 +45,8 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/salazie.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/salazie.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Salazie</h5>
           <p class="card-text">Nature verdoyante, cascades et villages de charme. </p>
@@ -57,7 +57,7 @@ onMounted(async () => {
 
     <div class="col mb-3">
       <div class="card h-100">
-        <img src="../assets/volcan.jpg" class="card-img-top" alt="...">
+        <img src="/volcan.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Volcan</h5>
           <p class="card-text">Le cadre grandiose du Piton de la Fournaise, plus que jamais actif.</p>
@@ -67,8 +67,8 @@ onMounted(async () => {
     </div> 
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/plaines.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/plaines.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Plaines</h5>
           <p class="card-text">Entre deux massifs volcaniques, des paysages superbes et atypiques.</p>
@@ -78,8 +78,8 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/piton.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/piton.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Piton des neiges</h5>
           <p class="card-text">Le plus haut sommet de l'Océan Indien, 3070 mètres.</p>
@@ -89,8 +89,8 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/nord.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/nord.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Nord</h5>
           <p class="card-text">Région moins explorée, avec comme point culminant la Roche Écrite.</p>
@@ -100,8 +100,8 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/sud.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/sud.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Sud</h5>
           <p class="card-text">Le Sud Sauvage, pépite à l'ombre du Volcan.</p>
@@ -111,8 +111,8 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/est.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/est.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Est</h5>
           <p class="card-text">L'aventure au coeur de la jungle des forêts primaires.</p>
@@ -122,8 +122,8 @@ onMounted(async () => {
     </div>
 
     <div class="col mb-3">
-      <div class="card h-80">
-        <img src="../assets/ouest.jpg" class="card-img-top" alt="...">
+      <div class="card h-100">
+        <img src="/ouest.jpg" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">Ouest</h5>
           <p class="card-text">Des points de vue célèbres et des itinéraires sportifs.</p>

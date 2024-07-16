@@ -57,7 +57,7 @@ const searchDifficulty = ref('')
 
 const currentOrder = ref('') 
 const sortedHikes = computed(() => {
-  return currentOrder.value == 'Difficulty' ?
+  return currentOrder.value == 'Difficulté' ?
   hikes.value.sort((a, b) => {
   let fa = a.difficulty, fb = b.difficulty;
   if (fa < fb) {
@@ -67,7 +67,7 @@ const sortedHikes = computed(() => {
     return -1;
   }
   return 0;
-  }): currentOrder.value == 'Rates' ?
+  }): currentOrder.value == 'Notes' ?
 
   hikes.value.sort((a, b) => {
   let fa = a.rates, fb = b.rates;
@@ -114,11 +114,6 @@ async function getZoneDetails() {
   isloadingzone.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
-}
-
-async function getHikeDetails(hike) {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + hike.id)
-  hikeDetails.value = response.data
 }
 
 async function getJourneys() {
@@ -377,8 +372,14 @@ onMounted(async () => {
 
 <template>
 
-  <div v-if="isloadingzone" class="loader">
-    <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem"></i>
+  <div v-if="isloadingzone" class="overlay">
+    <div class="overlay__wrapper">
+        <div class="overlay__spinner">
+          <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+    </div>
   </div>
 
   <div class="row" style="margin-left: 40px; margin-right: 40px;">
@@ -400,10 +401,10 @@ onMounted(async () => {
             layer-type="base"
           />
 
-          <l-geo-json v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="function() {return strokeStyle}">
+          <l-geo-json v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="function() {return strokeStyle}">
           </l-geo-json> 
 
-          <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.geojson), fitBounds(hike.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
+          <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
             <l-popup :options="{ closeButton:true, closeOnClick:true }">{{ hike.name }}<br/> 
               <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i>
               <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
@@ -440,7 +441,7 @@ onMounted(async () => {
 
         <div class="row" style="margin: 10px;">
           <div class="col-sm-5 col-6">
-            <select class="form-select form-select-sm" v-model="currentOrder" @change="getZoneDetails()">
+            <select class="form-select form-select-sm" v-model="currentOrder">
               <option disabled value="">Trier par</option>
               <option>Difficulté</option>
               <option>Notes</option>
@@ -479,7 +480,7 @@ onMounted(async () => {
             <h2 class="accordion-header" id="flush-headingOne">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
                 <div class="col-6">
-                  {{ hike.name}}
+                  {{ hike.name }}
                 </div>
                 <div class="col-3">
                   <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
@@ -503,16 +504,16 @@ onMounted(async () => {
                 {{ hike.description }}
                 <br/><br/>
                 <div class="col text-end">
-                  <button class="btn btn-light" @click="getHikeDetails(hike), selectedHike = hike.id, fitBounds(hike.geojson), showHeightgraph(hike.geojson)" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.geojson">
+                  <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="getHikeDetails(hike), getJourneys(), showUpdate()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light"  @click="getHikeDetails(hike), downloadGPX(hike.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.geojson">
+                  <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
                     <i class="pi pi-download" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="getHikeDetails(hike), showDelete()" data-toggle="tooltip" title="supprimer l'itinéraire">
+                  <button class="btn btn-light" @click="showDelete()" data-toggle="tooltip" title="supprimer l'itinéraire">
                     <i class="pi pi-trash" style="color:#D6955B;"></i>
                   </button>
                 </div>
@@ -531,7 +532,8 @@ onMounted(async () => {
   </div>
   
   <!-- Create -->
-  <CreateComponent :zoneId="props.id" :journeys="journeys" @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, hideCreate()">
+  <CreateComponent :zoneId="props.id" :journeys="journeys" 
+  @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, hideCreate(), fitBoundsZone(mapcenter)">
   </CreateComponent>
 
   <!-- Update -->
@@ -544,23 +546,41 @@ onMounted(async () => {
   :currentJourney="hikeDetails.journey" 
   :currentRates="hikeDetails.rates" 
   :currentDescription="hikeDetails.description"
-  :isGeojson="hikeDetails.geojson ? true : false"
-  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, hideUpdate(), fitBoundsZone(mapcenter)">
+  :hasTrail="hikeDetails.trail == 'None' ? false : true"
+  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, hideUpdate(), fitBoundsZone(mapcenter), hikeDetails = ''">
   </UpdateComponent>
 
   <!-- Delete -->
-  <DeleteComponent :hikeId="String(hikeDetails.id)" @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hideDelete()">
+  <DeleteComponent :hikeId="String(hikeDetails.id)" 
+  @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hideDelete()">
   </DeleteComponent>
 
 </template>
 
 <style>
 
-  .loader {
+  .overlay {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: white;
+    opacity: 0.5;
+  }
+
+  .overlay__wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .overlay__spinner {
     position: absolute;
     left: 50%;
     top: 50%;
-    opacity: .5;
+    transform: translate(-50%, -50%);
   }
 
   .mapContainer {
