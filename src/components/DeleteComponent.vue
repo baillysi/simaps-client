@@ -3,13 +3,14 @@
 import axios from 'axios';
 import { ref, toRef, watch } from 'vue';
 
-const emit = defineEmits(['exit'])
+const emit = defineEmits(['exit', 'close'])
 
 const props = defineProps({
   hikeId: String,
 })
 
 async function deleteHike() {
+  emit('close')
   await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId)
       .then((res) => {
           console.log(res.status);
