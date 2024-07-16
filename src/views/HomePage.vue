@@ -19,7 +19,7 @@
     <br/>
 
     <div class="container-fluid">
-      <img src="../assets/img.png">
+      <img src="/img.png">
     </div>
     <br/><br/>
     
