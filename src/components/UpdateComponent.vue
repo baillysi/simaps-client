@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { ref, toRef, watch } from 'vue';
 
-const emit = defineEmits(['exit'])
+const emit = defineEmits(['exit', 'close'])
 
 const props = defineProps({
   zoneId: String,
@@ -63,6 +63,7 @@ watch(toRef(props, 'currentDescription'), (value) => {
 });
 
 async function updateHike() {
+  emit('close')
   const payload = {
     name: updatedName.value,
     distance: updatedDistance.value,

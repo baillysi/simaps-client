@@ -42,6 +42,8 @@ const props = defineProps({
   id: String
 })
 
+const isloading = ref(false)
+
 const hikes = ref([])
 const hikeDetails = ref('')
 
@@ -109,9 +111,8 @@ async function resetFilters() {
 }
 
 async function getZoneDetails() {
-  isloadingzone.value = true
   const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
-  isloadingzone.value = false
+  isloading.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
 }
@@ -125,7 +126,6 @@ async function getJourneys() {
 const myMap = ref(null)
 const mapcenter = ref('')
 const ismapdata = ref(false)
-const isloadingzone = ref(false)
 
 watch(mapcenter, () => {
   ismapdata.value = true;
@@ -365,6 +365,7 @@ async function hideDelete() {
 }
 
 onMounted(async () => {
+  isloading.value = true
   getZoneDetails()
 })
 
@@ -372,7 +373,7 @@ onMounted(async () => {
 
 <template>
 
-  <div v-if="isloadingzone" class="overlay">
+  <div v-if="isloading" class="overlay">
     <div class="overlay__wrapper">
         <div class="overlay__spinner">
           <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">
@@ -524,7 +525,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" v-if="showMessage && isloadingzone == false"></AlertComponent>
+          <AlertComponent :message="message" v-if="showMessage && isloading == false"></AlertComponent>
         </div>
 
       </div>
@@ -533,7 +534,8 @@ onMounted(async () => {
   
   <!-- Create -->
   <CreateComponent :zoneId="props.id" :journeys="journeys" 
-  @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, hideCreate(), fitBoundsZone(mapcenter)">
+  @close="hideCreate(), isloading=true"
+  @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenter)">
   </CreateComponent>
 
   <!-- Update -->
@@ -547,12 +549,14 @@ onMounted(async () => {
   :currentRates="hikeDetails.rates" 
   :currentDescription="hikeDetails.description"
   :hasTrail="hikeDetails.trail == 'None' ? false : true"
-  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, hideUpdate(), fitBoundsZone(mapcenter), hikeDetails = ''">
+  @close="hideUpdate(), isloading=true"
+  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenter), hikeDetails = ''">
   </UpdateComponent>
 
   <!-- Delete -->
-  <DeleteComponent :hikeId="String(hikeDetails.id)" 
-  @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hideDelete()">
+  <DeleteComponent :hikeId="String(hikeDetails.id)"
+  @close="hideDelete(), isloading=true"
+  @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true">
   </DeleteComponent>
 
 </template>
