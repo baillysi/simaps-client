@@ -524,7 +524,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
+          <AlertComponent :message="message" v-if="showMessage && isloadingzone == false"></AlertComponent>
         </div>
 
       </div>
