@@ -1,7 +1,6 @@
 <script setup>
 
 import axios from 'axios';
-import { ref, toRef, watch } from 'vue';
 
 const emit = defineEmits(['exit', 'close'])
 

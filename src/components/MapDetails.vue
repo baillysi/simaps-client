@@ -514,7 +514,7 @@ onMounted(async () => {
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
                     <i class="pi pi-download" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showDelete()" data-toggle="tooltip" title="supprimer l'itinéraire">
+                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
                     <i class="pi pi-trash" style="color:#D6955B;"></i>
                   </button>
                 </div>
@@ -556,7 +556,7 @@ onMounted(async () => {
   <!-- Delete -->
   <DeleteComponent :hikeId="String(hikeDetails.id)"
   @close="hideDelete(), isloading=true"
-  @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true">
+  @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
   </DeleteComponent>
 
 </template>
