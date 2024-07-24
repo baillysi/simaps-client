@@ -24,6 +24,7 @@
     <br/><br/>
     
     <router-link class="btn btn-outline-secondary btn-lg" to="/maps">Accès aux Cartes</router-link>
+    
   </div>
   
 </template>
