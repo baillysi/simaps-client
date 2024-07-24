@@ -10,7 +10,7 @@
       <div class="container-fluid justify-content-center">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link" to="/home">Accueil</router-link>
+            <router-link class="nav-link" to="/">Accueil</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/maps">Cartes</router-link>
