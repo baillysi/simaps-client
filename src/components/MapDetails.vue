@@ -37,6 +37,9 @@ import AlertComponent from './AlertComponent.vue';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useResizeObserver } from '@vueuse/core'
 
+// login data
+const isLoggedIn = ref(false)
+
 // hikes data form
 const props = defineProps({
   id: String
@@ -514,7 +517,7 @@ onMounted(async () => {
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
                     <i class="pi pi-download" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
+                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire" :disabled="!isLoggedIn">
                     <i class="pi pi-trash" style="color:#D6955B;"></i>
                   </button>
                 </div>

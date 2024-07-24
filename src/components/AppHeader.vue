@@ -1,10 +1,31 @@
 <script setup>
 
-import { useAuth0 } from '@auth0/auth0-vue';
-const { loginWithRedirect } = useAuth0();
+import { ref } from 'vue';
 
-async function login() {
-  loginWithRedirect()
+import { Modal } from 'bootstrap';
+import AuthComponent from './AuthComponent.vue';
+import LogoutComponent from './LogoutComponent.vue';
+
+const isLoggedin = ref(false)
+
+async function showAuth() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#auth'));
+  myModal.show();
+}
+
+async function showLogout() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#logout'));
+  myModal.show();
+}
+
+async function hideAuth() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#auth'));
+  myModal.hide();
+}
+
+async function hideLogout() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#logout'));
+  myModal.hide();
 }
 
 </script>
@@ -17,7 +38,7 @@ async function login() {
         <a class="navbar-brand">Kavalé</a>
         <ul class="navbar-nav me-auto"> 
           <li class="nav-item">
-            <router-link class="nav-link" to="/home">Accueil</router-link>
+            <router-link class="nav-link" to="/">Accueil</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/maps">Cartes</router-link>
@@ -27,12 +48,22 @@ async function login() {
           </li>
         </ul>
         <form class="form-inline">
-          <button class="btn btn-outline-secondary" type="button" @click="login()">Se connecter</button>
+          <button class="btn btn-outline-secondary" style="margin-right: 5px;" type="button" @click="showAuth()">Mon compte</button>
+          <button class="btn btn-danger" style="margin-left: 5px;" type="button" @click="showLogout()">
+            <i class="pi pi-sign-out" style="color:white;"></i>
+          </button>
         </form>
       </div>
     </nav>
     <hr>
   </div>
+
+  <!-- Auth -->
+  <AuthComponent @exit="hideAuth(), isLoggedin=true, console.log(isLoggedin)"></AuthComponent>
+
+  <!-- Logout -->
+  <LogoutComponent @exit="hideLogout(), isLoggedin=false, console.log(isLoggedin)"></LogoutComponent>
+
 
 </template>
 
