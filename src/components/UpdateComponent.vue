@@ -140,32 +140,32 @@ async function onSubmit() {
             </ul>
           </p>
           <div class="form-group">
-            <label for="InputName">Nom</label>
-            <input type="text" v-model="updatedName" class="form-control" id="InputName">
+            <label for="UpName">Nom</label>
+            <input type="text" v-model="updatedName" class="form-control" id="UpName">
           </div>
           <div class="form-group">
-            <label for="InputDescription">Description</label>
-            <textarea type="text" v-model="updatedDescription" class="form-control" id="InputDescription" rows="4"></textarea>
+            <label for="UpDescription">Description</label>
+            <textarea type="text" v-model="updatedDescription" class="form-control" id="UpDescription" rows="4"></textarea>
           </div>
           <br/>
           <div class="row">
             <div class="form-group col">
-              <label for="InputDistance">Distance</label>
-              <input type="number" v-model="updatedDistance" class="form-control" id="InputDistance" placeholder="km" :disabled="props.hasTrail">
+              <label for="UpDistance">Distance</label>
+              <input type="number" v-model="updatedDistance" class="form-control" id="UpDistance" placeholder="km" :disabled="props.hasTrail">
             </div>
             <div class="form-group col">
-              <label for="InputElevation">Dénivelé positif cumulé</label>
-              <input type="number" v-model="updatedElevation" class="form-control" id="InputElevation" placeholder="m+" :disabled="props.hasTrail">
+              <label for="UpElevation">Dénivelé positif cumulé</label>
+              <input type="number" v-model="updatedElevation" class="form-control" id="UpElevation" placeholder="m+" :disabled="props.hasTrail">
             </div>
           </div>
           <div class="row">
             <div class="form-group col">
-              <label for="InputDuration">Durée</label>
-              <input type="number" v-model="updatedDuration" class="form-control" id="InputDuration" placeholder="heures">
+              <label for="UpDuration">Durée</label>
+              <input type="number" v-model="updatedDuration" class="form-control" id="UpDuration" placeholder="heures">
             </div>
             <div class="form-group col">
-              <label for="InputJourney">Type d'itinéraire</label>
-              <select v-model="updatedJourney" class="form-select" id="InputJourney">
+              <label for="UpJourney">Type d'itinéraire</label>
+              <select v-model="updatedJourney" class="form-select" id="UpJourney">
                 <option v-for="option in journeys" :value="option">
                   {{ option.name }}
                 </option>
@@ -174,12 +174,12 @@ async function onSubmit() {
           </div>
           <br/>
           <div class="form-group">
-            <label for="InputDifficulty">Difficulté</label>
-            <input v-model="updatedDifficulty" type="range" class="form-range" min="0" max="4" id="InputDifficulty">
+            <label for="UpDifficulty">Difficulté</label>
+            <input v-model="updatedDifficulty" type="range" class="form-range" min="0" max="4" id="UpDifficulty">
           </div>
           <div class="form-group">
-            <label for="InputRates">Intérêt</label>
-            <input v-model="updatedRates" type="range" class="form-range" min="0" max="4" id="InputRates">
+            <label for="UpRates">Intérêt</label>
+            <input v-model="updatedRates" type="range" class="form-range" min="0" max="4" id="UpRates">
           </div>
           <br/>
           <div class="modal-footer">
