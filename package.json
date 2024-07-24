@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.3.3",
     "@dwayneparton/geojson-to-gpx": "^0.2.0",
     "@popperjs/core": "^2.11.8",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
