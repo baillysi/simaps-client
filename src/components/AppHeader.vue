@@ -1,12 +1,5 @@
 <script setup>
 
-import { useAuth0 } from '@auth0/auth0-vue';
-const { loginWithRedirect } = useAuth0();
-
-async function login() {
-  loginWithRedirect()
-}
-
 </script>
 
 <template>
@@ -27,7 +20,7 @@ async function login() {
           </li>
         </ul>
         <form class="form-inline">
-          <button class="btn btn-outline-secondary" type="button" @click="login()">Se connecter</button>
+          <button class="btn btn-outline-secondary" type="button">Se connecter</button>
         </form>
       </div>
     </nav>
