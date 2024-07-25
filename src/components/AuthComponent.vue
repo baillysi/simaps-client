@@ -22,6 +22,7 @@ const googleUser = ref('')
 async function signInWithGoogle() {
   isAuthLoading.value = true
   await signInWithRedirect(auth, provider)
+  isAuthLoading.value = true
 }
 
 getRedirectResult(auth) 
@@ -36,7 +37,6 @@ getRedirectResult(auth)
     isAuthLoading.value = false
 
     console.log('Successfully logged in !')
-    alert('Successfully logged in !')
 
   }).catch((error) => {
     // Handle Errors here.
