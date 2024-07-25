@@ -24,10 +24,10 @@ async function signInWithGoogle() {
   await signInWithRedirect(auth, provider)
 }
 
-async function signInAsGuest(auth) {
+async function signInAsGuest() {
   isAuthLoading.value = true
   signInAnonymously(auth)
-    .then((result) => {
+    .then(() => {
       // Signed in..
       isAuthLoading.value = false
       console.log('Successfully logged in as guest !')
@@ -49,7 +49,6 @@ getRedirectResult(auth)
     // The signed-in user info.
     googleUser.value = result.user;
     isAuthLoading.value = false
-
     console.log('Successfully logged in !')
 
   }).catch((error) => {
@@ -114,7 +113,6 @@ getRedirectResult(auth)
           </button>
           <br/>
           <small id="guesthelp" class="form-text text-muted">Certaines fonctionnalités avancées ne seront pas disponibles.</small>
-
         </div>
 
       </div>
@@ -123,8 +121,9 @@ getRedirectResult(auth)
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
           <AlertComponent :message="'Vous êtes correctement identifié !'"></AlertComponent>
         </div>
-        <div>Utilisateur : {{ googleUser.displayName }} </div>
-        <div>Email : {{ googleUser.email }} </div>
+        <div v-if="currentUser.isAnonymous">Utilisateur : Invité </div>
+        <div v-if="!currentUser.isAnonymous">Utilisateur : {{ googleUser.displayName }} </div>
+        <div v-if="!currentUser.isAnonymous">Email : {{ googleUser.email }} </div>
       </div>
 
     </div>
