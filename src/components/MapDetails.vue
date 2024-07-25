@@ -37,8 +37,22 @@ import AlertComponent from './AlertComponent.vue';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useResizeObserver } from '@vueuse/core'
 
-// login data
+// user session
+import { useFirebaseAuth} from 'vuefire';
+import { onAuthStateChanged } from 'firebase/auth';
+
+const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
+
+// native vuefire watcher to check whether user logged or not
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    isLoggedIn.value = true
+  } 
+  else {
+    isLoggedIn.value = false
+  }
+});
 
 // hikes data form
 const props = defineProps({
@@ -511,7 +525,7 @@ onMounted(async () => {
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire" :disabled="!isLoggedIn">
                     <i class="pi pi-file-edit" style="color:#226D68;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">

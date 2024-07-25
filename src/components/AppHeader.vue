@@ -3,10 +3,26 @@
 import { ref } from 'vue';
 
 import { Modal } from 'bootstrap';
+
 import AuthComponent from './AuthComponent.vue';
 import LogoutComponent from './LogoutComponent.vue';
 
-const isLoggedin = ref(false)
+// user session
+import { useFirebaseAuth} from 'vuefire';
+import { onAuthStateChanged } from 'firebase/auth';
+
+const auth = useFirebaseAuth()
+const isLoggedIn = ref(false)
+
+// native vuefire watcher to check whether user logged or not
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    isLoggedIn.value = true
+  } 
+  else {
+    isLoggedIn.value = false
+  }
+});
 
 async function showAuth() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#auth'));
@@ -49,7 +65,7 @@ async function hideLogout() {
         </ul>
         <form class="form-inline">
           <button class="btn btn-outline-secondary" style="margin-right: 5px;" type="button" @click="showAuth()">Mon compte</button>
-          <button class="btn btn-danger" style="margin-left: 5px;" type="button" @click="showLogout()">
+          <button class="btn btn-danger" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
             <i class="pi pi-sign-out" style="color:white;"></i>
           </button>
         </form>
@@ -59,10 +75,10 @@ async function hideLogout() {
   </div>
 
   <!-- Auth -->
-  <AuthComponent @exit="hideAuth(), isLoggedin=true, console.log(isLoggedin)"></AuthComponent>
+  <AuthComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser" @exit="hideAuth()"></AuthComponent>
 
   <!-- Logout -->
-  <LogoutComponent @exit="hideLogout(), isLoggedin=false, console.log(isLoggedin)"></LogoutComponent>
+  <LogoutComponent @exit="hideLogout()"></LogoutComponent>
 
 
 </template>
