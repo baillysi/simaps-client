@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useFirebaseAuth } from 'vuefire'
-import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth'
 
 const emit = defineEmits(['exit', 'close'])
 const props = defineProps({
@@ -17,15 +17,30 @@ const provider = new GoogleAuthProvider();
 async function signInWithGoogle() {
   isAuthLoading.value = true
   signInWithRedirect(auth, provider)
-    .then(() => {
-      isAuthLoading.value = false
-      console.log('Successfully logged in !')
-      emit('exit')
-    })
-    .catch((error) => {
-      console.log(error.code)
-      alert(error.message);
-    });
+  getRedirectResult(auth)
+
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access Google APIs.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+
+    isAuthLoading.value = false
+    console.log('Successfully logged in !')
+    emit('exit')
+
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+
 }
 
 </script>
@@ -70,7 +85,7 @@ async function signInWithGoogle() {
       </div>
 
       <div v-if="isLoggedIn" class="modal-body" style="text-align:center;">
-        <div>Identifiant : {{ currentUser.email }}</div>
+        <div>Identifiant : {{ currentUser.email }} - {{ user }}</div>
       </div>
 
     </div>
