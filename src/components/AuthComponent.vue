@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+
+import AlertComponent from './AlertComponent.vue';
+
 import { useFirebaseAuth } from 'vuefire'
 import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth'
 
@@ -27,11 +30,11 @@ getRedirectResult(auth)
     // This gives you a Google Access Token. You can use it to access Google APIs.
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const token = credential.accessToken;
+
     // The signed-in user info.
     googleUser.value = result.user;
-
     isAuthLoading.value = false
-    
+
     console.log('Successfully logged in !')
     alert('Successfully logged in !')
 
@@ -45,7 +48,6 @@ getRedirectResult(auth)
     const credential = GoogleAuthProvider.credentialFromError(error);
     // ...
   });
-
 
 </script>
 
@@ -89,7 +91,11 @@ getRedirectResult(auth)
       </div>
 
       <div v-if="isLoggedIn" class="modal-body" style="text-align:center;">
-        <div>Identifiant : {{ currentUser.email }} - {{ googleUser }}</div>
+        <div class="row" style="margin-left: 10px; margin-right: 10px;">
+          <AlertComponent :message="'Vous êtes correctement identifié !'"></AlertComponent>
+        </div>
+        <div >Utilisateur : {{ googleUser.displayName }} </div>
+        <div >Email : {{ googleUser.email }} </div>
       </div>
 
     </div>
