@@ -1,27 +1,39 @@
 <script setup>
 
-const emit = defineEmits(['exit'])
+import { useFirebaseAuth } from 'vuefire'
+import { signOut } from 'firebase/auth'
 
-async function logout() {
-  emit('exit')
+const emit = defineEmits(['exit', 'close'])
+
+const auth = useFirebaseAuth()
+
+async function signout() {
+  emit('close')
+  signOut(auth).then((data) => {
+      console.log('Successfully logged out!');
+    })
+    .catch(error => {
+      console.log(error.code)
+      alert(error.message);
+    });
 }
 
 </script>
 
 <template>
 
-<div class="modal fade" id="#logout" tabindex="-1" aria-labelledby="#logout" aria-hidden="true">
+<div class="modal fade" id="#signout" tabindex="-1" aria-labelledby="#signout" aria-hidden="true">
   <div class="modal-dialog modal-confirm">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="#logout">Êtes-vous certain ?</h1>
+        <h1 class="modal-title fs-5" id="#signout">Êtes-vous certain ?</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p>Voulez-vous vraiment fermer votre session ?</p>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-danger" @click="logout">Se déconnecter</button>
+        <button class="btn btn-danger" @click="signout()">Se déconnecter</button>
       </div>
     </div>
   </div>
@@ -29,8 +41,9 @@ async function logout() {
 
 </template>
 
-<style>
 
+<style>
 </style>
+
 
 
