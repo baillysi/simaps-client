@@ -16,8 +16,10 @@ const provider = new GoogleAuthProvider();
 
 async function signInWithGoogle() {
   isAuthLoading.value = true
-  signInWithRedirect(auth, provider)
-  getRedirectResult(auth)
+  await signInWithRedirect(auth, provider)
+}
+
+getRedirectResult(auth) 
 
   .then((result) => {
     // This gives you a Google Access Token. You can use it to access Google APIs.
@@ -41,7 +43,6 @@ async function signInWithGoogle() {
     // ...
   });
 
-}
 
 </script>
 
