@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import { Modal } from 'bootstrap';
 
@@ -9,10 +9,13 @@ import LogoutComponent from './LogoutComponent.vue';
 
 // user session
 import { useFirebaseAuth} from 'vuefire';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, GoogleAuthProvider, getRedirectResult } from 'firebase/auth';
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
+const isAuthLoading = ref(false)
+
+// const googleUser = ref('')
 
 // native vuefire watcher to check whether user logged or not
 onAuthStateChanged(auth, (user) => {
@@ -44,10 +47,49 @@ async function hideLogout() {
   myModal.hide();
 }
 
+getRedirectResult(auth) 
+
+  .then((result) => {
+    isAuthLoading.value = false 
+    // This gives you a Google Access Token. You can use it to access Google APIs.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+
+    // The signed-in user info.
+    // googleUser.value = result.user;
+    console.log('Successfully logged in !')
+
+  })
+  .catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+
+  onMounted(async () => {
+    isAuthLoading.value = true
+})
+
+
 </script>
 
 <template>
-  
+
+  <div v-if="isAuthLoading" class="overlay">
+    <div class="overlay__wrapper">
+      <div class="overlay__spinner">
+        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+    
   <div id="header">
     <nav class="navbar navbar-expand-md navbar-light">
       <div class="container-fluid">
@@ -84,6 +126,28 @@ async function hideLogout() {
 </template>
 
 <style>
+
+  .overlay {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: white;
+    opacity: 0.5;
+  }
+  .overlay__wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .overlay__spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
 
   .navbar-brand {
     color: #226D68 !important;
