@@ -14,6 +14,8 @@ const isAuthLoading = ref(false)
 const auth = useFirebaseAuth()
 const provider = new GoogleAuthProvider();
 
+const googleUser = ref('')
+
 async function signInWithGoogle() {
   isAuthLoading.value = true
   await signInWithRedirect(auth, provider)
@@ -26,11 +28,12 @@ getRedirectResult(auth)
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const token = credential.accessToken;
     // The signed-in user info.
-    const user = result.user;
+    googleUser.value = result.user;
 
     isAuthLoading.value = false
+    
     console.log('Successfully logged in !')
-    emit('exit')
+    alert('Successfully logged in !')
 
   }).catch((error) => {
     // Handle Errors here.
@@ -86,7 +89,7 @@ getRedirectResult(auth)
       </div>
 
       <div v-if="isLoggedIn" class="modal-body" style="text-align:center;">
-        <div>Identifiant : {{ currentUser.email }} - {{ user }}</div>
+        <div>Identifiant : {{ currentUser.email }} - {{ googleUser }}</div>
       </div>
 
     </div>
