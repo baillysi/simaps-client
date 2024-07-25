@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useFirebaseAuth } from 'vuefire'
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth'
 
 const emit = defineEmits(['exit', 'close'])
 const props = defineProps({
@@ -16,10 +16,10 @@ const provider = new GoogleAuthProvider();
 
 async function signInWithGoogle() {
   isAuthLoading.value = true
-  signInWithPopup(auth, provider)
+  signInWithRedirect(auth, provider)
     .then(() => {
       isAuthLoading.value = false
-      alert('Successfully logged in !')
+      console.log('Successfully logged in !')
       emit('exit')
     })
     .catch((error) => {
