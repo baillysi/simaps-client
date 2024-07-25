@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import AlertComponent from './AlertComponent.vue';
 
 import { useFirebaseAuth } from 'vuefire'
-import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInAnonymously } from 'firebase/auth'
 
 const emit = defineEmits(['exit', 'close'])
 const props = defineProps({
@@ -22,7 +22,21 @@ const googleUser = ref('')
 async function signInWithGoogle() {
   isAuthLoading.value = true
   await signInWithRedirect(auth, provider)
+}
+
+async function signInAsGuest(auth) {
   isAuthLoading.value = true
+  signInAnonymously(auth)
+    .then((result) => {
+      // Signed in..
+      isAuthLoading.value = false
+      console.log('Successfully logged in as guest !')
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
 }
 
 getRedirectResult(auth) 
@@ -72,6 +86,7 @@ getRedirectResult(auth)
       </div>
 
       <div v-if="!isLoggedIn" class="modal-body" style="text-align:center;">
+
         <button class="gsi-material-button" @click="signInWithGoogle()">
           <div class="gsi-material-button-state"></div>
           <div class="gsi-material-button-content-wrapper">
@@ -84,18 +99,32 @@ getRedirectResult(auth)
                 <path fill="none" d="M0 0h48v48H0z"></path>
               </svg>
             </div>
-            <span class="gsi-material-button-contents">Sign in with Google</span>
-            <span style="display: none;">Sign in with Google</span>
+            <span class="gsi-material-button-contents">Se connecter avec Google</span>
+            <span style="display: none;">Se connecter avec Google</span>
           </div>
         </button>
+
+        <br/>
+        <br/>
+
+        <div>
+          Continuer en tant qu'invité 
+          <button class="btn btn-success btn-sm" style="margin-left: 5px;" type="button" @click="signInAsGuest()">
+            <i class="pi pi-sign-in" style="color:white;"></i>
+          </button>
+          <br/>
+          <small id="guesthelp" class="form-text text-muted">Certaines fonctionnalités avancées ne seront pas disponibles.</small>
+
+        </div>
+
       </div>
 
       <div v-if="isLoggedIn" class="modal-body" style="text-align:center;">
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
           <AlertComponent :message="'Vous êtes correctement identifié !'"></AlertComponent>
         </div>
-        <div >Utilisateur : {{ googleUser.displayName }} </div>
-        <div >Email : {{ googleUser.email }} </div>
+        <div>Utilisateur : {{ googleUser.displayName }} </div>
+        <div>Email : {{ googleUser.email }} </div>
       </div>
 
     </div>
