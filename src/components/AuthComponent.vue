@@ -20,6 +20,7 @@ async function signInWithGoogle() {
     .then(() => {
       isAuthLoading.value = false
       alert('Successfully logged in !')
+      emit('exit')
     })
     .catch((error) => {
       console.log(error.code)
