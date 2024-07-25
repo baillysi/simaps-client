@@ -1,10 +1,11 @@
 <script setup>
+
 import { ref } from 'vue'
 
 import AlertComponent from './AlertComponent.vue';
 
 import { useFirebaseAuth } from 'vuefire'
-import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInAnonymously } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithRedirect, signInAnonymously } from 'firebase/auth'
 
 const emit = defineEmits(['exit', 'close'])
 const props = defineProps({
@@ -16,8 +17,6 @@ const isAuthLoading = ref(false)
 
 const auth = useFirebaseAuth()
 const provider = new GoogleAuthProvider();
-
-const googleUser = ref('')
 
 async function signInWithGoogle() {
   isAuthLoading.value = true
@@ -38,29 +37,6 @@ async function signInAsGuest() {
       // ...
     });
 }
-
-getRedirectResult(auth) 
-
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access Google APIs.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-
-    // The signed-in user info.
-    googleUser.value = result.user;
-    isAuthLoading.value = false
-    console.log('Successfully logged in !')
-
-  }).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
 
 </script>
 
@@ -122,8 +98,8 @@ getRedirectResult(auth)
           <AlertComponent :message="'Vous êtes correctement identifié !'"></AlertComponent>
         </div>
         <div v-if="currentUser.isAnonymous">Utilisateur : Invité </div>
-        <div v-if="!currentUser.isAnonymous">Utilisateur : {{ googleUser.displayName }} </div>
-        <div v-if="!currentUser.isAnonymous">Email : {{ googleUser.email }} </div>
+        <div v-if="!currentUser.isAnonymous">Utilisateur : {{ currentUser.displayName }} </div>
+        <div v-if="!currentUser.isAnonymous">Email : {{ currentUser.email }} </div>
       </div>
 
     </div>
