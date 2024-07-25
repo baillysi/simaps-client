@@ -10,7 +10,6 @@ const auth = useFirebaseAuth()
 async function signout() {
   signOut(auth).then((data) => {
       console.log('Successfully logged out!');
-      alert('Successfully logged out !')
       emit('exit')
     })
     .catch(error => {
