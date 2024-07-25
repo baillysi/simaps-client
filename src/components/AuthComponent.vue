@@ -19,7 +19,7 @@ async function signInWithGoogle() {
   signInWithRedirect(auth, provider)
     .then(() => {
       isAuthLoading.value = false
-      alert('Successfully logged in !')
+      console.log('Successfully logged in !')
       emit('exit')
     })
     .catch((error) => {
