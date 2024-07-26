@@ -15,6 +15,8 @@ const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
 const isAuthLoading = ref(false)
 
+const providerUser = ref('')
+
 // native vuefire watcher to check whether user logged or not
 onAuthStateChanged(auth, (user) => {
   isAuthLoading.value = false
@@ -48,24 +50,21 @@ async function hideLogout() {
 // In most cases, getRedirectResult is not needed. onAuthStateChanged is sufficient for successful flows
 // but a developer may want to get the results (OAuth credentials, additional user info, etc)
 // or recover from certain errors (email already exists, linking is required, etc) 
-// or show error message to the user (account disabled, etc). They can call this API to get that information.
-// GetRedirectResult
+// or show error message to the user (account disabled, etc). it has to call this API to get that information.
 
 getRedirectResult(auth)
   .then((result) => {
     if (result != null) {
-      const user = result.user;
+      // Get the results
+      providerUser.value = result.user;
     }
-  }).catch((error) => {
+  })
+  .catch((error) => {
     // Handle Errors here.
+    isAuthLoading.value = false
     const errorCode = error.code;
     const errorMessage = error.message;
     alert(error.message)
-    // The email of the user's account used.
-    const email = error.email;
-    // The AuthCredential type that was used.
-    // const credential = GithubAuthProvider.credentialFromError(error);
-    // ...
   });
 
 onMounted(async () => {
