@@ -17,11 +17,14 @@ const isAuthLoading = ref(false)
 
 // native vuefire watcher to check whether user logged or not
 onAuthStateChanged(auth, (user) => {
+  isAuthLoading.value = false
   if (user) {
     isLoggedIn.value = true
+    console.log('Successfully logged in !')
   } 
   else {
     isLoggedIn.value = false
+    console.log('Successfully logged out!');
   }
 });
 
@@ -46,29 +49,11 @@ async function hideLogout() {
 // but a developer may want to get the results (OAuth credentials, additional user info, etc)
 // or recover from certain errors (email already exists, linking is required, etc) 
 // or show error message to the user (account disabled, etc). They can call this API to get that information.
+// GetRedirectResult
 
-// How to handle several providers ?
-
-getRedirectResult(auth) 
-
-  .then((result) => {
-    isAuthLoading.value = false 
-    console.log('Successfully logged in !')
-
-  })
-  .catch((error) => {
-    isAuthLoading.value = false
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-    alert(error.message)
-  });
-
-  onMounted(async () => {
-    isAuthLoading.value = true
+onMounted(async () => {
+  isAuthLoading.value = true
 })
-
 
 </script>
 
