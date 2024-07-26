@@ -43,6 +43,7 @@ async function signInAsGuest() {
       isAuthLoading.value = false
       const errorCode = error.code;
       const errorMessage = error.message;
+      alert(error.message)
       // ...
     });
 }
