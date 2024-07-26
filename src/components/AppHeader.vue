@@ -53,22 +53,9 @@ async function hideLogout() {
 
 getRedirectResult(auth)
   .then((result) => {
-    const credentialGoogle = GoogleAuthProvider.credentialFromResult(result);
-    if (credentialGoogle) {
-      // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-      const token = credential.accessToken;
-      // ...
+    if (result != null) {
+      const user = result.user;
     }
-
-    const credentialGitHub = GithubAuthProvider.credentialFromResult(result);
-    if (credentialGitHub) {
-      // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-      const token = credential.accessToken;
-      // ...
-    }
-
-    // The signed-in user info.
-    const user = result.user;
   }).catch((error) => {
     // Handle Errors here.
     const errorCode = error.code;
@@ -77,7 +64,7 @@ getRedirectResult(auth)
     // The email of the user's account used.
     const email = error.email;
     // The AuthCredential type that was used.
-    const credential = GithubAuthProvider.credentialFromError(error);
+    // const credential = GithubAuthProvider.credentialFromError(error);
     // ...
   });
 
