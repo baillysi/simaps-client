@@ -5,15 +5,15 @@
 <template>
 
   <div class="container" style="text-align:center; margin-top: 30px;">
-    <h1 style="font-family: Helvetica, Arial, sans-serif; font-size:bold; color:#18534F;">Maps & Hikes.</h1>
+    <h1 style="font-family: Helvetica, Arial, sans-serif; font-size:bold; color:#18534F;">Cartes & Randonnées.</h1>
     <br/>
 
     <figure class="text-center">
       <blockquote class="blockquote">
-        <h6 style="font-size:bold; color:#18534F;">Quelle que soit la direction prise, marcher conduit à l'essentiel.</h6>
+        <h6 style="font-size:bold; color:#18534F;">C’est le fait de ne pas connaître exactement le chemin, la carte jetée qui fait du soleil couchant le guide et rend le décor vivant.</h6>
       </blockquote>
       <figcaption class="blockquote-footer">
-        Sylvain Tesson <cite title="Source Title">Sur les chemins noirs</cite>
+        Art Garfunkel
       </figcaption>
     </figure>
     <br/>
