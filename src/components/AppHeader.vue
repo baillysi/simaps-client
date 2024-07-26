@@ -9,7 +9,7 @@ import LogoutComponent from './LogoutComponent.vue';
 
 // user session
 import { useFirebaseAuth} from 'vuefire';
-import { onAuthStateChanged, GoogleAuthProvider, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged, GoogleAuthProvider, getRedirectResult, GithubAuthProvider } from 'firebase/auth';
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
@@ -53,8 +53,15 @@ async function hideLogout() {
 
 getRedirectResult(auth)
   .then((result) => {
-    const credential = GithubAuthProvider.credentialFromResult(result);
-    if (credential) {
+    const credentialGoogle = GoogleAuthProvider.credentialFromResult(result);
+    if (credentialGoogle) {
+      // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+      const token = credential.accessToken;
+      // ...
+    }
+
+    const credentialGitHub = GithubAuthProvider.credentialFromResult(result);
+    if (credentialGitHub) {
       // This gives you a GitHub Access Token. You can use it to access the GitHub API.
       const token = credential.accessToken;
       // ...
