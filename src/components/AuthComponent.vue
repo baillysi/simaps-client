@@ -36,7 +36,7 @@ async function signInAsGuest() {
     .then(() => {
       // Signed in.
       isAuthLoading.value = false
-      console.log('Successfully logged in as guest !')
+      console.log('Logged in as guest !')
     })
     .catch((error) => {
       // Handle Errors here.
