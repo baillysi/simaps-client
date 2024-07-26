@@ -20,11 +20,11 @@ onAuthStateChanged(auth, (user) => {
   isAuthLoading.value = false
   if (user) {
     isLoggedIn.value = true
-    console.log('Successfully logged in !')
+    console.log('Logged in !')
   } 
   else {
     isLoggedIn.value = false
-    console.log('Successfully logged out!');
+    console.log('Logged out!');
   }
 });
 
@@ -50,6 +50,29 @@ async function hideLogout() {
 // or recover from certain errors (email already exists, linking is required, etc) 
 // or show error message to the user (account disabled, etc). They can call this API to get that information.
 // GetRedirectResult
+
+getRedirectResult(auth)
+  .then((result) => {
+    const credential = GithubAuthProvider.credentialFromResult(result);
+    if (credential) {
+      // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+      const token = credential.accessToken;
+      // ...
+    }
+
+    // The signed-in user info.
+    const user = result.user;
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    alert(error.message)
+    // The email of the user's account used.
+    const email = error.email;
+    // The AuthCredential type that was used.
+    const credential = GithubAuthProvider.credentialFromError(error);
+    // ...
+  });
 
 onMounted(async () => {
   isAuthLoading.value = true

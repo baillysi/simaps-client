@@ -17,13 +17,13 @@ const isAuthLoading = ref(false)
 const googleProvider = new GoogleAuthProvider()
 const githubProvider = new GithubAuthProvider()
 
-// Google provider. Check GetRedirectResult in AppHeader Component to get results.
+// Google provider. Check GetRedirectResult in to get results & handle errors.
 async function signInWithGoogle() {
   isAuthLoading.value = true
   await signInWithRedirect(auth, googleProvider)
 }
 
-// GitHub provider. Check GetRedirectResult in AppHeader Component to get results.
+// GitHub provider. Check GetRedirectResult in to get results & handle errors.
 async function signInWithGitHub() {
   isAuthLoading.value = true
   await signInWithRedirect(auth, githubProvider)
