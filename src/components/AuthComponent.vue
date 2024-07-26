@@ -5,33 +5,42 @@ import { ref } from 'vue'
 import AlertComponent from './AlertComponent.vue';
 
 import { useFirebaseAuth } from 'vuefire'
-import { GoogleAuthProvider, signInWithRedirect, signInAnonymously } from 'firebase/auth'
+import { GoogleAuthProvider, GithubAuthProvider, signInWithRedirect, signInAnonymously } from 'firebase/auth'
 
-const emit = defineEmits(['exit', 'close'])
 const props = defineProps({
   isLoggedIn: Boolean,
   currentUser: Object,
 })
 
-const isAuthLoading = ref(false)
-
 const auth = useFirebaseAuth()
-const provider = new GoogleAuthProvider();
+const isAuthLoading = ref(false)
+const googleProvider = new GoogleAuthProvider()
+const githubProvider = new GithubAuthProvider()
 
+// Google provider. Check GetRedirectResult in AppHeader Component to get results.
 async function signInWithGoogle() {
   isAuthLoading.value = true
-  await signInWithRedirect(auth, provider)
+  await signInWithRedirect(auth, googleProvider)
 }
 
+// GitHub provider. Check GetRedirectResult in AppHeader Component to get results.
+async function signInWithGitHub() {
+  isAuthLoading.value = true
+  await signInWithRedirect(auth, githubProvider)
+}
+
+// Guest Anonymous Login
 async function signInAsGuest() {
   isAuthLoading.value = true
   signInAnonymously(auth)
     .then(() => {
-      // Signed in..
+      // Signed in.
       isAuthLoading.value = false
       console.log('Successfully logged in as guest !')
     })
     .catch((error) => {
+      // Handle Errors here.
+      isAuthLoading.value = false
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
@@ -74,8 +83,22 @@ async function signInAsGuest() {
                 <path fill="none" d="M0 0h48v48H0z"></path>
               </svg>
             </div>
-            <span class="gsi-material-button-contents">Se connecter avec Google</span>
-            <span style="display: none;">Se connecter avec Google</span>
+            <span class="gsi-material-button-contents">Continuer avec Google</span>
+            <span style="display: none;">Continuer avec Google</span>
+          </div>
+        </button>
+
+        <br/>
+        <br/>
+
+        <button class="gsi-material-button" @click="signInWithGitHub()">
+          <div class="gsi-material-button-state"></div>
+          <div class="gsi-material-button-content-wrapper">
+            <div class="gsi-material-button-icon">
+              <i class="pi pi-github" style="color:black; font-size: 1.3rem"></i>
+            </div>
+            <span class="gsi-material-button-contents">Continuer avec GitHub</span>
+            <span style="display: none;">Continuer avec GitHub</span>
           </div>
         </button>
 

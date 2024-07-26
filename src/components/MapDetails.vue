@@ -45,6 +45,7 @@ const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
 
 // native vuefire watcher to check whether user logged or not
+// custom features available if logged in
 onAuthStateChanged(auth, (user) => {
   if (user) {
     isLoggedIn.value = true
