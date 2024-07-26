@@ -3,18 +3,21 @@
 import { useFirebaseAuth } from 'vuefire'
 import { signOut } from 'firebase/auth'
 
-const emit = defineEmits(['exit'])
+const emit = defineEmits(['close'])
 
 const auth = useFirebaseAuth()
 
+// SignOut
 async function signout() {
   signOut(auth).then((data) => {
       console.log('Successfully logged out!');
-      emit('exit')
+      emit('close')
     })
     .catch(error => {
-      console.log(error.code)
-      alert(error.message);
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
     });
 }
 

@@ -15,8 +15,6 @@ const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
 const isAuthLoading = ref(false)
 
-// const googleUser = ref('')
-
 // native vuefire watcher to check whether user logged or not
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -32,14 +30,11 @@ async function showAuth() {
   myModal.show();
 }
 
+// hideAuth never used due to Redirect methods
+
 async function showLogout() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#logout'));
   myModal.show();
-}
-
-async function hideAuth() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#auth'));
-  myModal.hide();
 }
 
 async function hideLogout() {
@@ -47,28 +42,27 @@ async function hideLogout() {
   myModal.hide();
 }
 
+// In most cases, getRedirectResult is not needed. onAuthStateChanged is sufficient for successful flows
+// but a developer may want to get the results (OAuth credentials, additional user info, etc)
+// or recover from certain errors (email already exists, linking is required, etc) 
+// or show error message to the user (account disabled, etc). They can call this API to get that information.
+
+// How to handle several providers ?
+
 getRedirectResult(auth) 
 
   .then((result) => {
     isAuthLoading.value = false 
-    // This gives you a Google Access Token. You can use it to access Google APIs.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-
-    // The signed-in user info.
-    // googleUser.value = result.user;
     console.log('Successfully logged in !')
 
   })
   .catch((error) => {
+    isAuthLoading.value = false
     // Handle Errors here.
     const errorCode = error.code;
     const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
     // ...
+    alert(error.message)
   });
 
   onMounted(async () => {
@@ -117,10 +111,10 @@ getRedirectResult(auth)
   </div>
 
   <!-- Auth -->
-  <AuthComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser" @exit="hideAuth()"></AuthComponent>
+  <AuthComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></AuthComponent>
 
   <!-- Logout -->
-  <LogoutComponent @exit="hideLogout()"></LogoutComponent>
+  <LogoutComponent @close="hideLogout()"></LogoutComponent>
 
 
 </template>
