@@ -8,13 +8,12 @@
     <p>Kavalé est une application web ayant pour objectif de valoriser la cartographie des sentiers de randonnées en France.
     </p>
     <br/>
-    <h5>Édition et développement</h5>
+    <h5>Édition</h5>
     <ul>
       <li>Simon BAILLY</li>
       <li>177 Chemin Badamier 97410 Saint Pierre</li>
       <li>simon.bailly5@gmail.com</li>
     </ul>
-    <p>Le code source du projet est en accès libre sur <a href="https://github.com/baillysi/">GitHub</a>.</p>
     <br/>
     <h5>Hébergement</h5>
     <ul>
@@ -24,12 +23,12 @@
     </ul>
     <br/>
     <h5>Droits d'auteur</h5>
-    <p>L'application Kavalé constitue une oeuvre dont Simon BAILLY est l'auteur au sens des articles L.111.1 et suivants du code de la propriété intellectuelle.
-      Toute modification, adaptation, reproduction de tout ou partie de l'application est interdite.
-    </p>
+
+    <p>L'application Kavalé est distribuée sous une licence open-source <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3.0</a>. Le code source est en accès libre sur <a href="https://github.com/baillysi/">GitHub</a>.</p>
+      
     <br/>
     <h5>Propriété intellectuelle</h5>
-    <p>Le contenu du site, la charte graphique, le code source, le nom de domaine, le logo, les images et les tracés gpx sont la propriété exclusive de l'éditeur.</p>
+    <p>Le nom de domaine, le logo, les images et les tracés gpx sont la propriété exclusive de l'éditeur.</p>
     <br/>
     <h5>Conditions d'utilisation et responsabilité</h5>
     <p>L'éditeur ne pourra être tenu responsable de l'utilisation des informations proposées via l'application.
