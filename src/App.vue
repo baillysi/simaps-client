@@ -16,7 +16,7 @@ import AppFooter from './components/AppFooter.vue'
 
   <vue-cookie-accept-decline
     :debug="false"
-    :disableDecline="false"
+    :disableDecline="true"
     :showPostponeButton="false"
     elementId="cookconsent"
     position="bottom-right"

@@ -46,11 +46,7 @@
     <br/>
     <h5>Préférences relatives aux cookies</h5>
     <p>Un cookie est un traceur permettant d’analyser le comportement des internautes, comme leurs navigations, leurs habitudes de consommation, leurs déplacements, etc.
-      L'application Kavalé utilise des cookies :
-      <ul>
-        <li>pour permettre l'authentification de l'utilisateur si celui-ci le souhaite.</li>
-        <li>pour mesurer l'audience de l'application.</li>
-      </ul>
+      L'application Kavalé utilise des cookies pour permettre l'authentification de l'utilisateur si celui-ci le souhaite.
     </p>
   </div>
   
