@@ -26,7 +26,8 @@ onAuthStateChanged(auth, (user) => {
   } 
   else {
     isLoggedIn.value = false
-    console.log('Logged out!');
+    console.log('Logged out!')
+    showAuth()
   }
 });
 
