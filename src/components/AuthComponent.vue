@@ -107,12 +107,12 @@ async function signInAsGuest() {
         <br/>
 
         <div>
-          Continuer en tant qu'invité 
+          Continuer en tant qu'invité &#x1F609;
           <button class="btn btn-success btn-sm" style="margin-left: 5px;" type="button" @click="signInAsGuest()">
             <i class="pi pi-sign-in" style="color:white;"></i>
           </button>
           <br/>
-          <small id="guesthelp" class="form-text text-muted">Certaines fonctionnalités avancées ne seront pas disponibles.</small>
+          <!-- <small id="guesthelp" class="form-text text-muted">Certaines fonctionnalités avancées ne seront pas disponibles.</small> -->
         </div>
 
       </div>
