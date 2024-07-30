@@ -22,7 +22,7 @@
       </div>
     </nav>
     <hr>
-    <span>&copy;2024 Simon BAILLY. Licence publique générale GNU v3.0.</span>
+    <span>&#127279;2024 Simon BAILLY. Licence publique générale GNU v3.0.</span>
   </div>
 
 </template>
