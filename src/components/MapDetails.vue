@@ -490,7 +490,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()">Créer un itinéraire</button>
+          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()" disabled>Créer un itinéraire</button>
         </div>
         <br/>
 
