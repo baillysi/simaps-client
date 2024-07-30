@@ -1,18 +1,25 @@
-# simaps-client
+# simaps-client 🗺️
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue3 client-side of [Kavalé](https://kavaleapp.com) web application, that aims to highlight hike trails in France. This is an alpha version, as proof of concept. Don't hesitate to join [discussions](https://github.com/baillysi/simaps-client/discussions) :v:
 
-## Recommended IDE Setup
+## Description
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+simaps-client provides a modern UI/UX with a leaflet map and a dashboard to perform CRUD operations on hikes data. 
 
-## Customize configuration
+<p align="center">
+<img src="https://github.com/user-attachments/assets/f3a7420c-b322-42d0-a384-aeec541092be" width="90%"/>
+</p>
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Development
 
-## Project Setup
+### Requirements
+
+Node.js >= 20.0.0
+  
+### Configuration
 
 ```sh
+
 npm install
 ```
 
@@ -21,9 +28,9 @@ npm install
 ```sh
 npm run dev
 ```
+served on http://localhost:5173
 
-### Compile and Minify for Production
+## Production & deployment
 
-```sh
-npm run build
-```
+Continuous integration with Firebase Hosting by Google.
+Use of Firebase Auth to handle user authentification.
