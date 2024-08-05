@@ -4,12 +4,12 @@ import { ref, onMounted } from 'vue';
 
 import { Modal } from 'bootstrap';
 
-import AuthComponent from './AuthComponent.vue';
+import LoginComponent from './LoginComponent.vue';
 import LogoutComponent from './LogoutComponent.vue';
 
 // user session
 import { useFirebaseAuth} from 'vuefire';
-import { onAuthStateChanged, GoogleAuthProvider, getRedirectResult, GithubAuthProvider } from 'firebase/auth';
+import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
@@ -27,12 +27,12 @@ onAuthStateChanged(auth, (user) => {
   else {
     isLoggedIn.value = false
     console.log('Logged out!')
-    showAuth()
+    showLogin()
   }
 });
 
-async function showAuth() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#auth'));
+async function showLogin() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
   myModal.show();
 }
 
@@ -102,7 +102,7 @@ onMounted(async () => {
           </li>
         </ul>
         <form class="form-inline">
-          <button class="btn btn-outline-secondary" style="margin-right: 5px;" type="button" @click="showAuth()">Mon compte</button>
+          <button class="btn btn-outline-secondary" style="margin-right: 5px;" type="button" @click="showLogin()">Mon compte</button>
           <button class="btn btn-danger" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
             <i class="pi pi-sign-out" style="color:white;"></i>
           </button>
@@ -112,8 +112,8 @@ onMounted(async () => {
     <hr>
   </div>
 
-  <!-- Auth -->
-  <AuthComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></AuthComponent>
+  <!-- Login -->
+  <LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
 
   <!-- Logout -->
   <LogoutComponent @close="hideLogout()"></LogoutComponent>

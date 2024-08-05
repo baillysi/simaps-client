@@ -62,11 +62,11 @@ async function signInAsGuest() {
   </div>
 </div>
 
-<div class="modal fade" data-bs-backdrop="static" id="#auth" tabindex="-1" aria-labelledby="#auth" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" id="#login" tabindex="-1" aria-labelledby="#login" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="#auth">Mon compte</h1>
+        <h1 class="modal-title fs-5" id="#login">Mon compte</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 

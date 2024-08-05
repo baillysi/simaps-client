@@ -49,6 +49,7 @@ const isLoggedIn = ref(false)
 onAuthStateChanged(auth, (user) => {
   if (user) {
     isLoggedIn.value = true
+    getZoneDetails()
   } 
   else {
     isLoggedIn.value = false
@@ -129,7 +130,12 @@ async function resetFilters() {
 }
 
 async function getZoneDetails() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
+  // add authorization to protect API
+  const token = await auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id, { headers })
   isloading.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
@@ -384,7 +390,6 @@ async function hideDelete() {
 
 onMounted(async () => {
   isloading.value = true
-  getZoneDetails()
 })
 
 </script>
