@@ -1,21 +1,19 @@
 <script setup>
 
 import { ref, onMounted } from 'vue';
-
 import { Modal } from 'bootstrap';
+import router from '../router'
 
-import AuthComponent from './AuthComponent.vue';
+import LoginComponent from './LoginComponent.vue';
 import LogoutComponent from './LogoutComponent.vue';
 
 // user session
-import { useFirebaseAuth} from 'vuefire';
-import { onAuthStateChanged, GoogleAuthProvider, getRedirectResult, GithubAuthProvider } from 'firebase/auth';
+import { useFirebaseAuth } from 'vuefire';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
 const isAuthLoading = ref(false)
-
-const providerUser = ref('')
 
 // native vuefire watcher to check whether user logged or not
 onAuthStateChanged(auth, (user) => {
@@ -27,12 +25,16 @@ onAuthStateChanged(auth, (user) => {
   else {
     isLoggedIn.value = false
     console.log('Logged out!')
-    showAuth()
   }
 });
 
-async function showAuth() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#auth'));
+// equivalent to router-link but enables the use native @click method
+async function goToMaps() {
+  router.push('/maps')
+}
+
+async function showLogin() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
   myModal.show();
 }
 
@@ -52,21 +54,6 @@ async function hideLogout() {
 // but a developer may want to get the results (OAuth credentials, additional user info, etc)
 // or recover from certain errors (email already exists, linking is required, etc) 
 // or show error message to the user (account disabled, etc). it has to call this API to get that information.
-
-getRedirectResult(auth)
-  .then((result) => {
-    if (result != null) {
-      // Get the results
-      providerUser.value = result.user;
-    }
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    isAuthLoading.value = false
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    alert(error.message)
-  });
 
 onMounted(async () => {
   isAuthLoading.value = true
@@ -95,14 +82,14 @@ onMounted(async () => {
             <router-link class="nav-link" to="/">Accueil</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/maps">Cartes</router-link>
+            <button class="nav-link" @click="isLoggedIn ? goToMaps() : showLogin()">Cartes</button>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/about">À propos</router-link>
           </li>
         </ul>
         <form class="form-inline">
-          <button class="btn btn-outline-secondary" style="margin-right: 5px;" type="button" @click="showAuth()">Mon compte</button>
+          <button class="btn btn-outline-secondary" style="margin-right: 5px;" type="button" @click="showLogin()">Mon compte</button>
           <button class="btn btn-danger" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
             <i class="pi pi-sign-out" style="color:white;"></i>
           </button>
@@ -112,8 +99,8 @@ onMounted(async () => {
     <hr>
   </div>
 
-  <!-- Auth -->
-  <AuthComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></AuthComponent>
+  <!-- Login -->
+  <LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
 
   <!-- Logout -->
   <LogoutComponent @close="hideLogout()"></LogoutComponent>

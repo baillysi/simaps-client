@@ -1,5 +1,35 @@
 <script setup>
 
+import { ref } from 'vue';
+import { Modal } from 'bootstrap';
+import router from '../router'
+
+// user session
+import { useFirebaseAuth} from 'vuefire';
+import { onAuthStateChanged } from 'firebase/auth';
+
+const auth = useFirebaseAuth()
+const isLoggedIn = ref(false)
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    isLoggedIn.value = true
+  } 
+  else {
+    isLoggedIn.value = false
+  }
+});
+
+// equivalent to router-link but enables the use native @click method
+async function goToMaps() {
+  router.push('/maps')
+}
+
+async function showLogin() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
+  myModal.show();
+}
+ 
 </script>
 
 <template>
@@ -23,7 +53,7 @@
     </div>
     <br/><br/>
     
-    <router-link class="btn btn-outline-secondary btn-lg" to="/maps">Accès aux Cartes</router-link>
+    <button class="btn btn-outline-secondary btn-lg" @click="isLoggedIn ? goToMaps() : showLogin()">Accès aux Cartes</button>
     
   </div>
   

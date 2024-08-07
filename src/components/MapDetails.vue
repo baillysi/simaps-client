@@ -45,10 +45,11 @@ const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
 
 // native vuefire watcher to check whether user logged or not
-// custom features available if logged in
+// we wait for user to be loaded to call getZoneDetails as it requires token
 onAuthStateChanged(auth, (user) => {
   if (user) {
     isLoggedIn.value = true
+    getZoneDetails()
   } 
   else {
     isLoggedIn.value = false
@@ -60,7 +61,7 @@ const props = defineProps({
   id: String
 })
 
-const isloading = ref(false)
+const isLoading = ref(false)
 
 const hikes = ref([])
 const hikeDetails = ref('')
@@ -129,8 +130,13 @@ async function resetFilters() {
 }
 
 async function getZoneDetails() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
-  isloading.value = false
+  // add authorization to protect API
+  const token = await auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id, { headers })
+  isLoading.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
 }
@@ -383,15 +389,14 @@ async function hideDelete() {
 }
 
 onMounted(async () => {
-  isloading.value = true
-  getZoneDetails()
+  isLoading.value = true
 })
 
 </script>
 
 <template>
 
-  <div v-if="isloading" class="overlay">
+  <div v-if="isLoading" class="overlay">
     <div class="overlay__wrapper">
         <div class="overlay__spinner">
           <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">

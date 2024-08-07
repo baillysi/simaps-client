@@ -1,23 +1,24 @@
 <script setup>
 
+import router from '../router'
+
+// user session
 import { useFirebaseAuth } from 'vuefire'
 import { signOut } from 'firebase/auth'
 
-const emit = defineEmits(['close'])
-
 const auth = useFirebaseAuth()
+
+const emit = defineEmits(['close'])
 
 // SignOut
 async function signout() {
   signOut(auth).then((data) => {
       emit('close')
+      router.push('/')
     })
     .catch(error => {
       // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
       alert(error.message)
-      // ...
     });
 }
 

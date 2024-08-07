@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 import AlertComponent from './AlertComponent.vue';
 
+// user session
 import { useFirebaseAuth } from 'vuefire'
 import { GoogleAuthProvider, GithubAuthProvider, signInWithRedirect, signInAnonymously } from 'firebase/auth'
 
@@ -41,10 +42,7 @@ async function signInAsGuest() {
     .catch((error) => {
       // Handle Errors here.
       isAuthLoading.value = false
-      const errorCode = error.code;
-      const errorMessage = error.message;
       alert(error.message)
-      // ...
     });
 }
 
@@ -62,11 +60,11 @@ async function signInAsGuest() {
   </div>
 </div>
 
-<div class="modal fade" data-bs-backdrop="static" id="#auth" tabindex="-1" aria-labelledby="#auth" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" id="#login" tabindex="-1" aria-labelledby="#login" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="#auth">Mon compte</h1>
+        <h1 class="modal-title fs-5" id="#login">Mon compte</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -112,7 +110,6 @@ async function signInAsGuest() {
             <i class="pi pi-sign-in" style="color:white;"></i>
           </button>
           <br/>
-          <!-- <small id="guesthelp" class="form-text text-muted">Certaines fonctionnalités avancées ne seront pas disponibles.</small> -->
         </div>
 
       </div>
@@ -155,6 +152,7 @@ async function signInAsGuest() {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
 .gsi-material-button {
   user-select: none;
   -moz-user-select: none;
