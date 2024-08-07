@@ -12,7 +12,6 @@ const isLoggedIn = ref(false)
 const isAuthLoading = ref(false)
 
 onAuthStateChanged(auth, (user) => {
-  isAuthLoading.value = false
   if (user) {
     isLoggedIn.value = true
     getZonesCount()
@@ -31,6 +30,7 @@ async function getZonesCount() {
     Authorization: 'Bearer ' + token
   };
   const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/count', { headers })
+  isAuthLoading.value = false
   count.value = response.data
 }
 
