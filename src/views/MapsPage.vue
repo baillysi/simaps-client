@@ -3,20 +3,54 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
+// user session
+import { useFirebaseAuth} from 'vuefire';
+import { onAuthStateChanged } from 'firebase/auth';
+
+const auth = useFirebaseAuth()
+const isLoggedIn = ref(false)
+const isAuthLoading = ref(false)
+
+onAuthStateChanged(auth, (user) => {
+  isAuthLoading.value = false
+  if (user) {
+    isLoggedIn.value = true
+    getZonesCount()
+  } 
+  else {
+    isLoggedIn.value = false
+  }
+});
+
 const count = ref('')
 
 async function getZonesCount() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/count')
+   // add authorization to protect API
+  const token = await auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/count', { headers })
   count.value = response.data
 }
 
 onMounted(async () => {
-  getZonesCount()
+  isAuthLoading.value = true
 })
 
 </script>
 
 <template>
+
+<div v-if="isAuthLoading" class="overlay">
+  <div class="overlay__wrapper">
+      <div class="overlay__spinner">
+        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+  </div>
+</div>
 
 <div class="container" style="text-align:center; margin-top: 50px;">
 
@@ -134,13 +168,32 @@ onMounted(async () => {
 
 
   </div>
-
-  
-
 </div>
 
 </template>
 
 <style>
+
+.overlay {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: white;
+  opacity: 0.5;
+}
+.overlay__wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.overlay__spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 
 </style>
