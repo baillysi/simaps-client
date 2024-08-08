@@ -24,6 +24,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 // custom markers
 // todo use font-awesome
 import hostCustomMarker from './icons/host.svg'
+import viewpointCustomMarker from './icons/viewpoint.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -43,12 +44,16 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
+const isAdmin = ref(false)
 
 // native vuefire watcher to check whether user logged or not
 // we wait for user to be loaded to call getZoneDetails as it requires token
 onAuthStateChanged(auth, (user) => {
   if (user) {
     isLoggedIn.value = true
+    if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
+      isAdmin.value = true
+    } 
     getZoneDetails()
   } 
   else {
@@ -149,6 +154,7 @@ async function getJourneys() {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
+const mapzoom = ref('')
 const ismapdata = ref(false)
 
 watch(mapcenter, () => {
@@ -232,6 +238,10 @@ async function showHeightgraph(geojson) {
 async function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
+}
+
+async function zoomUpdated(zoom) {
+  mapzoom.value = zoom
 }
 
 async function fitBoundsZone(mapcenter) {
@@ -355,6 +365,14 @@ const hosts = ref([
   },
 ])
 
+// viewpoints mock
+const viewpoints = ref([
+  {
+    coordinates: [-21.190369525029823, 55.536835622112406],
+    content : "Belvédère de Bois Court",
+  },
+])
+
 // custom validation 
 // check bootstrap native validation or third part library like veevalidate + server side validation
 // use of js functions to show or hide modals instead of native data-bs-dismiss to add form validation logic
@@ -411,7 +429,7 @@ onMounted(async () => {
     <div class="col-lg-7" style='padding: 10px;'>
 
       <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #226d68;'>
-        <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()">
+        <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
 
           <l-control-layers position="topright"></l-control-layers>
 
@@ -436,6 +454,24 @@ onMounted(async () => {
           </l-geo-json> 
 
           <l-layer-group 
+            :visible="mapzoom >= 13 ? true : false"
+            layerType="overlay"
+            name="Points de vue">
+            <l-marker-cluster-group>
+              <l-marker
+                v-for="(item, index) in viewpoints"
+                :key="index"
+                :lat-lng="[item.coordinates[0], item.coordinates[1]]">
+                <l-popup>{{ item.content }}</l-popup>
+                <l-icon
+                  :iconSize="mapzoom >= 15 ? [25, 25] : [18, 18]"
+                  :icon-url="viewpointCustomMarker"
+                />
+              </l-marker>
+            </l-marker-cluster-group>
+          </l-layer-group>
+
+          <l-layer-group 
             :visible="false"
             layerType="overlay"
             name="Gîtes">
@@ -446,7 +482,7 @@ onMounted(async () => {
                 :lat-lng="[item.coordinates[0], item.coordinates[1]]">
                 <l-popup>{{ item.content }}</l-popup>
                 <l-icon
-                  :iconSize="[25, 25]"
+                  :iconSize="mapzoom >= 15 ? [25, 25] : [18, 18]"
                   :icon-url="hostCustomMarker"
                 />
               </l-marker>
@@ -495,7 +531,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()" disabled>Créer un itinéraire</button>
+          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()" :disabled="!isAdmin">Créer un itinéraire</button>
         </div>
         <br/>
 
@@ -531,13 +567,13 @@ onMounted(async () => {
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire" disabled>
+                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire" :disabled="!isAdmin">
                     <i class="pi pi-file-edit" style="color:#226D68;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
                     <i class="pi pi-download" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire" disabled>
+                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire" :disabled="!isAdmin">
                     <i class="pi pi-trash" style="color:#D6955B;"></i>
                   </button>
                 </div>
