@@ -43,12 +43,16 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
+const isAdmin = ref(false)
 
 // native vuefire watcher to check whether user logged or not
 // we wait for user to be loaded to call getZoneDetails as it requires token
 onAuthStateChanged(auth, (user) => {
   if (user) {
     isLoggedIn.value = true
+    if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
+      isAdmin.value = true
+    } 
     getZoneDetails()
   } 
   else {
@@ -495,7 +499,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()" disabled>Créer un itinéraire</button>
+          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()" :disabled="!isAdmin">Créer un itinéraire</button>
         </div>
         <br/>
 
@@ -531,13 +535,13 @@ onMounted(async () => {
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire" disabled>
+                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire" :disabled="!isAdmin">
                     <i class="pi pi-file-edit" style="color:#226D68;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
                     <i class="pi pi-download" style="color:#226D68;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire" disabled>
+                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire" :disabled="!isAdmin">
                     <i class="pi pi-trash" style="color:#D6955B;"></i>
                   </button>
                 </div>
