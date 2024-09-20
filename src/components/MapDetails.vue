@@ -163,21 +163,21 @@ watch(mapcenter, () => {
 
 const selectedStyle = ref(
   {
-    'color':'#D6955B', 
+    'color':'#EF4C20', 
     'weight': 5
   }
 )
 
 const unselectedStyle = ref(
   {
-    'color':'#226D68',
+    'color':'#390040',
     'weight': 5
   }
 )
 
 const strokeStyle = ref(
   {
-    'color':'#FFFFFF',
+    'color':'#fff',
     'weight': 7
   }
 )
@@ -187,7 +187,7 @@ const colorMappings = {
     Simaps: {
         'Elevation': {
             text: 'Altitude',
-            color: '#D6955B'
+            color: '#EF4C20'
         }
     }
   }
@@ -417,7 +417,7 @@ onMounted(async () => {
   <div v-if="isLoading" class="overlay">
     <div class="overlay__wrapper">
         <div class="overlay__spinner">
-          <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">
+          <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -427,8 +427,9 @@ onMounted(async () => {
   <div class="row" style="margin-left: 40px; margin-right: 40px;">
 
     <div class="col-lg-7" style='padding: 10px;'>
+      <br/>
 
-      <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #226d68;'>
+      <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #390040;'>
         <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
 
           <l-control-layers position="topright"></l-control-layers>
@@ -447,9 +448,9 @@ onMounted(async () => {
           </l-geo-json> 
 
           <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
-            <l-popup :options="{ closeButton:true, closeOnClick:true }">{{ hike.name }}<br/> 
-              <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i>
-              <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
+            <l-popup :options="{ closeButton:true, closeOnClick:true }" class="inter-maps">{{ hike.name }}<br/> 
+              <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#390040;"></i>
+              <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#390040;"></i>
             </l-popup>
           </l-geo-json> 
 
@@ -496,19 +497,20 @@ onMounted(async () => {
     </div>
 
     <div class="col-lg-5 overflow-auto" style='padding: 10px'>
+      <br/>
 
       <div class="dataContainer">
 
         <div class="row" style="margin: 10px;">
           <div class="col-sm-5 col-6">
-            <select class="form-select form-select-sm" v-model="currentOrder">
+            <select class="form-select form-select-sm inter-maps" v-model="currentOrder">
               <option disabled value="">Trier par</option>
               <option>Difficulté</option>
               <option>Notes</option>
             </select>
           </div>
           <div class="col-sm-5 col-6" >
-            <select class="form-select form-select-sm" v-model="searchDifficulty">
+            <select class="form-select form-select-sm inter-maps" v-model="searchDifficulty">
               <option selected disabled value="">Difficulté</option>
               <option value="1">Facile</option>
               <option value="2">Moyen</option>
@@ -520,11 +522,11 @@ onMounted(async () => {
 
         <div class="row" style="margin: 10px;">
           <div class="col-sm-5 col-6">
-            <input class="form-control form-control-sm" placeholder="Nom" v-model="searchName"/>
+            <input class="form-control form-control-sm inter-maps" placeholder="Nom" v-model="searchName"/>
           </div>
-          <div class="col-2">
+          <div class="col-2 inter-maps">
             <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser">
-              <i class="pi pi-filter-slash" style="color:#226D68;"></i>
+              <i class="pi pi-filter-slash" style="color:#390040;"></i>
             </button>
           </div>
         </div>
@@ -539,7 +541,7 @@ onMounted(async () => {
           <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
             <h2 class="accordion-header" id="flush-headingOne">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
-                <div class="col-6">
+                <div class="col-6 inter-maps">
                   {{ hike.name }}
                 </div>
                 <div class="col-3">
@@ -549,13 +551,13 @@ onMounted(async () => {
                   <span v-if="hike.difficulty == 4" class="badge bg-dark">Très difficile</span>
                 </div>
                 <div class="col-2">
-                  <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#226D68;"></i> 
-                  <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#226D68;"></i>
+                  <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#390040;"></i> 
+                  <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#390040;"></i>
                 </div>
               </button>
             </h2>
             <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
-              <div class="accordion-body">
+              <div class="accordion-body inter-maps">
                 <span class="badge bg-info">{{ hike.distance }} km</span>
                 <span class="badge bg-info">{{ hike.elevation }} m+</span> 
                 <span class="badge bg-info">{{ hike.duration }} heures</span>
@@ -565,16 +567,16 @@ onMounted(async () => {
                 <br/><br/>
                 <div class="col text-end">
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
-                    <i class="pi pi-map" style="color:#226D68;"></i>
+                    <i class="pi pi-map" style="color:#390040;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire" :disabled="!isAdmin">
-                    <i class="pi pi-file-edit" style="color:#226D68;"></i>
+                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="mettre à jour l'itinéraire">
+                    <i class="pi pi-file-edit" style="color:#390040;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
-                    <i class="pi pi-download" style="color:#226D68;"></i>
+                    <i class="pi pi-download" style="color:#390040;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire" :disabled="!isAdmin">
-                    <i class="pi pi-trash" style="color:#D6955B;"></i>
+                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="supprimer l'itinéraire">
+                    <i class="pi pi-trash" style="color:#EF4C20;"></i>
                   </button>
                 </div>
               </div>
@@ -666,17 +668,64 @@ onMounted(async () => {
   }
 
   .badge.bg-info {
-    background-color:#226D68 !important; 
+    color:#390040 !important; 
+    background-color: #fff !important;
+    border: #390040 solid 1px;
+    margin-left: 5px;
+    margin-right: 5px;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500 !important;
+    font-style: normal;
+  }
+
+  .badge.bg-success {
+    background-color:#FFC13C !important;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500 !important;
+    font-style: normal;
+  }
+
+  .badge.bg-primary {
+    background-color:#FE8935 !important;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500 !important;
+    font-style: normal;
+  }
+
+  .badge.bg-danger {
+    background-color:#FF4B27 !important; 
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500 !important;
+    font-style: normal;
+  }
+
+  .badge.bg-dark {
+    background-color:#9F0000 !important;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500 !important;
+    font-style: normal;
+  }
+
+  .badge.bg-info {
+    color:#390040 !important; 
+    background-color: #fff !important;
+    border: #390040 solid 1px;
     margin-left: 5px;
     margin-right: 5px;
   }
 
   .marker-cluster-small {
-    background-color: #D6955B !important;
+    background-color: #EF4C20 !important;
   }
 
   .marker-cluster-small div {
-    background-color: #D6955B !important;
+    background-color: #EF4C20 !important;
     color: #fff !important;
   }
 

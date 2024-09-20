@@ -26,11 +26,11 @@ async function deleteHike() {
 <div class="modal fade" id="#delete" tabindex="-1" aria-labelledby="#delete" aria-hidden="true">
   <div class="modal-dialog modal-confirm">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header inter-maps">
         <h1 class="modal-title fs-5" id="#delete">Êtes-vous certain ?</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body inter-maps">
         <p>Voulez-vous vraiment supprimer l'itinéraire ? Cette action est irréversible.</p>
       </div>
       <div class="modal-footer">

@@ -35,12 +35,12 @@ async function showLogin() {
 <template>
 
   <div class="container" style="text-align:center; margin-top: 30px;">
-    <h1 style="font-family: Helvetica, Arial, sans-serif; font-size:bold; color:#18534F;">Cartes & Randonnées.</h1>
+    <h1 class="inter-maps" >Cartes & Randonnées.</h1>
     <br/>
 
     <figure class="text-center">
       <blockquote class="blockquote">
-        <h6 style="font-size:bold; color:#18534F;">C’est le fait de ne pas connaître exactement le chemin, la carte jetée qui fait du soleil couchant le guide et rend le décor vivant.</h6>
+        <h6 class="inter-maps">C’est le fait de ne pas connaître exactement le chemin, la carte jetée qui fait du soleil couchant le guide et rend le décor vivant.</h6>
       </blockquote>
       <figcaption class="blockquote-footer">
         Art Garfunkel
@@ -53,13 +53,15 @@ async function showLogin() {
     </div>
     <br/><br/>
     
-    <button class="btn btn-outline-secondary btn-lg" @click="isLoggedIn ? goToMaps() : showLogin()">Accès aux Cartes</button>
+    <button class="btn btn-outline-secondary" @click="isLoggedIn ? goToMaps() : showLogin()">Accès aux Cartes</button>
     
   </div>
   
 </template>
 
 <style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
   img {
     max-width: 100%;
@@ -69,14 +71,31 @@ async function showLogin() {
   }
 
   .btn-outline-secondary {
-    color:#D6955B !important;
-    font-weight: bold !important;
-    padding-right: 50px !important;
-    padding-left: 50px !important;
+    color:#390040 !important;
+    font-family: "Inter", sans-serif !important;
+    font-optical-sizing: auto;
+    font-weight: 500 !important;
+    font-style: normal;
+    padding-right: 40px !important;
+    padding-left: 40px !important;
   }
 
   .btn-outline-secondary:hover {
-    background-color:#226D68 !important;
+    color: #FFFFFF !important;
+    background-color:#390040 !important;
   }
+
+  .btn-danger {
+    background-color: #EF4C20 !important;
+  }
+
+  .inter-maps {
+    color: #390040 !important;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 550 !important;
+    font-style: normal;
+  }
+
 
 </style>

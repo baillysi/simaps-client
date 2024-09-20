@@ -127,7 +127,7 @@ async function onSubmit() {
 <div class="modal fade" data-bs-backdrop="static" id="#update" tabindex="-1" aria-labelledby="#update" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header inter-maps">
         <h1 class="modal-title fs-5" id="#update">Mettre à jour l'itinéraire</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
       </div>
@@ -139,33 +139,33 @@ async function onSubmit() {
               <li v-for="error in errors" style="color:#D6955B;">{{ error }}</li>
             </ul>
           </p>
-          <div class="form-group">
+          <div class="form-group inter-maps">
             <label for="InputName">Nom</label>
-            <input type="text" v-model="updatedName" class="form-control" id="InputName">
+            <input type="text" v-model="updatedName" class="form-control inter-maps" id="InputName">
           </div>
-          <div class="form-group">
+          <div class="form-group inter-maps">
             <label for="InputDescription">Description</label>
-            <textarea type="text" v-model="updatedDescription" class="form-control" id="InputDescription" rows="4"></textarea>
+            <textarea type="text" v-model="updatedDescription" class="form-control inter-maps" id="InputDescription" rows="4"></textarea>
           </div>
           <br/>
           <div class="row">
-            <div class="form-group col">
+            <div class="form-group col inter-maps">
               <label for="InputDistance">Distance</label>
-              <input type="number" v-model="updatedDistance" class="form-control" id="InputDistance" placeholder="km" :disabled="props.hasTrail">
+              <input type="number" v-model="updatedDistance" class="form-control inter-maps" id="InputDistance" placeholder="km" :disabled="props.hasTrail">
             </div>
-            <div class="form-group col">
+            <div class="form-group col inter-maps">
               <label for="InputElevation">Dénivelé positif cumulé</label>
-              <input type="number" v-model="updatedElevation" class="form-control" id="InputElevation" placeholder="m+" :disabled="props.hasTrail">
+              <input type="number" v-model="updatedElevation" class="form-control inter-maps" id="InputElevation" placeholder="m+" :disabled="props.hasTrail">
             </div>
           </div>
           <div class="row">
-            <div class="form-group col">
+            <div class="form-group col inter-maps">
               <label for="InputDuration">Durée</label>
-              <input type="number" v-model="updatedDuration" class="form-control" id="InputDuration" placeholder="heures">
+              <input type="number" v-model="updatedDuration" class="form-control inter-maps" id="InputDuration" placeholder="heures">
             </div>
-            <div class="form-group col">
+            <div class="form-group col inter-maps">
               <label for="InputJourney">Type d'itinéraire</label>
-              <select v-model="updatedJourney" class="form-select" id="InputJourney">
+              <select v-model="updatedJourney" class="form-select inter-maps" id="InputJourney">
                 <option v-for="option in journeys" :value="option">
                   {{ option.name }}
                 </option>
@@ -173,17 +173,17 @@ async function onSubmit() {
             </div>
           </div>
           <br/>
-          <div class="form-group">
+          <div class="form-group inter-maps">
             <label for="InputDifficulty">Difficulté</label>
-            <input v-model="updatedDifficulty" type="range" class="form-range" min="0" max="4" id="InputDifficulty">
+            <input v-model="updatedDifficulty" type="range" class="range-cust form-range" min="0" max="4" id="InputDifficulty">
           </div>
-          <div class="form-group">
+          <div class="form-group inter-maps">
             <label for="InputRates">Intérêt</label>
-            <input v-model="updatedRates" type="range" class="form-range" min="0" max="4" id="InputRates">
+            <input v-model="updatedRates" type="range" class="range-cust form-range" min="0" max="4" id="InputRates">
           </div>
           <br/>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            <button type="submit" class="btn btn-danger">Mettre à jour</button>
           </div>
         </form>
       </div>
@@ -194,6 +194,16 @@ async function onSubmit() {
 </template>
 
 <style>
+
+.range-cust::-webkit-slider-thumb {
+  background: #390040 !important;
+}
+.range-cust::-moz-range-thumb {
+  background: #390040 !important;
+}
+.range-cust::-ms-thumb {
+  background: #390040 !important;
+}
 
 </style>
 

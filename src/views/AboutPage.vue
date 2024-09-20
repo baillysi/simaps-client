@@ -4,7 +4,8 @@
 
 <template>
 
-  <div class="container" style="text-align:justify;">
+  <div class="container inter-maps" style="text-align:justify;">
+    <br/>
     <p>Kavalé est une application web ayant pour objectif de valoriser la cartographie des sentiers de randonnées en France.
     </p>
     <br/>
