@@ -37,23 +37,21 @@ async function showLogin() {
   
   <div id="footer">
     <nav class="navbar navbar-expand navbar-light">
-      <hr>
       <div class="container-fluid justify-content-center">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link" to="/">Accueil</router-link>
+            <router-link class="nav-link inter-maps" to="/">Accueil</router-link>
           </li>
           <li class="nav-item">
-            <button class="nav-link" @click="isLoggedIn ? goToMaps() : showLogin()">Cartes</button>
+            <button class="nav-link inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Cartes</button>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/about">À propos</router-link>
+            <router-link class="nav-link inter-maps" to="/about">À propos</router-link>
           </li>
         </ul>
       </div>
     </nav>
-    <hr>
-    <span>&#127279;2024 Simon BAILLY. Licence publique générale GNU v3.0.</span>
+    <span class="inter-footer">&#127279;2024 Simon BAILLY. Licence publique générale GNU v3.0.</span>
   </div>
 
 </template>
@@ -67,6 +65,15 @@ async function showLogin() {
     padding-left: 40px;
     padding-right: 40px;
     padding-top: 80px;
+  }
+
+  .inter-footer {
+    color: #390040 !important;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500 !important;
+    font-style: normal;
+    opacity: 0.5;
   }
 
 </style>

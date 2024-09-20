@@ -53,7 +53,7 @@ async function signInAsGuest() {
 <div v-if="isAuthLoading" class="overlay">
   <div class="overlay__wrapper">
     <div class="overlay__spinner">
-      <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">
+      <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
@@ -62,7 +62,7 @@ async function signInAsGuest() {
 
 <div class="modal fade" data-bs-backdrop="static" id="#login" tabindex="-1" aria-labelledby="#login" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content inter-maps">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="#login">Mon compte</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -82,7 +82,7 @@ async function signInAsGuest() {
                 <path fill="none" d="M0 0h48v48H0z"></path>
               </svg>
             </div>
-            <span class="gsi-material-button-contents">Continuer avec Google</span>
+            <span class="gsi-material-button-contents inter-maps">Continuer avec Google</span>
             <span style="display: none;">Continuer avec Google</span>
           </div>
         </button>
@@ -96,7 +96,7 @@ async function signInAsGuest() {
             <div class="gsi-material-button-icon">
               <i class="pi pi-github" style="color:black; font-size: 1.3rem"></i>
             </div>
-            <span class="gsi-material-button-contents">Continuer avec GitHub</span>
+            <span class="gsi-material-button-contents inter-maps">Continuer avec GitHub</span>
             <span style="display: none;">Continuer avec GitHub</span>
           </div>
         </button>
@@ -106,7 +106,7 @@ async function signInAsGuest() {
 
         <div>
           Continuer en tant qu'invité &#x1F609;
-          <button class="btn btn-success btn-sm" style="margin-left: 5px;" type="button" @click="signInAsGuest()">
+          <button class="btn btn-danger btn-sm" style="margin-left: 5px;" type="button" @click="signInAsGuest()">
             <i class="pi pi-sign-in" style="color:white;"></i>
           </button>
           <br/>

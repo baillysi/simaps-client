@@ -66,7 +66,7 @@ onMounted(async () => {
   <div v-if="isAuthLoading" class="overlay">
     <div class="overlay__wrapper">
       <div class="overlay__spinner">
-        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#226d68" role="status">
+        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -74,29 +74,30 @@ onMounted(async () => {
   </div>
     
   <div id="header">
-    <nav class="navbar navbar-expand-md navbar-light">
+    <nav class="navbar navbar-expand-md navbar-light" style="border-bottom: 1.5px solid #390040;">
       <div class="container-fluid">
-        <a class="navbar-brand">Kavalé</a>
+        <a class="navbar-brand">
+          <img src="./icons/logo.svg" alt="Kavalé Logo"/>
+        </a>
         <ul class="navbar-nav me-auto"> 
           <li class="nav-item">
-            <router-link class="nav-link" to="/">Accueil</router-link>
+            <router-link class="nav-link inter-maps" to="/">Accueil</router-link>
           </li>
           <li class="nav-item">
-            <button class="nav-link" @click="isLoggedIn ? goToMaps() : showLogin()">Cartes</button>
+            <button class="nav-link inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Cartes</button>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/about">À propos</router-link>
+            <router-link class="nav-link inter-maps" to="/about">À propos</router-link>
           </li>
         </ul>
         <form class="form-inline">
-          <button class="btn btn-outline-secondary" style="margin-right: 5px;" type="button" @click="showLogin()">Mon compte</button>
+          <button class="btn btn-outline-secondary" style="margin-right: 8px;" type="button" @click="showLogin()">Mon compte</button>
           <button class="btn btn-danger" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
             <i class="pi pi-sign-out" style="color:white;"></i>
           </button>
         </form>
       </div>
     </nav>
-    <hr>
   </div>
 
   <!-- Login -->
@@ -133,24 +134,21 @@ onMounted(async () => {
   }
 
   .navbar-brand {
-    color: #226D68 !important;
-    font-weight: bold;
-    font-size: 35px !important;
-    margin-bottom: 8px;
-    padding-right: 30px;
+    margin-bottom: 0px;
+    padding-right: 45px;
+    width: 145px;
   }
 
   #header {
-    margin-top:30px;
+    margin-top: 8px;
     padding-left: 40px;
     padding-right: 40px;
   }
 
   .nav-link {
-    color: #18534F !important;
+    font-size: 17px !important;
+    margin-right: 8px;
   }
   
 
 </style>
-
-
