@@ -24,7 +24,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 // custom markers
 // todo use font-awesome
 import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/viewpoint.svg'
+import viewpointCustomMarker from './icons/star.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -163,7 +163,7 @@ watch(mapcenter, () => {
 
 const selectedStyle = ref(
   {
-    'color':'#EF4C20', 
+    'color':'#FF953D', 
     'weight': 5
   }
 )
@@ -187,7 +187,7 @@ const colorMappings = {
     Simaps: {
         'Elevation': {
             text: 'Altitude',
-            color: '#EF4C20'
+            color: '#FF953D'
         }
     }
   }
@@ -368,7 +368,7 @@ const hosts = ref([
 // viewpoints mock
 const viewpoints = ref([
   {
-    coordinates: [-21.190369525029823, 55.536835622112406],
+    coordinates: [-21.016683 , 55.399258],
     content : "Belvédère de Bois Court",
   },
 ])
@@ -455,7 +455,7 @@ onMounted(async () => {
           </l-geo-json> 
 
           <l-layer-group 
-            :visible="mapzoom >= 13 ? true : false"
+            :visible="mapzoom >= 12 ? true : false"
             layerType="overlay"
             name="Points de vue">
             <l-marker-cluster-group>
@@ -465,7 +465,7 @@ onMounted(async () => {
                 :lat-lng="[item.coordinates[0], item.coordinates[1]]">
                 <l-popup>{{ item.content }}</l-popup>
                 <l-icon
-                  :iconSize="mapzoom >= 15 ? [25, 25] : [18, 18]"
+                  :iconSize="mapzoom >= 15 ? [30, 30] : [23, 23]"
                   :icon-url="viewpointCustomMarker"
                 />
               </l-marker>
@@ -541,7 +541,7 @@ onMounted(async () => {
           <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
             <h2 class="accordion-header" id="flush-headingOne">
               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
-                <div class="col-6 inter-maps">
+                <div class="col-6 inter-maps-bold">
                   {{ hike.name }}
                 </div>
                 <div class="col-3">
@@ -557,7 +557,7 @@ onMounted(async () => {
               </button>
             </h2>
             <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
-              <div class="accordion-body inter-maps">
+              <div class="accordion-body inter-maps-light">
                 <span class="badge bg-info">{{ hike.distance }} km</span>
                 <span class="badge bg-info">{{ hike.elevation }} m+</span> 
                 <span class="badge bg-info">{{ hike.duration }} heures</span>
@@ -576,7 +576,7 @@ onMounted(async () => {
                     <i class="pi pi-download" style="color:#390040;"></i>
                   </button>
                   <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="supprimer l'itinéraire">
-                    <i class="pi pi-trash" style="color:#EF4C20;"></i>
+                    <i class="pi pi-trash" style="color:#FF953D;"></i>
                   </button>
                 </div>
               </div>
@@ -721,11 +721,11 @@ onMounted(async () => {
   }
 
   .marker-cluster-small {
-    background-color: #EF4C20 !important;
+    background-color: #9f0000 !important;
   }
 
   .marker-cluster-small div {
-    background-color: #EF4C20 !important;
+    background-color: #9f0000 !important;
     color: #fff !important;
   }
 

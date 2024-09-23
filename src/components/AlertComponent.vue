@@ -18,8 +18,8 @@ const props = defineProps({
 
   .alert.alert-success {
     background-color: #fff !important;
-    color: #EF4C20;
-    border: #EF4C20 solid 1px;
+    color: #FF953D;
+    border: #FF953D solid 1px;
   }
 
 </style>

@@ -59,9 +59,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/mafate.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Mafate</h4>
-          <p class="card-text">Le cirque le plus sauvage, aucune route n'y mène, un monde à part.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Mafate</h4>
+          <p class="card-text inter-maps-light">Le cirque le plus sauvage, aucune route n'y mène, un monde à part.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 1 }}">{{ count[1] }} itinéraires</router-link>
       </div>
@@ -70,9 +70,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/cilaos.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Cilaos</h4>
-          <p class="card-text">Au pied du Piton des Neiges, des possibilités infinies d'excursions.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Cilaos</h4>
+          <p class="card-text inter-maps-light">Au pied du Piton des Neiges, des possibilités infinies d'excursions.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 2 }}">{{ count[2] }} itinéraires</router-link>
       </div>
@@ -81,9 +81,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/salazie.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Salazie</h4>
-          <p class="card-text">Nature verdoyante, cascades et villages de charme. </p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Salazie</h4>
+          <p class="card-text inter-maps-light">Nature verdoyante, cascades et villages de charme. </p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 3 }}">{{ count[3] }} itinéraires</router-link>
       </div>
@@ -92,9 +92,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/volcan.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Volcan</h4>
-          <p class="card-text">Le cadre grandiose du Piton de la Fournaise, plus que jamais actif.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Volcan</h4>
+          <p class="card-text inter-maps-light">Le cadre grandiose du Piton de la Fournaise, plus que jamais actif.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 4 }}">{{ count[4] }} itinéraires</router-link>
       </div>
@@ -103,9 +103,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/plaines.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Plaines</h4>
-          <p class="card-text">Entre deux massifs volcaniques, des paysages atypiques.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Plaines</h4>
+          <p class="card-text inter-maps-light">Entre deux massifs volcaniques, des paysages atypiques.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 5 }}">{{ count[5] }} itinéraires</router-link>
       </div>
@@ -114,9 +114,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/piton.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Piton des Neiges</h4>
-          <p class="card-text">Le plus haut sommet de l'Océan Indien, 3070 mètres.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Piton des Neiges</h4>
+          <p class="card-text inter-maps-light">Le plus haut sommet de l'Océan Indien, 3070 mètres.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 6 }}">{{ count[6] }} itinéraires</router-link>
       </div>
@@ -125,9 +125,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/nord.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Nord</h4>
-          <p class="card-text">Région moins connue, avec comme point culminant la Roche Écrite.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Nord</h4>
+          <p class="card-text inter-maps-light">Région moins connue, avec comme point culminant la Roche Écrite.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 7 }}">{{ count[7] }} itinéraires</router-link>
       </div>
@@ -136,9 +136,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/sud.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Sud</h4>
-          <p class="card-text">Le Sud Sauvage, pépite à l'ombre du Volcan.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Sud</h4>
+          <p class="card-text inter-maps-light">Le Sud Sauvage, pépite à l'ombre du Volcan.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 8 }}">{{ count[8] }} itinéraires</router-link>
       </div>
@@ -147,9 +147,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/est.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Est</h4>
-          <p class="card-text">L'aventure au coeur de la jungle des forêts primaires.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Est</h4>
+          <p class="card-text inter-maps-light">L'aventure au coeur de la jungle des forêts primaires.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 9 }}">{{ count[9] }} itinéraires</router-link>
       </div>
@@ -158,9 +158,9 @@ onMounted(async () => {
     <div class="col mb-3">
       <div class="card h-100">
         <img src="/ouest.jpg" class="card-img-top" alt="...">
-        <div class="card-body inter-maps">
-          <h4 class="card-title">Ouest</h4>
-          <p class="card-text">Des points de vue célèbres et des itinéraires sportifs.</p>
+        <div class="card-body">
+          <h4 class="card-title inter-maps-bold">Ouest</h4>
+          <p class="card-text inter-maps-light">Des points de vue célèbres et des itinéraires sportifs.</p>
         </div>
         <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 10 }}">{{ count[10] }} itinéraires</router-link>
       </div>

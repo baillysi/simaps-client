@@ -35,12 +35,12 @@ async function showLogin() {
 <template>
 
   <div class="container" style="text-align:center; margin-top: 30px;">
-    <h1 class="inter-maps" >Cartes & Randonnées.</h1>
+    <h1 class="inter-maps-bold" >Cartes & Randonnées.</h1>
     <br/>
 
     <figure class="text-center">
       <blockquote class="blockquote">
-        <h6 class="inter-maps">C’est le fait de ne pas connaître exactement le chemin, la carte jetée qui fait du soleil couchant le guide et rend le décor vivant.</h6>
+        <h6 class="inter-maps-light">C’est le fait de ne pas connaître exactement le chemin, la carte jetée qui fait du soleil couchant le guide et rend le décor vivant.</h6>
       </blockquote>
       <figcaption class="blockquote-footer">
         Art Garfunkel
@@ -53,7 +53,7 @@ async function showLogin() {
     </div>
     <br/><br/>
     
-    <button class="btn btn-outline-secondary" @click="isLoggedIn ? goToMaps() : showLogin()">Accès aux Cartes</button>
+    <button class="btn btn-outline-secondary btn-lg" @click="isLoggedIn ? goToMaps() : showLogin()">Accès aux Cartes</button>
     
   </div>
   
@@ -74,7 +74,7 @@ async function showLogin() {
     color:#390040 !important;
     font-family: "Inter", sans-serif !important;
     font-optical-sizing: auto;
-    font-weight: 500 !important;
+    font-weight: 650 !important;
     font-style: normal;
     padding-right: 40px !important;
     padding-left: 40px !important;
@@ -86,7 +86,7 @@ async function showLogin() {
   }
 
   .btn-danger {
-    background-color: #EF4C20 !important;
+    background-color: #FF953D !important;
   }
 
   .inter-maps {
@@ -97,5 +97,20 @@ async function showLogin() {
     font-style: normal;
   }
 
+  .inter-maps-bold {
+    color: #390040 !important;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800 !important;
+    font-style: normal;
+  }
+
+  .inter-maps-light {
+    color: #390040 !important;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400 !important;
+    font-style: normal;
+  }
 
 </style>
