@@ -83,9 +83,16 @@ onMounted(async () => {
           <li class="nav-item">
             <router-link class="nav-link inter-maps" to="/">Accueil</router-link>
           </li>
-          <li class="nav-item">
-            <button class="nav-link inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Cartes</button>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle inter-maps" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Cartes
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li class="nav-item"><button class="dropdown-item inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Réunion</button></li>
+            </ul>
           </li>
+
           <li class="nav-item">
             <router-link class="nav-link inter-maps" to="/about">À propos</router-link>
           </li>
@@ -136,7 +143,7 @@ onMounted(async () => {
   .navbar-brand {
     margin-bottom: 0px;
     padding-right: 45px;
-    width: 145px;
+    width: 155px;
   }
 
   #header {
@@ -147,7 +154,12 @@ onMounted(async () => {
 
   .nav-link {
     font-size: 17px !important;
-    margin-right: 8px;
+    margin-right: 10px;
+  }
+
+  .dropdown-item.inter-maps:hover {
+    background-color: #390040;
+    color: #fff !important;
   }
   
 
