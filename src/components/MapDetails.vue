@@ -533,7 +533,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()">Créer un itinéraire</button>
+          <button class="btn btn-outline-secondary" :disabled="!isAdmin" @click="getJourneys(), showCreate()">Créer un itinéraire</button>
         </div>
         <br/>
 
@@ -569,7 +569,7 @@ onMounted(async () => {
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#390040;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip"  title="mettre à jour l'itinéraire">
+                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#390040;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
