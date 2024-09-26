@@ -1,7 +1,7 @@
 <script setup>
 
 import axios from 'axios';
-import { ref, toRef, watch } from 'vue';
+import { ref, computed } from 'vue';
 
 const emit = defineEmits(['exit', 'close'])
 
@@ -18,6 +18,21 @@ const duration = ref('')
 const journey = ref([])
 const rates = ref(2)
 const description = ref('')
+
+const durationHHMM = computed({
+  // getter
+  get() {
+    if ( duration.value !== undefined ) { // to prevent error when updatedDuration is accessed during render but not defined 
+      const date = new Date(duration.value * 1000)
+      return date.toISOString().substring(11, 16)
+    }
+  },
+  // setter
+  set(val) {
+    var ts = val.split(':');
+    duration.value  = Date.UTC(1970, 0, 1, ts[0], ts[1]) / 1000;
+  }
+})
 
 // Dummy data to create new hike
 const gpx = ref('')
@@ -93,8 +108,8 @@ async function onSubmit() {
 <div class="modal fade" data-bs-backdrop="static" id="#create" tabindex="-1" aria-labelledby="#create" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header inter-maps">
-        <h1 class="modal-title fs-5" id="#create">Créer un itinéraire</h1>
+      <div class="modal-header">
+        <h1 class="modal-title inter-maps-bold fs-5" id="#create">Créer un itinéraire</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
       </div>
       <div class="modal-body">
@@ -107,31 +122,31 @@ async function onSubmit() {
           </p>
           <div class="form-group inter-maps">
             <label for="InputName">Nom</label>
-            <input type="text" v-model="name" class="form-control inter-maps" id="InputName">
+            <input type="text" v-model="name" class="form-control inter-maps-light" id="InputName">
           </div>
           <div class="form-group inter-maps">
             <label for="InputDescription">Description</label>
-            <textarea type="text" v-model="description" class="form-control inter-maps" id="InputDescription" rows="4"></textarea>
+            <textarea type="text" v-model="description" class="form-control inter-maps-light" id="InputDescription" rows="4"></textarea>
           </div>
           <br/>
           <div class="row">
             <div class="form-group col inter-maps">
               <label for="InputDistance">Distance</label>
-              <input type="number" v-model="distance" class="form-control inter-maps" id="InputDistance" placeholder="km">
+              <input type="number" step="0.1" v-model="distance" class="form-control inter-maps-light" id="InputDistance" placeholder="km">
             </div>
             <div class="form-group col inter-maps">
               <label for="InputElevation">Dénivelé positif cumulé</label>
-              <input type="number" v-model="elevation" class="form-control inter-maps" id="InputElevation" placeholder="m+">
+              <input type="number" v-model="elevation" class="form-control inter-maps-light" id="InputElevation" placeholder="m+">
             </div>
           </div>
           <div class="row">
             <div class="form-group col inter-maps">
               <label for="InputDuration">Durée</label>
-              <input type="number" v-model="duration" class="form-control inter-maps" id="InputDuration" placeholder="heures">
+              <input type="time" v-model="durationHHMM" class="form-control inter-maps-light" id="InputDuration" placeholder="durée">
             </div>
             <div class="form-group col inter-maps">
               <label for="InputJourney">Type d'itinéraire</label>
-              <select v-model="journey" class="form-select inter-maps" id="InputJourney">
+              <select v-model="journey" class="form-select inter-maps-light" id="InputJourney">
                 <option v-for="option in journeys" :value="option">
                   {{ option.name }}
                 </option>

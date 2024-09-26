@@ -42,8 +42,13 @@ async function showLogin() {
           <li class="nav-item">
             <router-link class="nav-link inter-maps" to="/">Accueil</router-link>
           </li>
-          <li class="nav-item">
-            <button class="nav-link inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Cartes</button>
+          <li class="nav-item dropdown dropup">
+            <a class="nav-link dropdown-toggle inter-maps" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Cartes
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li class="nav-item"><button class="dropdown-item inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Réunion</button></li>
+            </ul>
           </li>
           <li class="nav-item">
             <router-link class="nav-link inter-maps" to="/about">À propos</router-link>
@@ -71,7 +76,7 @@ async function showLogin() {
     color: #390040 !important;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 500 !important;
+    font-weight: 550 !important;
     font-style: normal;
     opacity: 0.5;
   }

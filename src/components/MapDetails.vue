@@ -533,7 +533,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()" :disabled="!isAdmin">Créer un itinéraire</button>
+          <button class="btn btn-outline-secondary" @click="getJourneys(), showCreate()">Créer un itinéraire</button>
         </div>
         <br/>
 
@@ -560,7 +560,7 @@ onMounted(async () => {
               <div class="accordion-body inter-maps-light">
                 <span class="badge bg-info">{{ hike.distance }} km</span>
                 <span class="badge bg-info">{{ hike.elevation }} m+</span> 
-                <span class="badge bg-info">{{ hike.duration }} heures</span>
+                <span class="badge bg-info">{{ (new Date(hike.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hike.duration * 1000)).toISOString().substring(14, 16) }}</span>
                 <span class="badge bg-info">{{ hike.journey.name }}</span>
                 <br/><br/>
                 {{ hike.description }}
@@ -569,7 +569,7 @@ onMounted(async () => {
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#390040;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="mettre à jour l'itinéraire">
+                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip"  title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#390040;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
