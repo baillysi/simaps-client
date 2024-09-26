@@ -53,7 +53,7 @@ async function showLogin() {
     </div>
     <br/><br/>
     
-    <button class="btn btn-outline-secondary btn-lg" @click="isLoggedIn ? goToMaps() : showLogin()">Accès aux Cartes</button>
+    <button class="btn btn-outline-secondary" @click="isLoggedIn ? goToMaps() : showLogin()">Île de la Réunion</button>
     
   </div>
   
