@@ -24,7 +24,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 // custom markers
 // todo use font-awesome
 import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/star.svg'
+import viewpointCustomMarker from './icons/viewpoint.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -74,6 +74,8 @@ const hikeDetails = ref('')
 const selectedHike = ref('')
 
 const journeys = ref([])
+
+const viewpoints = ref([])
 
 const message = ref('')
 const showMessage = ref(false)
@@ -144,6 +146,7 @@ async function getZoneDetails() {
   isLoading.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
+  viewpoints.value = response.data['viewpoints']
 }
 
 async function getJourneys() {
@@ -365,14 +368,6 @@ const hosts = ref([
   },
 ])
 
-// viewpoints mock
-const viewpoints = ref([
-  {
-    coordinates: [-21.016683 , 55.399258],
-    content : "Belvédère de Bois Court",
-  },
-])
-
 // custom validation 
 // check bootstrap native validation or third part library like veevalidate + server side validation
 // use of js functions to show or hide modals instead of native data-bs-dismiss to add form validation logic
@@ -455,17 +450,17 @@ onMounted(async () => {
           </l-geo-json> 
 
           <l-layer-group 
-            :visible="mapzoom >= 12 ? true : false"
+            :visible="true"
             layerType="overlay"
             name="Points de vue">
             <l-marker-cluster-group>
               <l-marker
                 v-for="(item, index) in viewpoints"
                 :key="index"
-                :lat-lng="[item.coordinates[0], item.coordinates[1]]">
-                <l-popup>{{ item.content }}</l-popup>
+                :lat-lng="[item.lat, item.lng]">
+                <l-popup class="inter-maps">{{ item.name }}</l-popup>
                 <l-icon
-                  :iconSize="mapzoom >= 15 ? [30, 30] : [23, 23]"
+                  :iconSize="mapzoom >= 15 ? [30, 30] : [20, 20]"
                   :icon-url="viewpointCustomMarker"
                 />
               </l-marker>
@@ -481,7 +476,7 @@ onMounted(async () => {
                 v-for="(item, index) in hosts"
                 :key="index"
                 :lat-lng="[item.coordinates[0], item.coordinates[1]]">
-                <l-popup>{{ item.content }}</l-popup>
+                <l-popup class="inter-maps">{{ item.content }}</l-popup>
                 <l-icon
                   :iconSize="mapzoom >= 15 ? [25, 25] : [18, 18]"
                   :icon-url="hostCustomMarker"
