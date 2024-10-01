@@ -12,7 +12,7 @@ import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, L
 // wrapper seems to be compatible with vue3
 import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
 import 'vue-leaflet-markercluster/dist/style.css';
-
+import { LMarkerRotate } from 'vue-leaflet-rotate-marker';
 
 // native leaflet plugins
 import 'leaflet.locatecontrol'
@@ -459,16 +459,18 @@ onMounted(async () => {
             layerType="overlay"
             name="Points de vue">
             <l-marker-cluster-group>
-              <l-marker
+              <l-marker-rotate
                 v-for="(item, index) in viewpoints"
                 :key="index"
-                :lat-lng="[item.lat, item.lng]">
+                :lat-lng="[item.lat, item.lng]"
+                :rotationAngle=45>
                 <l-popup class="inter-maps">{{ item.name }}</l-popup>
                 <l-icon
                   :iconSize="mapzoom >= 15 ? [30, 30] : [20, 20]"
                   :icon-url="viewpointCustomMarker"
+                  :icon-anchor="[3, 3]"
                 />
-              </l-marker>
+              </l-marker-rotate>
             </l-marker-cluster-group>
           </l-layer-group>
 
