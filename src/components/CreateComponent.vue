@@ -3,6 +3,10 @@
 import axios from 'axios';
 import { ref, computed } from 'vue';
 
+// user session
+import { useFirebaseAuth } from 'vuefire';
+const auth = useFirebaseAuth()
+
 const emit = defineEmits(['exit', 'close'])
 
 const props = defineProps({
@@ -52,7 +56,13 @@ async function createHike() {
     gpx: gpx.value,
   }
 
-  await axios.post(import.meta.env.VITE_APP_ROOT_API + '/hikes', payload)
+  // add authorization to protect API
+  const token = await auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+
+  await axios.post(import.meta.env.VITE_APP_ROOT_API + '/hikes', payload, { headers })
       .then((res) => {
           console.log(res.status);
           resetData();

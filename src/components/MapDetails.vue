@@ -13,6 +13,7 @@ import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, L
 import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
 import 'vue-leaflet-markercluster/dist/style.css';
 
+
 // native leaflet plugins
 import 'leaflet.locatecontrol'
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
@@ -20,6 +21,7 @@ import 'leaflet.fullscreen'
 import 'leaflet.fullscreen/Control.FullScreen.css'
 import 'leaflet.heightgraph'
 import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
+
 
 // custom markers
 // todo use font-awesome
@@ -34,6 +36,7 @@ import CreateComponent from './CreateComponent.vue';
 import UpdateComponent from './UpdateComponent.vue';
 import DeleteComponent from './DeleteComponent.vue';
 import AlertComponent from './AlertComponent.vue';
+import LoginComponent from './LoginComponent.vue';
 
 import { ref, onMounted, watch, computed } from 'vue';
 import { useResizeObserver } from '@vueuse/core'
@@ -47,26 +50,32 @@ const isLoggedIn = ref(false)
 const isAdmin = ref(false)
 
 // native vuefire watcher to check whether user logged or not
-// we wait for user to be loaded to call getZoneDetails as it requires token
+// we wait for user to be loaded to call create / update / delete hike as it requires token
 onAuthStateChanged(auth, (user) => {
   if (user) {
     isLoggedIn.value = true
+    // check specific user
     if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
       isAdmin.value = true
     } 
-    getZoneDetails()
   } 
   else {
     isLoggedIn.value = false
   }
 });
 
+async function showLogin() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
+  myModal.show();
+}
+
+
 // hikes data form
 const props = defineProps({
   id: String
 })
 
-const isLoading = ref(false)
+const isResponseLoading = ref(false)
 
 const hikes = ref([])
 const hikeDetails = ref('')
@@ -137,13 +146,8 @@ async function resetFilters() {
 }
 
 async function getZoneDetails() {
-  // add authorization to protect API
-  const token = await auth.currentUser.getIdToken()
-  const headers = { 
-    Authorization: 'Bearer ' + token
-  };
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id, { headers })
-  isLoading.value = false
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
+  isResponseLoading.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
   hikes.value = response.data['hikes']
   viewpoints.value = response.data['viewpoints']
@@ -402,14 +406,15 @@ async function hideDelete() {
 }
 
 onMounted(async () => {
-  isLoading.value = true
+  isResponseLoading.value = true
+  getZoneDetails()
 })
 
 </script>
 
 <template>
 
-  <div v-if="isLoading" class="overlay">
+  <div v-if="isResponseLoading" class="overlay">
     <div class="overlay__wrapper">
         <div class="overlay__spinner">
           <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
@@ -528,7 +533,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" :disabled="!isAdmin" @click="getJourneys(), showCreate()">Créer un itinéraire</button>
+          <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), showCreate()) : showLogin()">Créer un itinéraire</button>
         </div>
         <br/>
 
@@ -564,7 +569,7 @@ onMounted(async () => {
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#390040;"></i>
                   </button>
-                  <button class="btn btn-light" @click="showUpdate(), getJourneys(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="mettre à jour l'itinéraire">
+                  <button class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#390040;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
@@ -614,6 +619,9 @@ onMounted(async () => {
   @close="hideDelete(), isloading=true"
   @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
   </DeleteComponent>
+
+  <!-- Login -->
+  <LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
 
 </template>
 
