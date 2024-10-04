@@ -72,13 +72,15 @@ async function showLogin() {
 
 // hikes data form
 const props = defineProps({
-  id: String
+  zone: String
 })
 
 const isResponseLoading = ref(false)
 
 const hikes = ref([])
 const hikeDetails = ref('')
+
+const alicia = ref('')
 
 const selectedHike = ref('')
 
@@ -146,9 +148,10 @@ async function resetFilters() {
 }
 
 async function getZoneDetails() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.id)
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
   isResponseLoading.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
+  alicia.value = response.data['id'].toString()
   hikes.value = response.data['hikes']
   viewpoints.value = response.data['viewpoints']
 }
@@ -596,13 +599,13 @@ onMounted(async () => {
   </div>
   
   <!-- Create -->
-  <CreateComponent :zoneId="props.id" :journeys="journeys" 
+  <CreateComponent :zoneId="alicia" :journeys="journeys" 
   @close="hideCreate(), isloading=true"
   @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenter)">
   </CreateComponent>
 
   <!-- Update -->
-  <UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="props.id" :journeys="journeys" 
+  <UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="alicia" :journeys="journeys" 
   :currentName="hikeDetails.name" 
   :currentDistance="hikeDetails.distance" 
   :currentElevation="hikeDetails.elevation" 

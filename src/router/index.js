@@ -23,7 +23,7 @@ const router = createRouter({
       component: MapsPage,
     },
     {
-      path: '/maps/:id',
+      path: '/maps/:zone',
       name: 'MapDetails',
       component: MapDetails,
       props: true,
