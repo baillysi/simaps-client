@@ -3,46 +3,25 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-// user session
-import { useFirebaseAuth} from 'vuefire';
-import { onAuthStateChanged } from 'firebase/auth';
-
-const auth = useFirebaseAuth()
-const isLoggedIn = ref(false)
-const isAuthLoading = ref(false)
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    isLoggedIn.value = true
-    getZonesCount()
-  } 
-  else {
-    isLoggedIn.value = false
-  }
-});
-
+const isResponseLoading = ref(false)
 const count = ref('')
 
 async function getZonesCount() {
-   // add authorization to protect API
-  const token = await auth.currentUser.getIdToken()
-  const headers = { 
-    Authorization: 'Bearer ' + token
-  };
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/count', { headers })
-  isAuthLoading.value = false
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/count')
+  isResponseLoading.value = false
   count.value = response.data
 }
 
 onMounted(async () => {
-  isAuthLoading.value = true
+  isResponseLoading.value = true
+  getZonesCount()
 })
 
 </script>
 
 <template>
 
-<div v-if="isAuthLoading" class="overlay">
+<div v-if="isResponseLoading" class="overlay">
   <div class="overlay__wrapper">
       <div class="overlay__spinner">
         <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
@@ -63,7 +42,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Mafate</h4>
           <p class="card-text inter-maps-light">Le cirque le plus sauvage, aucune route n'y mène, un monde à part.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 1 }}">{{ count[1] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'mafate'}}">{{ count[1] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -74,7 +53,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Cilaos</h4>
           <p class="card-text inter-maps-light">Au pied du Piton des Neiges, des possibilités infinies d'excursions.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 2 }}">{{ count[2] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'cilaos' }}">{{ count[2] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -85,7 +64,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Salazie</h4>
           <p class="card-text inter-maps-light">Nature verdoyante, cascades et villages de charme. </p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 3 }}">{{ count[3] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'salazie' }}">{{ count[3] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -96,7 +75,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Volcan</h4>
           <p class="card-text inter-maps-light">Le cadre grandiose du Piton de la Fournaise, plus que jamais actif.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 4 }}">{{ count[4] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'volcan' }}">{{ count[4] }} itinéraires</router-link>
       </div>
     </div> 
 
@@ -107,7 +86,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Plaines</h4>
           <p class="card-text inter-maps-light">Entre deux massifs volcaniques, des paysages atypiques.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 5 }}">{{ count[5] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'plaines' }}">{{ count[5] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -118,7 +97,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Piton des Neiges</h4>
           <p class="card-text inter-maps-light">Le plus haut sommet de l'Océan Indien, 3070 mètres.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 6 }}">{{ count[6] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'piton des neiges' }}">{{ count[6] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -129,7 +108,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Nord</h4>
           <p class="card-text inter-maps-light">Région moins connue, avec comme point culminant la Roche Écrite.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 7 }}">{{ count[7] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'nord' }}">{{ count[7] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -140,7 +119,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Sud</h4>
           <p class="card-text inter-maps-light">Le Sud Sauvage, pépite à l'ombre du Volcan.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 8 }}">{{ count[8] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'sud' }}">{{ count[8] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -151,7 +130,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Est</h4>
           <p class="card-text inter-maps-light">L'aventure au coeur de la jungle des forêts primaires.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 9 }}">{{ count[9] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'est' }}">{{ count[9] }} itinéraires</router-link>
       </div>
     </div>
 
@@ -162,7 +141,7 @@ onMounted(async () => {
           <h4 class="card-title inter-maps-bold">Ouest</h4>
           <p class="card-text inter-maps-light">Des points de vue célèbres et des itinéraires sportifs.</p>
         </div>
-        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { id: 10 }}">{{ count[10] }} itinéraires</router-link>
+        <router-link class="btn btn-outline-secondary" :to="{ name: 'MapDetails', params: { zone: 'ouest' }}">{{ count[10] }} itinéraires</router-link>
       </div>
     </div>
 

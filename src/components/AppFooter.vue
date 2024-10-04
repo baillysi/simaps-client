@@ -1,34 +1,10 @@
 <script setup>
 
-import { ref } from 'vue';
-import { Modal } from 'bootstrap';
 import router from '../router';
-
-// user session
-import { useFirebaseAuth } from 'vuefire';
-import { onAuthStateChanged } from 'firebase/auth';
-
-const auth = useFirebaseAuth()
-const isLoggedIn = ref(false)
-
-// native vuefire watcher to check whether user logged or not
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    isLoggedIn.value = true
-  } 
-  else {
-    isLoggedIn.value = false
-  }
-});
 
 // equivalent to router-link but enables the use native @click method
 async function goToMaps() {
   router.push('/maps')
-}
-
-async function showLogin() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
-  myModal.show();
 }
 
 </script>
@@ -47,7 +23,7 @@ async function showLogin() {
               Cartes
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <li class="nav-item"><button class="dropdown-item inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Réunion</button></li>
+              <li class="nav-item"><button class="dropdown-item inter-maps" @click="goToMaps()">Réunion</button></li>
             </ul>
           </li>
           <li class="nav-item">

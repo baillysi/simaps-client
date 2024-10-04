@@ -20,11 +20,9 @@ onAuthStateChanged(auth, (user) => {
   isAuthLoading.value = false
   if (user) {
     isLoggedIn.value = true
-    console.log('Logged in !')
   } 
   else {
     isLoggedIn.value = false
-    console.log('Logged out!')
   }
 });
 
@@ -89,7 +87,7 @@ onMounted(async () => {
               Cartes
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <li class="nav-item"><button class="dropdown-item inter-maps" @click="isLoggedIn ? goToMaps() : showLogin()">Réunion</button></li>
+              <li class="nav-item"><button class="dropdown-item inter-maps" @click="goToMaps()">Réunion</button></li>
             </ul>
           </li>
 

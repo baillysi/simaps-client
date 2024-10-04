@@ -3,6 +3,10 @@
 import axios from 'axios';
 import { ref, toRef, watch, computed } from 'vue';
 
+// user session
+import { useFirebaseAuth } from 'vuefire';
+const auth = useFirebaseAuth()
+
 const emit = defineEmits(['exit', 'close'])
 
 const props = defineProps({
@@ -91,7 +95,14 @@ async function updateHike() {
     rates: updatedRates.value,
     description: updatedDescription.value,
   }
-  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, payload)
+
+  // add authorization to protect API
+  const token = await auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+
+  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, payload, { headers })
       .then((res) => {
           console.log(res.status);
           emit('exit');
