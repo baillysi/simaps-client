@@ -38,6 +38,7 @@ import AppFooter from './components/AppFooter.vue'
 
     <!-- Optional -->
     <template #acceptContent>J'accepte!</template>
+
   </vue-cookie-accept-decline>
 
 </template>
@@ -48,4 +49,19 @@ import AppFooter from './components/AppFooter.vue'
   display: flex;
   flex-direction: column;
 }
+
+#cookconsent {
+  color:#3C002E !important;
+}
+
+.cookie__floating__buttons__button--accept:hover {
+  background-color:#FF803D !important;
+  color:#fff !important;
+}
+
+.cookie__floating__buttons__button--accept {
+  background-color:#fff !important;
+  color: #FF803D !important;
+}
+
 </style>

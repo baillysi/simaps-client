@@ -53,7 +53,7 @@ async function signInAsGuest() {
 <div v-if="isAuthLoading" class="overlay">
   <div class="overlay__wrapper">
     <div class="overlay__spinner">
-      <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
+      <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
@@ -106,8 +106,8 @@ async function signInAsGuest() {
 
         <div>
           Continuer en tant qu'invité &#x1F609;
-          <button class="btn btn-danger btn-sm" style="margin-left: 5px;" type="button" @click="signInAsGuest()">
-            <i class="pi pi-sign-in" style="color:white;"></i>
+          <button class="btn btn-outline-primary btn-sm" style="margin-left: 5px;" type="button" @click="signInAsGuest()">
+            <i class="pi pi-sign-in"></i>
           </button>
           <br/>
         </div>

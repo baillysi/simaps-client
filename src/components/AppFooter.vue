@@ -49,7 +49,7 @@ async function goToMaps() {
   }
 
   .inter-footer {
-    color: #390040 !important;
+    color: #3C002E !important;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 550 !important;

@@ -187,13 +187,13 @@ async function onSubmit() {
 <style>
 
 .range-cust::-webkit-slider-thumb {
-  background: #390040 !important;
+  background: #3C002E !important;
 }
 .range-cust::-moz-range-thumb {
-  background: #390040 !important;
+  background: #3C002E !important;
 }
 .range-cust::-ms-thumb {
-  background: #390040 !important;
+  background: #3C002E !important;
 }
 
 </style>

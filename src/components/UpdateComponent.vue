@@ -129,19 +129,19 @@ const errors = ref([])
 async function onSubmit() {
   errors.value = []
   if (!updatedName.value) {
-    errors.value.push('Name is required.')
+    errors.value.push('Le nom est obligatoire.')
   }
   if (!updatedDistance.value) {
-    errors.value.push('Distance is required.')
+    errors.value.push('La distance est obligatoire.')
   }
   if (!updatedElevation.value) {
-    errors.value.push('Positive elevation is required.')
+    errors.value.push('Le dénivelé positif est obligatoire.')
   }
   if (!updatedDuration.value) {
-    errors.value.push('Duration is required.')
+    errors.value.push('La durée est obligatoire.')
   }
   if (!updatedJourney.value.name) {
-    errors.value.push('Journey type is required.')
+    errors.value.push('Le type d\'itinéraire est obligatoire.')
   }
   if (errors.value.length == 0) {
     updateHike()
@@ -161,10 +161,10 @@ async function onSubmit() {
       </div>
       <div class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate>
-          <p v-if="errors.length">
+          <p v-if="errors.length" style="color:#FF803D;">
             <b>Veuillez corriger les erreurs suivantes :</b>
             <ul>
-              <li v-for="error in errors" style="color:#D6955B;">{{ error }}</li>
+              <li v-for="error in errors">{{ error }}</li>
             </ul>
           </p>
           <div class="form-group inter-maps">
@@ -224,13 +224,13 @@ async function onSubmit() {
 <style>
 
 .range-cust::-webkit-slider-thumb {
-  background: #390040 !important;
+  background: #3C002E !important;
 }
 .range-cust::-moz-range-thumb {
-  background: #390040 !important;
+  background: #3C002E !important;
 }
 .range-cust::-ms-thumb {
-  background: #390040 !important;
+  background: #3C002E !important;
 }
 
 </style>
