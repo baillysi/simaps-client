@@ -26,7 +26,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 // custom markers
 // todo use font-awesome
 import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/viewpoint.svg'
+import viewpointCustomMarker from './icons/street-view.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -164,7 +164,7 @@ async function getJourneys() {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
-const mapzoom = ref('')
+const mapzoom = ref(13)
 const ismapdata = ref(false)
 
 watch(mapcenter, () => {
@@ -461,20 +461,16 @@ onMounted(async () => {
             :visible="true"
             layerType="overlay"
             name="Points de vue">
-            <l-marker-cluster-group>
-              <l-marker-rotate
-                v-for="(item, index) in viewpoints"
-                :key="index"
-                :lat-lng="[item.lat, item.lng]"
-                :rotationAngle=45>
-                <l-popup class="inter-maps">{{ item.name }}</l-popup>
-                <l-icon
-                  :iconSize="mapzoom >= 15 ? [30, 30] : [20, 20]"
-                  :icon-url="viewpointCustomMarker"
-                  :icon-anchor="[3, 3]"
-                />
-              </l-marker-rotate>
-            </l-marker-cluster-group>
+            <l-marker
+              v-for="(item, index) in viewpoints"
+              :key="index"
+              :lat-lng="[item.lat, item.lng]">
+              <l-popup class="inter-maps">{{ item.name }}</l-popup>
+              <l-icon
+                :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
+                :icon-url="viewpointCustomMarker"
+              />
+            </l-marker>
           </l-layer-group>
 
           <l-layer-group 
