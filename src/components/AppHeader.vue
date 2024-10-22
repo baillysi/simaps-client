@@ -88,7 +88,6 @@ onMounted(async () => {
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <li class="nav-item"><button class="dropdown-item inter-maps" @click="goToMaps()">Réunion</button></li>
-              <li class="nav-item"><button class="dropdown-item inter-maps" @click="goToMaps()">Jura</button></li>
             </ul>
           </li>
 
