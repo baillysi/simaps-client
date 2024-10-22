@@ -64,7 +64,7 @@ onMounted(async () => {
   <div v-if="isAuthLoading" class="overlay">
     <div class="overlay__wrapper">
       <div class="overlay__spinner">
-        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
+        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -72,7 +72,7 @@ onMounted(async () => {
   </div>
     
   <div id="header">
-    <nav class="navbar navbar-expand-md navbar-light" style="border-bottom: 1.5px solid #390040;">
+    <nav class="navbar navbar-expand-md navbar-light" style="border-bottom: 1.5px solid #3C002E;">
       <div class="container-fluid">
         <a class="navbar-brand">
           <img src="./icons/logo.svg" alt="Kavalé Logo"/>
@@ -97,8 +97,8 @@ onMounted(async () => {
         </ul>
         <form class="form-inline">
           <button class="btn btn-outline-secondary" style="margin-right: 8px;" type="button" @click="showLogin()">Mon compte</button>
-          <button class="btn btn-danger" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
-            <i class="pi pi-sign-out" style="color:white;"></i>
+          <button class="btn btn-outline-primary" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
+            <i class="pi pi-sign-out"></i>
           </button>
         </form>
       </div>
@@ -156,7 +156,7 @@ onMounted(async () => {
   }
 
   .dropdown-item.inter-maps:hover {
-    background-color: #390040;
+    background-color: #3C002E;
     color: #fff !important;
   }
   

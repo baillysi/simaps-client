@@ -48,7 +48,7 @@ async function goToMaps() {
   }
 
   .btn-outline-secondary {
-    color:#390040 !important;
+    color:#3C002E !important;
     font-family: "Inter", sans-serif !important;
     font-optical-sizing: auto;
     font-weight: 650 !important;
@@ -59,15 +59,32 @@ async function goToMaps() {
 
   .btn-outline-secondary:hover {
     color: #FFFFFF !important;
-    background-color:#390040 !important;
+    background-color:#3C002E !important;
   }
 
   .btn-danger {
-    background-color: #FF953D !important;
+    border-color: #FF803D !important;
+    background-color: #fff !important;
+    color: #FF803D !important;
+    font-family: "Inter", sans-serif !important;
+    font-optical-sizing: auto;
+    font-weight: 650 !important;
+    font-style: normal;
+  }
+
+  .btn-danger:hover {
+    color: #FFFFFF !important;
+    background-color:#FF803D !important;
+  }
+
+  .btn-outline-primary {
+    border-color: #FF803D !important;
+    color: #FFFFFF !important;
+    background-color:#FF803D !important;
   }
 
   .inter-maps {
-    color: #390040 !important;
+    color: #3C002E !important;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 550 !important;

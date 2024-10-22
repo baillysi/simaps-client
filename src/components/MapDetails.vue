@@ -26,7 +26,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 // custom markers
 // todo use font-awesome
 import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/viewpoint.svg'
+import viewpointCustomMarker from './icons/street-view.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -164,7 +164,7 @@ async function getJourneys() {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
-const mapzoom = ref('')
+const mapzoom = ref(13)
 const ismapdata = ref(false)
 
 watch(mapcenter, () => {
@@ -173,14 +173,14 @@ watch(mapcenter, () => {
 
 const selectedStyle = ref(
   {
-    'color':'#FF953D', 
+    'color':'#FF803D', 
     'weight': 5
   }
 )
 
 const unselectedStyle = ref(
   {
-    'color':'#390040',
+    'color':'#3C002E',
     'weight': 5
   }
 )
@@ -197,7 +197,7 @@ const colorMappings = {
     Simaps: {
         'Elevation': {
             text: 'Altitude',
-            color: '#FF953D'
+            color: '#FF803D'
         }
     }
   }
@@ -420,7 +420,7 @@ onMounted(async () => {
   <div v-if="isResponseLoading" class="overlay">
     <div class="overlay__wrapper">
         <div class="overlay__spinner">
-          <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#390040" role="status">
+          <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -432,7 +432,7 @@ onMounted(async () => {
     <div class="col-lg-7" style='padding: 10px;'>
       <br/>
 
-      <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #390040;'>
+      <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #3C002E;'>
         <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
 
           <l-control-layers position="topright"></l-control-layers>
@@ -452,8 +452,8 @@ onMounted(async () => {
 
           <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
             <l-popup :options="{ closeButton:true, closeOnClick:true }" class="inter-maps">{{ hike.name }}<br/> 
-              <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#390040;"></i>
-              <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#390040;"></i>
+              <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i>
+              <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
             </l-popup>
           </l-geo-json> 
 
@@ -461,20 +461,16 @@ onMounted(async () => {
             :visible="true"
             layerType="overlay"
             name="Points de vue">
-            <l-marker-cluster-group>
-              <l-marker-rotate
-                v-for="(item, index) in viewpoints"
-                :key="index"
-                :lat-lng="[item.lat, item.lng]"
-                :rotationAngle=45>
-                <l-popup class="inter-maps">{{ item.name }}</l-popup>
-                <l-icon
-                  :iconSize="mapzoom >= 15 ? [30, 30] : [20, 20]"
-                  :icon-url="viewpointCustomMarker"
-                  :icon-anchor="[3, 3]"
-                />
-              </l-marker-rotate>
-            </l-marker-cluster-group>
+            <l-marker
+              v-for="(item, index) in viewpoints"
+              :key="index"
+              :lat-lng="[item.lat, item.lng]">
+              <l-popup class="inter-maps">{{ item.name }}</l-popup>
+              <l-icon
+                :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
+                :icon-url="viewpointCustomMarker"
+              />
+            </l-marker>
           </l-layer-group>
 
           <l-layer-group 
@@ -531,7 +527,7 @@ onMounted(async () => {
           </div>
           <div class="col-2 inter-maps">
             <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser">
-              <i class="pi pi-filter-slash" style="color:#390040;"></i>
+              <i class="pi pi-filter-slash" style="color:#3C002E;"></i>
             </button>
           </div>
         </div>
@@ -556,8 +552,8 @@ onMounted(async () => {
                   <span v-if="hike.difficulty == 4" class="badge bg-dark">Très difficile</span>
                 </div>
                 <div class="col-2">
-                  <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#390040;"></i> 
-                  <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#390040;"></i>
+                  <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
+                  <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
                 </div>
               </button>
             </h2>
@@ -572,16 +568,16 @@ onMounted(async () => {
                 <br/><br/>
                 <div class="col text-end">
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
-                    <i class="pi pi-map" style="color:#390040;"></i>
+                    <i class="pi pi-map" style="color:#3C002E;"></i>
                   </button>
                   <button class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
-                    <i class="pi pi-file-edit" style="color:#390040;"></i>
+                    <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
-                    <i class="pi pi-download" style="color:#390040;"></i>
+                    <i class="pi pi-download" style="color:#3C002E;"></i>
                   </button>
                   <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="supprimer l'itinéraire">
-                    <i class="pi pi-trash" style="color:#FF953D;"></i>
+                    <i class="pi pi-trash" style="color:#FF803D;"></i>
                   </button>
                 </div>
               </div>
@@ -676,9 +672,9 @@ onMounted(async () => {
   }
 
   .badge.bg-info {
-    color:#390040 !important; 
+    color:#3C002E !important; 
     background-color: #fff !important;
-    border: #390040 solid 1px;
+    border: #3C002E solid 1px;
     margin-left: 5px;
     margin-right: 5px;
 
@@ -721,9 +717,9 @@ onMounted(async () => {
   }
 
   .badge.bg-info {
-    color:#390040 !important; 
+    color:#3C002E !important; 
     background-color: #fff !important;
-    border: #390040 solid 1px;
+    border: #3C002E solid 1px;
     margin-left: 5px;
     margin-right: 5px;
   }
