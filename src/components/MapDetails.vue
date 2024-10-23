@@ -588,7 +588,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" v-if="showMessage && isloading == false"></AlertComponent>
+          <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
         </div>
 
       </div>
@@ -597,7 +597,7 @@ onMounted(async () => {
   
   <!-- Create -->
   <CreateComponent :zoneId="alicia" :journeys="journeys" 
-  @close="hideCreate(), isloading=true"
+  @close="hideCreate(), isResponseLoading=true"
   @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenterFixed)">
   </CreateComponent>
 
@@ -612,13 +612,13 @@ onMounted(async () => {
   :currentRates="hikeDetails.rates" 
   :currentDescription="hikeDetails.description"
   :hasTrail="hikeDetails.trail == 'None' ? false : true"
-  @close="hideUpdate(), isloading=true"
+  @close="hideUpdate(), isResponseLoading=true"
   @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenterFixed), hikeDetails = ''">
   </UpdateComponent>
 
   <!-- Delete -->
   <DeleteComponent :hikeId="String(hikeDetails.id)"
-  @close="hideDelete(), isloading=true"
+  @close="hideDelete(), isResponseLoading=true"
   @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
   </DeleteComponent>
 
