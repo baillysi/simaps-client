@@ -166,11 +166,11 @@ async function onSubmit() {
           <br/>
           <div class="form-group inter-maps">
             <label for="InputDifficulty">Difficulté</label>
-            <input v-model="difficulty" type="range" class="form-range range-cust" min="0" max="4" id="InputDifficulty">
+            <input v-model="difficulty" type="range" class="form-range range-cust" min="1" max="4" id="InputDifficulty">
           </div>
           <div class="form-group inter-maps">
             <label for="InputRates">Intérêt</label>
-            <input v-model="rates" type="range" class="form-range range-cust" min="0" max="4" id="InputRates">
+            <input v-model="rates" type="range" class="form-range range-cust" min="1" max="4" id="InputRates">
           </div>
           <br/>
           <div class="modal-footer">

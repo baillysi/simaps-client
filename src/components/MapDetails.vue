@@ -164,7 +164,8 @@ async function getJourneys() {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
-const mapzoom = ref(13)
+const mapcenterFixed = ref([-21.128756, 55.519246])
+const mapzoom = ref(11)
 const ismapdata = ref(false)
 
 watch(mapcenter, () => {
@@ -254,8 +255,8 @@ async function zoomUpdated(zoom) {
   mapzoom.value = zoom
 }
 
-async function fitBoundsZone(mapcenter) {
-  myMap.value.leafletObject.setView(mapcenter, 13)
+async function fitBoundsZone(mapcenterFixed) {
+  myMap.value.leafletObject.setView(mapcenterFixed, 11)
 }
 
 async function downloadGPX(geojson, name) {
@@ -433,7 +434,7 @@ onMounted(async () => {
       <br/>
 
       <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #3C002E;'>
-        <l-map ref="myMap" :zoom="13" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
+        <l-map ref="myMap" :zoom="11" :center="mapcenterFixed" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
 
           <l-control-layers position="topright"></l-control-layers>
 
@@ -484,7 +485,7 @@ onMounted(async () => {
                 :lat-lng="[item.coordinates[0], item.coordinates[1]]">
                 <l-popup class="inter-maps">{{ item.content }}</l-popup>
                 <l-icon
-                  :iconSize="mapzoom >= 15 ? [25, 25] : [18, 18]"
+                  :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
                   :icon-url="hostCustomMarker"
                 />
               </l-marker>
@@ -587,7 +588,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" v-if="showMessage && isloading == false"></AlertComponent>
+          <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
         </div>
 
       </div>
@@ -596,8 +597,8 @@ onMounted(async () => {
   
   <!-- Create -->
   <CreateComponent :zoneId="alicia" :journeys="journeys" 
-  @close="hideCreate(), isloading=true"
-  @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenter)">
+  @close="hideCreate(), isResponseLoading=true"
+  @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenterFixed)">
   </CreateComponent>
 
   <!-- Update -->
@@ -611,13 +612,13 @@ onMounted(async () => {
   :currentRates="hikeDetails.rates" 
   :currentDescription="hikeDetails.description"
   :hasTrail="hikeDetails.trail == 'None' ? false : true"
-  @close="hideUpdate(), isloading=true"
-  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenter), hikeDetails = ''">
+  @close="hideUpdate(), isResponseLoading=true"
+  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenterFixed), hikeDetails = ''">
   </UpdateComponent>
 
   <!-- Delete -->
   <DeleteComponent :hikeId="String(hikeDetails.id)"
-  @close="hideDelete(), isloading=true"
+  @close="hideDelete(), isResponseLoading=true"
   @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
   </DeleteComponent>
 
@@ -725,11 +726,11 @@ onMounted(async () => {
   }
 
   .marker-cluster-small {
-    background-color: #9f0000 !important;
+    background-color: #FE8935 !important;
   }
 
   .marker-cluster-small div {
-    background-color: #9f0000 !important;
+    background-color: #FE8935 !important;
     color: #fff !important;
   }
 
