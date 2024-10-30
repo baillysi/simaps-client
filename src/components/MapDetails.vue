@@ -26,7 +26,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 // custom markers
 // todo use font-awesome
 import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/street-view.svg'
+import viewpointCustomMarker from './icons/viewpoint.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -474,7 +474,7 @@ onMounted(async () => {
             </l-marker>
           </l-layer-group>
 
-          <l-layer-group 
+          <l-layer-group
             :visible="false"
             layerType="overlay"
             name="Gîtes">
@@ -535,7 +535,7 @@ onMounted(async () => {
         <br/>
 
         <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), showCreate()) : showLogin()">Créer un itinéraire</button>
+          <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), showCreate()) : showLogin()" :disabled="!isAdmin">Créer un itinéraire</button>
         </div>
         <br/>
 
@@ -571,7 +571,7 @@ onMounted(async () => {
                   <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
                     <i class="pi pi-map" style="color:#3C002E;"></i>
                   </button>
-                  <button class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire" :disabled="!isAdmin">
                     <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
