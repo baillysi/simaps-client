@@ -12,8 +12,7 @@ async function goToMaps() {
 <template>
 
   <div class="container" style="text-align:center; margin-top: 30px;">
-    <h1 class="inter-maps-bold" >Cartes & Randonnées.</h1>
-    <br/>
+    <h1 class="inter-maps-bold" style="font-size: 60px;">Cartes & Randonnées.</h1>
 
     <figure class="text-center">
       <blockquote class="blockquote">
@@ -25,8 +24,8 @@ async function goToMaps() {
     </figure>
     <br/>
 
-    <div class="container-fluid">
-      <img src="/img.png">
+    <div class="container-fluid illustration">
+      <img src="/illustration.svg">
     </div>
     <br/><br/>
     
@@ -43,8 +42,11 @@ async function goToMaps() {
   img {
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
-    opacity: 0.85;
+  }
+
+  .illustration {
+    max-width: 83%;
+    height: auto;
   }
 
   .btn-outline-secondary {

@@ -26,7 +26,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 // custom markers
 // todo use font-awesome
 import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/street-view.svg'
+import viewpointCustomMarker from './icons/viewpoint.svg'
 
 import { Modal } from 'bootstrap';
 import axios from 'axios';
@@ -474,7 +474,7 @@ onMounted(async () => {
             </l-marker>
           </l-layer-group>
 
-          <l-layer-group 
+          <l-layer-group
             :visible="false"
             layerType="overlay"
             name="Gîtes">
