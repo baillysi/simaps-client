@@ -1,5 +1,6 @@
 <script setup>
 
+import AppFooter from '../components/AppFooter.vue'
 import router from '../router'
 
 // equivalent to router-link but enables the use native @click method
@@ -11,27 +12,45 @@ async function goToMaps() {
 
 <template>
 
-  <div class="container" style="text-align:center; margin-top: 30px;">
-    <h1 class="inter-maps-bold" style="font-size: 60px;">Cartes & Randonnées.</h1>
+<div class="container-fluid" style="text-align:center;">
+  
+  <h1 class="simaps-bold" style="font-size: 70px;">Cartes & Randonnées.</h1>
 
-    <figure class="text-center">
-      <blockquote class="blockquote">
-        <h6 class="inter-maps-light">C’est le fait de ne pas connaître exactement le chemin, la carte jetée qui fait du soleil couchant le guide et rend le décor vivant.</h6>
-      </blockquote>
-      <figcaption class="blockquote-footer">
-        Art Garfunkel
-      </figcaption>
-    </figure>
-    <br/>
+  <figure class="text-center">
+    <blockquote class="blockquote">
+      <h6 class="simaps-light">A mes montagnes, reconnaissant, infiniment, pour le bien-être intérieur que ma jeunesse a retiré de leur sévère école.</h6>
+    </blockquote>
+    <figcaption class="blockquote-footer">
+      Walter Bonatti
+    </figcaption>
+  </figure>
+  <br/>
 
-    <div class="container-fluid illustration">
-      <img src="/illustration.svg">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="list-group list-group-flush">
+          <button type="button" class="list-group-item custom-border-1" @click="goToMaps()">Réunion</button>
+          <button type="button" class="list-group-item custom-border-2" disabled style="opacity: 0.5;">Pyrénées</button>
+          <button type="button" class="list-group-item custom-border-1" disabled style="opacity: 0.5;">Cévennes</button>
+        </div>
+      </div>
+      <div class="col-lg-6" >
+        <img src="/illustration.svg">
+      </div>
+      <div class="col-lg-3">
+        <div class="list-group list-group-flush">
+          <button type="button" class="list-group-item custom-border-4" disabled style="opacity: 0.5;">Vanoise</button>
+          <button type="button" class="list-group-item custom-border-3" disabled style="opacity: 0.5;">Écrins</button>
+          <button type="button" class="list-group-item custom-border-4" disabled style="opacity: 0.5;">Mont-Blanc</button>
+        </div>
+      </div>
     </div>
-    <br/><br/>
-    
-    <button class="btn btn-outline-secondary" @click="goToMaps()">Île de la Réunion</button>
-    
   </div>
+
+</div>
+
+<AppFooter />
   
 </template>
 
@@ -44,9 +63,50 @@ async function goToMaps() {
     height: auto;
   }
 
-  .illustration {
-    max-width: 83%;
-    height: auto;
+  .list-group-item {
+    margin-left: 20px;
+    margin-right: 20px;
+    color:#3C002E !important;
+    font-family: "Inter", sans-serif !important;
+    font-optical-sizing: auto;
+    font-weight: 800 !important;
+    font-style: normal;
+    font-size: 25px !important;
+  }
+
+  .list-group-item:hover {
+    color: #fff !important;
+    background-color:#3C002E !important;
+  }
+
+  .custom-border-1 {
+    border:#3C002E solid 2px !important;
+    border-top: none !important;
+    border-right:none !important;
+  }
+
+  .custom-border-2 {
+    border:#3C002E solid 2px !important;
+    border-top: none !important;
+    border-left:none !important;
+  }
+
+  .custom-border-3 {
+    border:#3C002E solid 2px !important;
+    border-bottom: none !important;
+    border-right:none !important;
+  }
+
+  .custom-border-4 {
+    border:#3C002E solid 2px !important;
+    border-bottom: none !important;
+    border-left:none !important;
+  }
+
+  .btn-outline-primary {
+    border-color: #FF803D !important;
+    color: #fff !important;
+    background-color:#FF803D !important;
   }
 
   .btn-outline-secondary {
@@ -60,7 +120,7 @@ async function goToMaps() {
   }
 
   .btn-outline-secondary:hover {
-    color: #FFFFFF !important;
+    color: #fff !important;
     background-color:#3C002E !important;
   }
 
@@ -75,17 +135,11 @@ async function goToMaps() {
   }
 
   .btn-danger:hover {
-    color: #FFFFFF !important;
+    color: #fff !important;
     background-color:#FF803D !important;
   }
 
-  .btn-outline-primary {
-    border-color: #FF803D !important;
-    color: #FFFFFF !important;
-    background-color:#FF803D !important;
-  }
-
-  .inter-maps {
+  .simaps-classic {
     color: #3C002E !important;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
@@ -93,16 +147,18 @@ async function goToMaps() {
     font-style: normal;
   }
 
-  .inter-maps-bold {
-    color: #390040 !important;
+  .simaps-bold {
+    color: #3C002E !important;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 800 !important;
     font-style: normal;
+    margin-top: 5px;
+    margin-bottom: 5px;
   }
 
-  .inter-maps-light {
-    color: #390040 !important;
+  .simaps-light {
+    color: #3C002E !important;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400 !important;
