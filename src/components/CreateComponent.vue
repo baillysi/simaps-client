@@ -119,7 +119,7 @@ async function onSubmit() {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title inter-maps-bold fs-5" id="#create">Créer un itinéraire</h1>
+        <h1 class="modal-title simaps-bold fs-5" id="#create">Créer un itinéraire</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
       </div>
       <div class="modal-body">
@@ -130,33 +130,33 @@ async function onSubmit() {
               <li v-for="error in errors" style="color:#D6955B;">{{ error }}</li>
             </ul>
           </p>
-          <div class="form-group inter-maps">
+          <div class="form-group simaps-classic">
             <label for="InputName">Nom</label>
-            <input type="text" v-model="name" class="form-control inter-maps-light" id="InputName">
+            <input type="text" v-model="name" class="form-control simaps-light" id="InputName">
           </div>
-          <div class="form-group inter-maps">
+          <div class="form-group simaps-classic">
             <label for="InputDescription">Description</label>
-            <textarea type="text" v-model="description" class="form-control inter-maps-light" id="InputDescription" rows="4"></textarea>
+            <textarea type="text" v-model="description" class="form-control simaps-light" id="InputDescription" rows="4"></textarea>
           </div>
           <br/>
           <div class="row">
-            <div class="form-group col inter-maps">
+            <div class="form-group col simaps-classic">
               <label for="InputDistance">Distance</label>
-              <input type="number" step="0.1" v-model="distance" class="form-control inter-maps-light" id="InputDistance" placeholder="km">
+              <input type="number" step="0.1" v-model="distance" class="form-control simaps-light" id="InputDistance" placeholder="km">
             </div>
-            <div class="form-group col inter-maps">
+            <div class="form-group col simaps-classic">
               <label for="InputElevation">Dénivelé positif cumulé</label>
-              <input type="number" v-model="elevation" class="form-control inter-maps-light" id="InputElevation" placeholder="m+">
+              <input type="number" v-model="elevation" class="form-control simaps-light" id="InputElevation" placeholder="m+">
             </div>
           </div>
           <div class="row">
-            <div class="form-group col inter-maps">
+            <div class="form-group col simaps-classic">
               <label for="InputDuration">Durée</label>
-              <input type="time" v-model="durationHHMM" class="form-control inter-maps-light" id="InputDuration" placeholder="durée">
+              <input type="time" v-model="durationHHMM" class="form-control simaps-light" id="InputDuration" placeholder="durée">
             </div>
-            <div class="form-group col inter-maps">
+            <div class="form-group col simaps-classic">
               <label for="InputJourney">Type d'itinéraire</label>
-              <select v-model="journey" class="form-select inter-maps-light" id="InputJourney">
+              <select v-model="journey" class="form-select simaps-light" id="InputJourney">
                 <option v-for="option in journeys" :value="option">
                   {{ option.name }}
                 </option>
@@ -164,11 +164,11 @@ async function onSubmit() {
             </div>
           </div>
           <br/>
-          <div class="form-group inter-maps">
+          <div class="form-group simaps-classic">
             <label for="InputDifficulty">Difficulté</label>
             <input v-model="difficulty" type="range" class="form-range range-cust" min="1" max="4" id="InputDifficulty">
           </div>
-          <div class="form-group inter-maps">
+          <div class="form-group simaps-classic">
             <label for="InputRates">Intérêt</label>
             <input v-model="rates" type="range" class="form-range range-cust" min="1" max="4" id="InputRates">
           </div>

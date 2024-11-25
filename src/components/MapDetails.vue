@@ -38,6 +38,8 @@ import DeleteComponent from './DeleteComponent.vue';
 import AlertComponent from './AlertComponent.vue';
 import LoginComponent from './LoginComponent.vue';
 
+import AppFooter from '../components/AppFooter.vue'
+
 import { ref, onMounted, watch, computed } from 'vue';
 import { useResizeObserver } from '@vueuse/core'
 
@@ -232,7 +234,7 @@ const myFullscreenControl = L.control
     titleCancel: 'sortir plein écran', // change the title of the button when fullscreen is on, default Exit Full Screen
     content: null, // change the content of the button, can be HTML, default null
     forceSeparateButton: true, // force separate button to detach from zoom buttons, default false
-    forcePseudoFullscreen: true, // force use of pseudo full screen even if full screen API is available, default false
+    forcePseudoFullscreen: false, // force use of pseudo full screen even if full screen API is available, default false
     fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
   })
 
@@ -418,320 +420,322 @@ onMounted(async () => {
 
 <template>
 
-  <div v-if="isResponseLoading" class="overlay">
-    <div class="overlay__wrapper">
-        <div class="overlay__spinner">
-          <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+<div v-if="isResponseLoading" class="overlay">
+  <div class="overlay__wrapper">
+      <div class="overlay__spinner">
+        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
+      </div>
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="col-lg-8">
+    <div class="mapContainer" v-if="ismapdata">
+
+      <l-map ref="myMap" :zoom="10" :center="mapcenterFixed" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
+
+        <l-control-layers position="topright"></l-control-layers>
+
+        <l-tile-layer
+          v-for="tileProvider in tileProviders"
+          :key="tileProvider.name"
+          :name="tileProvider.name"
+          :visible="tileProvider.visible"
+          :url="tileProvider.url"
+          :attribution="tileProvider.attribution"
+          layer-type="base"
+        />
+
+        <l-geo-json v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="function() {return strokeStyle}">
+        </l-geo-json> 
+
+        <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
+          <l-popup :options="{ closeButton:true, closeOnClick:true }" class="simaps-classic">{{ hike.name }}<br/> 
+            <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i>
+            <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
+          </l-popup>
+        </l-geo-json> 
+
+        <l-layer-group 
+          :visible="true"
+          layerType="overlay"
+          name="Points de vue">
+          <l-marker
+            v-for="(item, index) in viewpoints"
+            :key="index"
+            :lat-lng="[item.lat, item.lng]">
+            <l-popup class="simaps-classic">{{ item.name }}</l-popup>
+            <l-icon
+              :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
+              :icon-url="viewpointCustomMarker"
+            />
+          </l-marker>
+        </l-layer-group>
+
+        <l-layer-group
+          :visible="false"
+          layerType="overlay"
+          name="Gîtes">
+          <l-marker-cluster-group>
+            <l-marker
+              v-for="(item, index) in hosts"
+              :key="index"
+              :lat-lng="[item.coordinates[0], item.coordinates[1]]">
+              <l-popup class="simaps-classic">{{ item.content }}</l-popup>
+              <l-icon
+                :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
+                :icon-url="hostCustomMarker"
+              />
+            </l-marker>
+          </l-marker-cluster-group>
+        </l-layer-group>
+
+        <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
+
+      </l-map>
     </div>
   </div>
 
-  <div class="row" style="margin-left: 40px; margin-right: 40px;">
+  <div class="col-lg-4">
 
-    <div class="col-lg-7" style='padding: 10px;'>
-      <br/>
-
-      <div class="mapContainer" v-if="ismapdata" style='border: 2px solid #3C002E;'>
-        <l-map ref="myMap" :zoom="11" :center="mapcenterFixed" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
-
-          <l-control-layers position="topright"></l-control-layers>
-
-          <l-tile-layer
-            v-for="tileProvider in tileProviders"
-            :key="tileProvider.name"
-            :name="tileProvider.name"
-            :visible="tileProvider.visible"
-            :url="tileProvider.url"
-            :attribution="tileProvider.attribution"
-            layer-type="base"
-          />
-
-          <l-geo-json v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="function() {return strokeStyle}">
-          </l-geo-json> 
-
-          <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
-            <l-popup :options="{ closeButton:true, closeOnClick:true }" class="inter-maps">{{ hike.name }}<br/> 
-              <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i>
-              <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
-            </l-popup>
-          </l-geo-json> 
-
-          <l-layer-group 
-            :visible="true"
-            layerType="overlay"
-            name="Points de vue">
-            <l-marker
-              v-for="(item, index) in viewpoints"
-              :key="index"
-              :lat-lng="[item.lat, item.lng]">
-              <l-popup class="inter-maps">{{ item.name }}</l-popup>
-              <l-icon
-                :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
-                :icon-url="viewpointCustomMarker"
-              />
-            </l-marker>
-          </l-layer-group>
-
-          <l-layer-group
-            :visible="false"
-            layerType="overlay"
-            name="Gîtes">
-            <l-marker-cluster-group>
-              <l-marker
-                v-for="(item, index) in hosts"
-                :key="index"
-                :lat-lng="[item.coordinates[0], item.coordinates[1]]">
-                <l-popup class="inter-maps">{{ item.content }}</l-popup>
-                <l-icon
-                  :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
-                  :icon-url="hostCustomMarker"
-                />
-              </l-marker>
-            </l-marker-cluster-group>
-          </l-layer-group>
-
-          <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
-
-        </l-map>
-      </div>
+    <div class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
+      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), showCreate()) : showLogin()" :disabled="!isAdmin">+ nouvel itinéraire</button>
     </div>
 
-    <div class="col-lg-5 overflow-auto" style='padding: 10px'>
+    <div class="dataContainer">
+
+      <div class="row" style="margin: 10px;">
+        <div class="col-5">
+          <input class="form-control form-control-sm simaps-classic" placeholder="Nom" v-model="searchName"/>
+        </div>
+        <div class="col-5" >
+          <select class="form-select form-select-sm simaps-classic" v-model="searchDifficulty">
+            <option selected disabled value="">Niveau</option>
+            <option value="1">Facile</option>
+            <option value="2">Moyen</option>
+            <option value="3">Difficile</option>
+            <option value="4">Expert</option>
+          </select>
+        </div>
+        <div class="col-2 simaps-classic">
+          <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser">
+            <i class="pi pi-filter-slash" style="color:#3C002E;"></i>
+          </button>
+        </div>
+      </div>
       <br/>
 
-      <div class="dataContainer">
-
-        <div class="row" style="margin: 10px;">
-          <div class="col-sm-5 col-6">
-            <select class="form-select form-select-sm inter-maps" v-model="currentOrder">
-              <option disabled value="">Trier par</option>
-              <option>Difficulté</option>
-              <option>Notes</option>
-            </select>
-          </div>
-          <div class="col-sm-5 col-6" >
-            <select class="form-select form-select-sm inter-maps" v-model="searchDifficulty">
-              <option selected disabled value="">Difficulté</option>
-              <option value="1">Facile</option>
-              <option value="2">Moyen</option>
-              <option value="3">Difficile</option>
-              <option value="4">Très difficile</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row" style="margin: 10px;">
-          <div class="col-sm-5 col-6">
-            <input class="form-control form-control-sm inter-maps" placeholder="Nom" v-model="searchName"/>
-          </div>
-          <div class="col-2 inter-maps">
-            <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser">
-              <i class="pi pi-filter-slash" style="color:#3C002E;"></i>
+      <div class="accordion accordion-flush" id="accordionFlushParent">
+        <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
+          <h2 class="accordion-header" id="flush-headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
+              <div class="col-6 simaps-bold">
+                {{ hike.name }}
+              </div>
+              <div class="col-3">
+                <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
+                <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
+                <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
+                <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
+              </div>
+              <div class="col-3">
+                <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
+                <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
+              </div>
             </button>
-          </div>
-        </div>
-        <br/>
-
-        <div class="row" style="margin-left: 80px; margin-right: 80px;">
-          <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), showCreate()) : showLogin()" :disabled="!isAdmin">Créer un itinéraire</button>
-        </div>
-        <br/>
-
-        <div class="accordion accordion-flush" id="accordionFlushParent">
-          <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
-            <h2 class="accordion-header" id="flush-headingOne">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
-                <div class="col-6 inter-maps-bold">
-                  {{ hike.name }}
-                </div>
-                <div class="col-3">
-                  <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
-                  <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
-                  <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
-                  <span v-if="hike.difficulty == 4" class="badge bg-dark">Très difficile</span>
-                </div>
-                <div class="col-2">
-                  <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
-                  <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
-                </div>
-              </button>
-            </h2>
-            <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
-              <div class="accordion-body inter-maps-light">
-                <span class="badge bg-info">{{ hike.distance }} km</span>
-                <span class="badge bg-info">{{ hike.elevation }} m+</span> 
-                <span class="badge bg-info">{{ (new Date(hike.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hike.duration * 1000)).toISOString().substring(14, 16) }}</span>
-                <span class="badge bg-info">{{ hike.journey.name }}</span>
-                <br/><br/>
-                {{ hike.description }}
-                <br/><br/>
-                <div class="col text-end">
-                  <button class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte" :disabled="!hike.trail.geojson">
-                    <i class="pi pi-map" style="color:#3C002E;"></i>
-                  </button>
-                  <button class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire" :disabled="!isAdmin">
-                    <i class="pi pi-file-edit" style="color:#3C002E;"></i>
-                  </button>
-                  <button class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx" :disabled="!hike.trail.geojson">
-                    <i class="pi pi-download" style="color:#3C002E;"></i>
-                  </button>
-                  <button class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" :disabled="!isAdmin" title="supprimer l'itinéraire">
-                    <i class="pi pi-trash" style="color:#FF803D;"></i>
-                  </button>
-                </div>
+          </h2>
+          <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
+            <div class="accordion-body simaps-light">
+              <span class="badge bg-info">{{ hike.distance }} km</span>
+              <span class="badge bg-info">{{ hike.elevation }} m+</span> 
+              <span class="badge bg-info">{{ (new Date(hike.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hike.duration * 1000)).toISOString().substring(14, 16) }}</span>
+              <span class="badge bg-info">{{ hike.journey.name }}</span>
+              <br/><br/>
+              {{ hike.description }}
+              <br/><br/>
+              <div class="col text-end">
+                <button v-if="hike.trail.geojson" class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte">
+                  <i class="pi pi-map" style="color:#3C002E;"></i>
+                </button>
+                <button v-if="isAdmin" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <i class="pi pi-file-edit" style="color:#3C002E;"></i>
+                </button>
+                <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
+                  <i class="pi pi-download" style="color:#3C002E;"></i>
+                </button>
+                <button v-if="isAdmin" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
+                  <i class="pi pi-trash" style="color:#FF803D;"></i>
+                </button>
               </div>
             </div>
           </div>
         </div>
-        <br/>
-
-        <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
-        </div>
-
       </div>
+
+      <br/>
+
+      <div class="row" style="margin-left: 10px; margin-right: 10px;">
+        <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
+      </div>
+
     </div>
   </div>
-  
-  <!-- Create -->
-  <CreateComponent :zoneId="alicia" :journeys="journeys" 
-  @close="hideCreate(), isResponseLoading=true"
-  @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenterFixed)">
-  </CreateComponent>
 
-  <!-- Update -->
-  <UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="alicia" :journeys="journeys" 
-  :currentName="hikeDetails.name" 
-  :currentDistance="hikeDetails.distance" 
-  :currentElevation="hikeDetails.elevation" 
-  :currentDifficulty="hikeDetails.difficulty" 
-  :currentDuration="hikeDetails.duration" 
-  :currentJourney="hikeDetails.journey" 
-  :currentRates="hikeDetails.rates" 
-  :currentDescription="hikeDetails.description"
-  :hasTrail="hikeDetails.trail == 'None' ? false : true"
-  @close="hideUpdate(), isResponseLoading=true"
-  @exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenterFixed), hikeDetails = ''">
-  </UpdateComponent>
+</div>
 
-  <!-- Delete -->
-  <DeleteComponent :hikeId="String(hikeDetails.id)"
-  @close="hideDelete(), isResponseLoading=true"
-  @exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
-  </DeleteComponent>
+<!-- Create -->
+<CreateComponent :zoneId="alicia" :journeys="journeys" 
+@close="hideCreate(), isResponseLoading=true"
+@exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenterFixed)">
+</CreateComponent>
 
-  <!-- Login -->
-  <LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
+<!-- Update -->
+<UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="alicia" :journeys="journeys" 
+:currentName="hikeDetails.name" 
+:currentDistance="hikeDetails.distance" 
+:currentElevation="hikeDetails.elevation" 
+:currentDifficulty="hikeDetails.difficulty" 
+:currentDuration="hikeDetails.duration" 
+:currentJourney="hikeDetails.journey" 
+:currentRates="hikeDetails.rates" 
+:currentDescription="hikeDetails.description"
+:hasTrail="hikeDetails.trail == 'None' ? false : true"
+@close="hideUpdate(), isResponseLoading=true"
+@exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenterFixed), hikeDetails = ''">
+</UpdateComponent>
+
+<!-- Delete -->
+<DeleteComponent :hikeId="String(hikeDetails.id)"
+@close="hideDelete(), isResponseLoading=true"
+@exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
+</DeleteComponent>
+
+<!-- Login -->
+<LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
 
 </template>
 
 <style>
 
-  .overlay {
-    position: fixed;
-    z-index: 9999;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: white;
-    opacity: 0.5;
-  }
+.mapContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;  /* This means "100% of the width of its container", the .col-lg-8 */
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
 
-  .overlay__wrapper {
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
+.dataContainer {
+  position: relative;
+  max-height: calc(100vh - 141px - 12px - 62px);
+  width: 100%;  /* This means "100% of the width of its container", the .col-lg-4 */
+  overflow: auto;
+  padding-right: 12px;
+}
 
-  .overlay__spinner {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
+.overlay {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: white;
+  opacity: 0.5;
+}
 
-  .mapContainer {
-    position: relative;
-    min-height: 800px;
-    height: 100%;
-    width: 100%;  /* This means "100% of the width of its container", the .col-lg-7 */
-  }
+.overlay__wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
 
-  .dataContainer {
-    position: relative;
-    
-    max-height: 800px;
-    width: 100%;  /* This means "100% of the width of its container", the .col-lg-5 */
-  }
+.overlay__spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 
-  .leaflet-popup-content-wrapper {
-    border-radius: 0.5 !important;
-    font-size:small;
-  }
+.leaflet-popup-content-wrapper {
+  border-radius: 0.5 !important;
+  font-size:small;
+}
 
-  .badge.bg-info {
-    color:#3C002E !important; 
-    background-color: #fff !important;
-    border: #3C002E solid 1px;
-    margin-left: 5px;
-    margin-right: 5px;
+.accordion-button:link, .accordion-button:visited, .accordion-button:hover, .accordion-button:active  {
+  background-color: rgba(24, 0, 18, .3)  !important;
+  color:#fff !important;
+  text-decoration: none !important;
+  border: hidden !important;
+  border-color: #fff !important;
+  box-shadow: 0px !important;
+}
 
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500 !important;
-    font-style: normal;
-  }
+.accordion-button:not(.collapsed) {
+  color: #fff  !important;
+  background-color: rgba(24, 0, 18, .3)  !important;
+}
 
-  .badge.bg-success {
-    background-color:#FFC13C !important;
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500 !important;
-    font-style: normal;
-  }
+.accordion-button:focus {
+  z-index: 3;
+  border-color: #fff !important;
+  outline: 0;
+  box-shadow: 0 0 0 .25rem #FFF !important;
+}
 
-  .badge.bg-primary {
-    background-color:#FE8935 !important;
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500 !important;
-    font-style: normal;
-  }
+.badge.bg-info {
+  color:#3C002E !important; 
+  background-color: #fff !important;
+  border: #3C002E solid 1px;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500 !important;
+  font-style: normal;
+}
 
-  .badge.bg-danger {
-    background-color:#FF4B27 !important; 
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500 !important;
-    font-style: normal;
-  }
+.badge.bg-success {
+  background-color:#FFC13C !important;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500 !important;
+  font-style: normal;
+}
 
-  .badge.bg-dark {
-    background-color:#9F0000 !important;
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500 !important;
-    font-style: normal;
-  }
+.badge.bg-primary {
+  background-color:#FE8935 !important;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500 !important;
+  font-style: normal;
+}
 
-  .badge.bg-info {
-    color:#3C002E !important; 
-    background-color: #fff !important;
-    border: #3C002E solid 1px;
-    margin-left: 5px;
-    margin-right: 5px;
-  }
+.badge.bg-danger {
+  background-color:#FF4B27 !important; 
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500 !important;
+  font-style: normal;
+}
 
-  .marker-cluster-small {
-    background-color: #FE8935 !important;
-  }
+.badge.bg-dark {
+  background-color:#9F0000 !important;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500 !important;
+  font-style: normal;
+}
 
-  .marker-cluster-small div {
-    background-color: #FE8935 !important;
-    color: #fff !important;
-  }
+.marker-cluster-small {
+  background-color: #FE8935 !important;
+}
+
+.marker-cluster-small div {
+  background-color: #FE8935 !important;
+  color: #fff !important;
+}
 
 </style>

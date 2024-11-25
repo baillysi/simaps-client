@@ -61,104 +61,106 @@ onMounted(async () => {
 
 <template>
 
-  <div v-if="isAuthLoading" class="overlay">
-    <div class="overlay__wrapper">
-      <div class="overlay__spinner">
-        <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
+<div v-if="isAuthLoading" class="overlay">
+  <div class="overlay__wrapper">
+    <div class="overlay__spinner">
+      <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
   </div>
-    
-  <div id="header">
-    <nav class="navbar navbar-expand-md navbar-light" style="border-bottom: 1.5px solid #3C002E;">
-      <div class="container-fluid">
-        <a class="navbar-brand">
-          <img src="./icons/logo.svg" alt="Kavalé Logo"/>
-        </a>
-        <ul class="navbar-nav me-auto"> 
-          <li class="nav-item">
-            <router-link class="nav-link inter-maps" to="/">Accueil</router-link>
-          </li>
+</div>
+  
+<div id="header">
+  <nav class="navbar navbar-expand-md navbar-light">
+    <div class="container-fluid">
 
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle inter-maps" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Cartes
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <li class="nav-item"><button class="dropdown-item inter-maps" @click="goToMaps()">Réunion</button></li>
-            </ul>
-          </li>
+      <router-link class="navbar-brand" to="/"><img src="./icons/logo.svg" alt="Kavalé Logo"/></router-link>
 
-          <li class="nav-item">
-            <router-link class="nav-link inter-maps" to="/about">À propos</router-link>
-          </li>
-        </ul>
-        <form class="form-inline">
-          <button class="btn btn-outline-secondary" style="margin-right: 8px;" type="button" @click="showLogin()">Mon compte</button>
-          <button class="btn btn-outline-primary" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
-            <i class="pi pi-sign-out"></i>
-          </button>
-        </form>
-      </div>
-    </nav>
-  </div>
+      <ul class="navbar-nav me-auto"> 
+        <li class="nav-item">
+          <router-link class="nav-link simaps-classic" to="/">Accueil</router-link>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle simaps-classic" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Cartes
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <li class="nav-item"><button class="dropdown-item simaps-classic" @click="goToMaps()">Réunion</button></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link simaps-classic" to="/about">À propos</router-link>
+        </li>
+      </ul>
 
-  <!-- Login -->
-  <LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
+      <form class="form-inline">
+        <button v-if="isLoggedIn" class="btn btn-outline-secondary" style="margin-right: 8px;" type="button" @click="showLogin()">Mon compte</button>
+        <button v-if="!isLoggedIn" class="btn btn-outline-secondary" style="margin-right: 8px;" type="button" @click="showLogin()">Se connecter</button>
+        <button class="btn btn-outline-primary" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
+          <i class="pi pi-sign-out"></i>
+        </button>
+      </form>
 
-  <!-- Logout -->
-  <LogoutComponent @close="hideLogout()"></LogoutComponent>
+    </div>
+  </nav>
+</div>
 
+<!-- Login -->
+<LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
+
+<!-- Logout -->
+<LogoutComponent @close="hideLogout()"></LogoutComponent>
 
 </template>
 
 <style>
 
-  .overlay {
-    position: fixed;
-    z-index: 9999;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: white;
-    opacity: 0.5;
-  }
-  .overlay__wrapper {
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-  .overlay__spinner {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
+#header {
+  grid-row: header;
+  padding-left: 40px;
+  padding-right: 40px;
+}
 
-  .navbar-brand {
-    margin-bottom: 0px;
-    padding-right: 45px;
-    width: 155px;
-  }
+.overlay {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: white;
+  opacity: 0.5;
+}
 
-  #header {
-    margin-top: 8px;
-    padding-left: 40px;
-    padding-right: 40px;
-  }
+.overlay__wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
 
-  .nav-link {
-    font-size: 17px !important;
-    margin-right: 10px;
-  }
+.overlay__spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 
-  .dropdown-item.inter-maps:hover {
-    background-color: #3C002E;
-    color: #fff !important;
-  }
-  
+.navbar-brand {
+  padding-right: 10px;
+  padding-left: 10px;
+  width: 135px;
+}
+
+.nav-link {
+  font-size: 17px !important;
+  margin-right: 10px;
+}
+
+.dropdown-item.simaps-classic:hover {
+  background-color: #3C002E;
+  color: #fff !important;
+}
+
 
 </style>
