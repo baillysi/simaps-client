@@ -1,11 +1,15 @@
 <script setup>
 
+import { ref } from 'vue';
+
 import AppFooter from '../components/AppFooter.vue'
 import router from '../router'
 
+const zone = ref('')
+
 // equivalent to router-link but enables the use native @click method
 async function goToMaps() {
-  router.push('/maps')
+  router.push('/maps/' + zone.value)
 }
  
 </script>
@@ -14,7 +18,7 @@ async function goToMaps() {
 
 <div class="container-fluid" style="text-align:center;">
   
-  <h1 class="simaps-bold" style="font-size: 70px;">Cartes & Randonnées.</h1>
+  <h1 class="simaps-bold" style="font-size: 75px;">Cartes & Randonnées.</h1>
 
   <figure class="text-center">
     <blockquote class="blockquote">
@@ -24,28 +28,17 @@ async function goToMaps() {
       Walter Bonatti
     </figcaption>
   </figure>
+  
+  <div class="container" >
+    <img src="/illustration.svg" style="max-width: 80%;">
+  </div>
+
+  <br/>
   <br/>
 
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-3">
-        <div class="list-group list-group-flush">
-          <button type="button" class="list-group-item custom-border-1" @click="goToMaps()">Réunion</button>
-          <button type="button" class="list-group-item custom-border-2" disabled style="opacity: 0.5;">Pyrénées</button>
-          <button type="button" class="list-group-item custom-border-1" disabled style="opacity: 0.5;">Cévennes</button>
-        </div>
-      </div>
-      <div class="col-lg-6" >
-        <img src="/illustration.svg">
-      </div>
-      <div class="col-lg-3">
-        <div class="list-group list-group-flush">
-          <button type="button" class="list-group-item custom-border-4" disabled style="opacity: 0.5;">Vanoise</button>
-          <button type="button" class="list-group-item custom-border-3" disabled style="opacity: 0.5;">Écrins</button>
-          <button type="button" class="list-group-item custom-border-4" disabled style="opacity: 0.5;">Mont-Blanc</button>
-        </div>
-      </div>
-    </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-outline-secondary" @click="zone = 'reunion', goToMaps()">Île de la Réunion</button>
+    <button type="button" class="btn btn-outline-secondary disabled" @click="zone = 'ecrins', goToMaps()">Massif des Écrins</button>
   </div>
 
 </div>
@@ -63,46 +56,6 @@ async function goToMaps() {
     height: auto;
   }
 
-  .list-group-item {
-    margin-left: 20px;
-    margin-right: 20px;
-    color:#3C002E !important;
-    font-family: "Inter", sans-serif !important;
-    font-optical-sizing: auto;
-    font-weight: 800 !important;
-    font-style: normal;
-    font-size: 25px !important;
-  }
-
-  .list-group-item:hover {
-    color: #fff !important;
-    background-color:#3C002E !important;
-  }
-
-  .custom-border-1 {
-    border:#3C002E solid 2px !important;
-    border-top: none !important;
-    border-right:none !important;
-  }
-
-  .custom-border-2 {
-    border:#3C002E solid 2px !important;
-    border-top: none !important;
-    border-left:none !important;
-  }
-
-  .custom-border-3 {
-    border:#3C002E solid 2px !important;
-    border-bottom: none !important;
-    border-right:none !important;
-  }
-
-  .custom-border-4 {
-    border:#3C002E solid 2px !important;
-    border-bottom: none !important;
-    border-left:none !important;
-  }
-
   .btn-outline-primary {
     border-color: #FF803D !important;
     color: #fff !important;
@@ -115,8 +68,8 @@ async function goToMaps() {
     font-optical-sizing: auto;
     font-weight: 650 !important;
     font-style: normal;
-    padding-right: 40px !important;
-    padding-left: 40px !important;
+    padding-right: 50px !important;
+    padding-left: 50px !important;
   }
 
   .btn-outline-secondary:hover {
@@ -153,8 +106,6 @@ async function goToMaps() {
     font-optical-sizing: auto;
     font-weight: 800 !important;
     font-style: normal;
-    margin-top: 5px;
-    margin-bottom: 5px;
   }
 
   .simaps-light {

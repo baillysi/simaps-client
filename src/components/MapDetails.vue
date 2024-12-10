@@ -7,7 +7,7 @@ import 'leaflet/dist/leaflet.css';
 
 // vue components for Leaflet Maps - vue3
 // regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
-import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LIcon, LGeoJson } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LIcon, LGeoJson, LTooltip } from '@vue-leaflet/vue-leaflet';
 
 // wrapper seems to be compatible with vue3
 import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
@@ -28,7 +28,7 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 import hostCustomMarker from './icons/host.svg'
 import viewpointCustomMarker from './icons/viewpoint.svg'
 
-import { Modal } from 'bootstrap';
+import { Collapse, Modal } from 'bootstrap';
 import axios from 'axios';
 import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
 
@@ -71,7 +71,6 @@ async function showLogin() {
   myModal.show();
 }
 
-
 // hikes data form
 const props = defineProps({
   zone: String
@@ -82,8 +81,9 @@ const isResponseLoading = ref(false)
 const hikes = ref([])
 const hikeDetails = ref('')
 
-const alicia = ref('')
+const zone_id = ref('')
 
+const hoveredHike = ref('')
 const selectedHike = ref('')
 
 const journeys = ref([])
@@ -96,7 +96,8 @@ const showMessage = ref(false)
 const searchName = ref('')
 const searchDifficulty = ref('')
 
-const currentOrder = ref('') 
+const currentOrder = ref('')
+
 const sortedHikes = computed(() => {
   return currentOrder.value == 'Difficulté' ?
   hikes.value.sort((a, b) => {
@@ -142,6 +143,12 @@ const filteredHikes = computed (() => {
             .includes(searchDifficulty.value.toLowerCase())
           )
 })
+const geojsonHikes = computed (() => {
+  return filteredHikes.value.filter(
+        (hike) =>
+          hike.trail.geojson
+          )
+})
 
 async function resetFilters() {
   searchDifficulty.value = ""
@@ -153,7 +160,7 @@ async function getZoneDetails() {
   const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
   isResponseLoading.value = false
   mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
-  alicia.value = response.data['id'].toString()
+  zone_id.value = response.data['id'].toString()
   hikes.value = response.data['hikes']
   viewpoints.value = response.data['viewpoints']
 }
@@ -176,22 +183,22 @@ watch(mapcenter, () => {
 
 const selectedStyle = ref(
   {
-    'color':'#FF803D', 
-    'weight': 5
+    'color':'#9F0000', 
+    'weight': 6.5
   }
 )
 
-const unselectedStyle = ref(
+const hoveredStyle = ref(
+  {
+    'color':'#FF803D', 
+    'weight': 6.5
+  }
+)
+
+const outedStyle = ref(
   {
     'color':'#3C002E',
     'weight': 5
-  }
-)
-
-const strokeStyle = ref(
-  {
-    'color':'#fff',
-    'weight': 7
   }
 )
 
@@ -243,12 +250,12 @@ async function onReady() {
   myFullscreenControl.addTo(myMap.value.leafletObject)
 }
 
-async function showHeightgraph(geojson) {
+function showHeightgraph(geojson) {
   myHeightGraph.addTo(myMap.value.leafletObject)
   myHeightGraph.addData([geojson])
 }
 
-async function fitBounds(geojson) {
+function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
 }
@@ -257,11 +264,11 @@ async function zoomUpdated(zoom) {
   mapzoom.value = zoom
 }
 
-async function fitBoundsZone(mapcenterFixed) {
+function fitBoundsZone(mapcenterFixed) {
   myMap.value.leafletObject.setView(mapcenterFixed, 11)
 }
 
-async function downloadGPX(geojson, name) {
+function downloadGPX(geojson, name) {
 
   const options = {
     metadata: {
@@ -381,6 +388,7 @@ const hosts = ref([
 // custom validation 
 // check bootstrap native validation or third part library like veevalidate + server side validation
 // use of js functions to show or hide modals instead of native data-bs-dismiss to add form validation logic
+
 async function showCreate() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#create'));
   myModal.show();
@@ -409,6 +417,15 @@ async function hideUpdate() {
 async function hideDelete() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#delete'));
   myModal.hide();
+}
+
+function showSelected(index) {
+  const details = document.getElementById('flush-collapseOne'+index);
+  const detailsCollapse = Collapse.getOrCreateInstance(details);
+  detailsCollapse.show();
+  details.addEventListener('shown.bs.collapse', ev =>  {
+      document.querySelector('#flush-collapseOne'+index).scrollIntoView({ behavior: 'smooth', block: "center"});
+  });
 }
 
 onMounted(async () => {
@@ -449,18 +466,25 @@ onMounted(async () => {
           layer-type="base"
         />
 
-        <l-geo-json v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="function() {return strokeStyle}">
-        </l-geo-json> 
+        <l-geo-json @click="selectedHike=hike.id, showSelected(index), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
+        @mouseover="hoveredHike=hike.id" 
+        @mouseout="hoveredHike=''" 
+        v-for="(hike, index) in geojsonHikes" :key="hike.id" :geojson="hike.trail.geojson" 
+        :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : function() {return outedStyle} )">
 
-        <l-geo-json @click="selectedHike=hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" v-for="hike in sortedHikes" :key="hike.id" :geojson="hike.trail.geojson" :options-style="selectedHike == hike.id ? function() {return selectedStyle} : function() {return unselectedStyle}">
-          <l-popup :options="{ closeButton:true, closeOnClick:true }" class="simaps-classic">{{ hike.name }}<br/> 
-            <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i>
-            <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
-          </l-popup>
+          <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hike.name }}<br/> 
+            <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
+            <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i><br/>
+            <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
+            <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
+            <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
+            <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
+          </l-tooltip>
+
         </l-geo-json> 
 
         <l-layer-group 
-          :visible="true"
+          :visible="false"
           layerType="overlay"
           name="Points de vue">
           <l-marker
@@ -529,9 +553,12 @@ onMounted(async () => {
       <br/>
 
       <div class="accordion accordion-flush" id="accordionFlushParent">
-        <div class="accordion-item" v-for="(hike, index) in filteredHikes" :key="hike.id">
+        <div class="accordion-item" v-for="(hike, index) in geojsonHikes" :key="hike.id">
           <h2 class="accordion-header" id="flush-headingOne">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne"
+            @mouseover="hoveredHike = hike.id" 
+            @mouseout="hoveredHike=''" 
+            @click="selectedHike = hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)">
               <div class="col-6 simaps-bold">
                 {{ hike.name }}
               </div>
@@ -557,9 +584,6 @@ onMounted(async () => {
               {{ hike.description }}
               <br/><br/>
               <div class="col text-end">
-                <button v-if="hike.trail.geojson" class="btn btn-light" @click="showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson),  selectedHike = hike.id" data-toggle="tooltip" title="voir sur la carte">
-                  <i class="pi pi-map" style="color:#3C002E;"></i>
-                </button>
                 <button v-if="isAdmin" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                   <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                 </button>
@@ -587,13 +611,13 @@ onMounted(async () => {
 </div>
 
 <!-- Create -->
-<CreateComponent :zoneId="alicia" :journeys="journeys" 
+<CreateComponent :zoneId="zone_id" :journeys="journeys" 
 @close="hideCreate(), isResponseLoading=true"
 @exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenterFixed)">
 </CreateComponent>
 
 <!-- Update -->
-<UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="alicia" :journeys="journeys" 
+<UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="zone_id" :journeys="journeys" 
 :currentName="hikeDetails.name" 
 :currentDistance="hikeDetails.distance" 
 :currentElevation="hikeDetails.elevation" 
@@ -624,7 +648,7 @@ onMounted(async () => {
   position: relative;
   height: 100%;
   width: 100%;  /* This means "100% of the width of its container", the .col-lg-8 */
-  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+  /* filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); */
 }
 
 .dataContainer {

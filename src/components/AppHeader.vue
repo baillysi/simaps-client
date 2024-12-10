@@ -26,9 +26,11 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+const zone = ref('')
+
 // equivalent to router-link but enables the use native @click method
 async function goToMaps() {
-  router.push('/maps')
+  router.push('/maps/' + zone.value)
 }
 
 async function showLogin() {
@@ -86,7 +88,8 @@ onMounted(async () => {
             Cartes
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <li class="nav-item"><button class="dropdown-item simaps-classic" @click="goToMaps()">Réunion</button></li>
+            <li class="nav-item"><button class="dropdown-item simaps-classic" @click="zone = 'reunion', goToMaps()">Réunion</button></li>
+            <li class="nav-item"><button class="dropdown-item simaps-classic" @click="zone = 'ecrins', goToMaps()" disabled>Écrins</button></li>
           </ul>
         </li>
         <li class="nav-item">
@@ -149,7 +152,7 @@ onMounted(async () => {
 .navbar-brand {
   padding-right: 10px;
   padding-left: 10px;
-  width: 135px;
+  width: 125px;
 }
 
 .nav-link {

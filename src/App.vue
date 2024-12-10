@@ -43,6 +43,10 @@ import AppHeader from './components/AppHeader.vue'
 
 <style>
 
+* {
+    outline: none;
+}
+
 #app {
   min-height: 100vh; /* This means "100% of the viewport height" */
   overflow-x: hidden; /* To prevent horizontal scroll bar */
