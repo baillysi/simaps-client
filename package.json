@@ -24,7 +24,6 @@
     "vue": "^3.2.47",
     "vue-cookie-accept-decline": "^6.1.0",
     "vue-leaflet-markercluster": "^0.6.1",
-    "vue-leaflet-rotate-marker": "^0.1.0",
     "vue-router": "^4.1.6",
     "vuefire": "^3.1.24"
   },

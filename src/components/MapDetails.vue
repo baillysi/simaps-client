@@ -12,7 +12,6 @@ import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, L
 // wrapper seems to be compatible with vue3
 import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
 import 'vue-leaflet-markercluster/dist/style.css';
-import { LMarkerRotate } from 'vue-leaflet-rotate-marker';
 
 // native leaflet plugins
 import 'leaflet.locatecontrol'
@@ -66,7 +65,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-async function showLogin() {
+function showLogin() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
   myModal.show();
 }
@@ -80,7 +79,6 @@ const isResponseLoading = ref(false)
 
 const hikes = ref([])
 const hikeDetails = ref('')
-
 const zone_id = ref('')
 
 const hoveredHike = ref('')
@@ -150,7 +148,7 @@ const geojsonHikes = computed (() => {
           )
 })
 
-async function resetFilters() {
+function resetFilters() {
   searchDifficulty.value = ""
   searchName.value = ""
   currentOrder.value = ""
@@ -173,7 +171,6 @@ async function getJourneys() {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
-const mapcenterFixed = ref([-21.128756, 55.519246])
 const mapzoom = ref(11)
 const ismapdata = ref(false)
 
@@ -184,21 +181,25 @@ watch(mapcenter, () => {
 const selectedStyle = ref(
   {
     'color':'#9F0000', 
-    'weight': 6.5
+    'weight': 6
   }
 )
-
 const hoveredStyle = ref(
   {
     'color':'#FF803D', 
-    'weight': 6.5
+    'weight': 6
   }
 )
-
 const outedStyle = ref(
   {
     'color':'#3C002E',
     'weight': 5
+  }
+)
+const outedLightStyle = ref(
+  {
+    'color':'#3C002E',
+    'weight': 3
   }
 )
 
@@ -245,7 +246,7 @@ const myFullscreenControl = L.control
     fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
   })
 
-async function onReady() {
+function onReady() {
   myLocateControl.addTo(myMap.value.leafletObject)
   myFullscreenControl.addTo(myMap.value.leafletObject)
 }
@@ -260,12 +261,12 @@ function fitBounds(geojson) {
   myMap.value.leafletObject.fitBounds(feature.getBounds())
 }
 
-async function zoomUpdated(zoom) {
+function zoomUpdated(zoom) {
   mapzoom.value = zoom
 }
 
-function fitBoundsZone(mapcenterFixed) {
-  myMap.value.leafletObject.setView(mapcenterFixed, 11)
+function fitBoundsZone(mapcenter) {
+  myMap.value.leafletObject.setView(mapcenter, 11)
 }
 
 function downloadGPX(geojson, name) {
@@ -389,32 +390,32 @@ const hosts = ref([
 // check bootstrap native validation or third part library like veevalidate + server side validation
 // use of js functions to show or hide modals instead of native data-bs-dismiss to add form validation logic
 
-async function showCreate() {
+function showCreate() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#create'));
   myModal.show();
 }
 
-async function showUpdate() {
+function showUpdate() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#update'));
   myModal.show();
 }
 
-async function showDelete() {
+function showDelete() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#delete'));
   myModal.show();
 }
 
-async function hideCreate() {
+function hideCreate() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#create'));
   myModal.hide();
 }
 
-async function hideUpdate() {
+function hideUpdate() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#update'));
   myModal.hide();
 }
 
-async function hideDelete() {
+function hideDelete() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#delete'));
   myModal.hide();
 }
@@ -452,7 +453,7 @@ onMounted(async () => {
   <div class="col-lg-8">
     <div class="mapContainer" v-if="ismapdata">
 
-      <l-map ref="myMap" :zoom="10" :center="mapcenterFixed" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
+      <l-map ref="myMap" :zoom="10" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
 
         <l-control-layers position="topright"></l-control-layers>
 
@@ -470,7 +471,7 @@ onMounted(async () => {
         @mouseover="hoveredHike=hike.id" 
         @mouseout="hoveredHike=''" 
         v-for="(hike, index) in geojsonHikes" :key="hike.id" :geojson="hike.trail.geojson" 
-        :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : function() {return outedStyle} )">
+        :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : ( mapzoom >= 13 ? function() {return outedStyle} : function() {return outedLightStyle} ) )">
 
           <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hike.name }}<br/> 
             <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
@@ -559,18 +560,14 @@ onMounted(async () => {
             @mouseover="hoveredHike = hike.id" 
             @mouseout="hoveredHike=''" 
             @click="selectedHike = hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)">
-              <div class="col-6 simaps-bold">
+              <div class="col-8 simaps-bold" style="padding-right: 10px !important;">
                 {{ hike.name }}
               </div>
-              <div class="col-3">
+              <div class="col-4">
                 <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
                 <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
                 <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
                 <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
-              </div>
-              <div class="col-3">
-                <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
-                <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
               </div>
             </button>
           </h2>
@@ -613,7 +610,7 @@ onMounted(async () => {
 <!-- Create -->
 <CreateComponent :zoneId="zone_id" :journeys="journeys" 
 @close="hideCreate(), isResponseLoading=true"
-@exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenterFixed)">
+@exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenter)">
 </CreateComponent>
 
 <!-- Update -->
@@ -628,7 +625,7 @@ onMounted(async () => {
 :currentDescription="hikeDetails.description"
 :hasTrail="hikeDetails.trail == 'None' ? false : true"
 @close="hideUpdate(), isResponseLoading=true"
-@exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenterFixed), hikeDetails = ''">
+@exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenter), hikeDetails = ''">
 </UpdateComponent>
 
 <!-- Delete -->
