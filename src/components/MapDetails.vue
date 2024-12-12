@@ -37,8 +37,6 @@ import DeleteComponent from './DeleteComponent.vue';
 import AlertComponent from './AlertComponent.vue';
 import LoginComponent from './LoginComponent.vue';
 
-import AppFooter from '../components/AppFooter.vue'
-
 import { ref, onMounted, watch, computed } from 'vue';
 import { useResizeObserver } from '@vueuse/core'
 
@@ -85,14 +83,15 @@ const hoveredHike = ref('')
 const selectedHike = ref('')
 
 const journeys = ref([])
-
 const viewpoints = ref([])
+const regions = ref([])
 
 const message = ref('')
 const showMessage = ref(false)
 
 const searchName = ref('')
 const searchDifficulty = ref('')
+const searchRegion = ref('')
 
 const currentOrder = ref('')
 
@@ -107,10 +106,10 @@ const sortedHikes = computed(() => {
     return -1;
   }
   return 0;
-  }): currentOrder.value == 'Notes' ?
+  }): currentOrder.value == 'Région' ?
 
   hikes.value.sort((a, b) => {
-  let fa = a.rates, fb = b.rates;
+  let fa = a.region['id'], fb = b.region['id'];
   if (fa < fb) {
     return 1;
   }
@@ -139,28 +138,37 @@ const filteredHikes = computed (() => {
           hike.difficulty.toString()
             .toLowerCase()
             .includes(searchDifficulty.value.toLowerCase())
-          )
-})
-const geojsonHikes = computed (() => {
-  return filteredHikes.value.filter(
-        (hike) =>
-          hike.trail.geojson
-          )
+          &&
+          hike.region['id'].toString()
+            .toLowerCase()
+            .includes(searchRegion.value.toString().toLowerCase())
+          &&
+          hike.trail.geojson)
 })
 
+function resetData() {
+  selectedHike.value = ''
+  hideHeightgraph()
+  fitBoundsZone(mapcenter.value)
+}
+
 function resetFilters() {
-  searchDifficulty.value = ""
-  searchName.value = ""
-  currentOrder.value = ""
+  resetData()
+  searchDifficulty.value = ''
+  searchRegion.value = ''
+  searchName.value = ''
+  currentOrder.value = ''
 }
 
 async function getZoneDetails() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
+  const responseZone = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
+  const responseRegion = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions/'+ props.zone)
   isResponseLoading.value = false
-  mapcenter.value = [parseFloat(response.data['lat']), parseFloat(response.data['lng'])]
-  zone_id.value = response.data['id'].toString()
-  hikes.value = response.data['hikes']
-  viewpoints.value = response.data['viewpoints']
+  mapcenter.value = [parseFloat(responseZone.data['lat']), parseFloat(responseZone.data['lng'])]
+  zone_id.value = responseZone.data['id'].toString()
+  hikes.value = responseZone.data['hikes']
+  viewpoints.value = responseZone.data['viewpoints']
+  regions.value = responseRegion.data
 }
 
 async function getJourneys() {
@@ -256,6 +264,10 @@ function showHeightgraph(geojson) {
   myHeightGraph.addData([geojson])
 }
 
+function hideHeightgraph() {
+  myHeightGraph.remove()
+}
+
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
@@ -266,7 +278,7 @@ function zoomUpdated(zoom) {
 }
 
 function fitBoundsZone(mapcenter) {
-  myMap.value.leafletObject.setView(mapcenter, 11)
+  myMap.value.leafletObject.setView(mapcenter, 10)
 }
 
 function downloadGPX(geojson, name) {
@@ -420,12 +432,12 @@ function hideDelete() {
   myModal.hide();
 }
 
-function showSelected(index) {
-  const details = document.getElementById('flush-collapseOne'+index);
+function showSelected(hike) {
+  const details = document.getElementById('flush-collapseOne'+hike.id);
   const detailsCollapse = Collapse.getOrCreateInstance(details);
   detailsCollapse.show();
   details.addEventListener('shown.bs.collapse', ev =>  {
-      document.querySelector('#flush-collapseOne'+index).scrollIntoView({ behavior: 'smooth', block: "center"});
+      document.querySelector('#flush-collapseOne'+hike.id).scrollIntoView({ behavior: 'smooth', block: "center"});
   });
 }
 
@@ -467,15 +479,13 @@ onMounted(async () => {
           layer-type="base"
         />
 
-        <l-geo-json @click="selectedHike=hike.id, showSelected(index), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
+        <l-geo-json @click="selectedHike=hike.id, showSelected(hike), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
         @mouseover="hoveredHike=hike.id" 
         @mouseout="hoveredHike=''" 
-        v-for="(hike, index) in geojsonHikes" :key="hike.id" :geojson="hike.trail.geojson" 
+        v-for="hike in filteredHikes" :key="hike.id" :geojson="hike.trail.geojson" 
         :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : ( mapzoom >= 13 ? function() {return outedStyle} : function() {return outedLightStyle} ) )">
 
           <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hike.name }}<br/> 
-            <i v-for="rate in hike.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
-            <i v-for="rate in (4 - hike.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i><br/>
             <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
             <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
             <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
@@ -533,11 +543,14 @@ onMounted(async () => {
     <div class="dataContainer">
 
       <div class="row" style="margin: 10px;">
-        <div class="col-5">
-          <input class="form-control form-control-sm simaps-classic" placeholder="Nom" v-model="searchName"/>
+        <div class="col-5" >
+          <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
+            <option selected disabled value="">Région</option>
+            <option v-for="region in regions" :value="region.id">{{ region.name }}</option>
+          </select>
         </div>
         <div class="col-5" >
-          <select class="form-select form-select-sm simaps-classic" v-model="searchDifficulty">
+          <select class="form-select form-select-sm simaps-classic" v-model="searchDifficulty" @click="resetData()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Niveau</option>
             <option value="1">Facile</option>
             <option value="2">Moyen</option>
@@ -546,7 +559,7 @@ onMounted(async () => {
           </select>
         </div>
         <div class="col-2 simaps-classic">
-          <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser">
+          <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <i class="pi pi-filter-slash" style="color:#3C002E;"></i>
           </button>
         </div>
@@ -554,16 +567,19 @@ onMounted(async () => {
       <br/>
 
       <div class="accordion accordion-flush" id="accordionFlushParent">
-        <div class="accordion-item" v-for="(hike, index) in geojsonHikes" :key="hike.id">
+        <div class="accordion-item" v-for="hike in filteredHikes" :key="hike.id">
           <h2 class="accordion-header" id="flush-headingOne">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+index" aria-expanded="false" aria-controls="flush-collapseOne"
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+hike.id" aria-expanded="false" aria-controls="flush-collapseOne"
             @mouseover="hoveredHike = hike.id" 
             @mouseout="hoveredHike=''" 
             @click="selectedHike = hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)">
-              <div class="col-8 simaps-bold" style="padding-right: 10px !important;">
+              <div class="col-6 simaps-bold" style="padding-right: 10px !important;">
                 {{ hike.name }}
               </div>
-              <div class="col-4">
+              <div class="col-4 d-lg-none d-xxl-block">
+                <span class="badge bg-light simaps-bold">{{ hike.region['name'].toUpperCase() }}</span>
+              </div>
+              <div class="col-2">
                 <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
                 <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
                 <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
@@ -571,7 +587,7 @@ onMounted(async () => {
               </div>
             </button>
           </h2>
-          <div :id="'flush-collapseOne'+index" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
+          <div :id="'flush-collapseOne'+hike.id" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushParent">
             <div class="accordion-body simaps-light">
               <span class="badge bg-info">{{ hike.distance }} km</span>
               <span class="badge bg-info">{{ hike.elevation }} m+</span> 
