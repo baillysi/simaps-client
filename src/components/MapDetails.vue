@@ -160,11 +160,12 @@ const sortedRegions = computed(() => {
 function resetData() {
   selectedHike.value = ''
   hideHeightgraph()
-  fitBoundsZone(mapcenter.value)
 }
 
 function resetFilters() {
-  resetData()
+  selectedHike.value = ''
+  hideHeightgraph()
+  fitBoundsZone(mapcenter.value)
   searchDifficulty.value = ''
   searchRegion.value = ''
   searchName.value = ''
@@ -282,6 +283,21 @@ function hideHeightgraph() {
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
+}
+
+function fitBoundsRegion() {
+  if (filteredHikes.value.length != 0) {
+    let feature = L.geoJSON(filteredHikes.value[0].trail.geojson)
+    var bounds = feature.getBounds()
+  }
+  else {
+    return;
+  }
+  for (let i = 0; i < filteredHikes.value.length; i++) {
+    let feature = L.geoJSON(filteredHikes.value[i].trail.geojson)
+    bounds.extend(feature.getBounds())
+  }
+  myMap.value.leafletObject.fitBounds(bounds)
 }
 
 function zoomUpdated(zoom) {
@@ -555,7 +571,7 @@ onMounted(async () => {
 
       <div class="row" style="margin: 10px;">
         <div class="col-5" >
-          <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
+          <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData(), fitBoundsRegion()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Région</option>
             <option v-for="region in sortedRegions" :value="region.id">{{ region.name }}</option>
           </select>
@@ -584,10 +600,10 @@ onMounted(async () => {
             @mouseover="hoveredHike = hike.id" 
             @mouseout="hoveredHike=''" 
             @click="selectedHike = hike.id, showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)">
-              <div class="col-6 simaps-bold" style="padding-right: 10px !important;">
+              <div class="col-7 simaps-bold" style="padding-right: 10px !important;">
                 {{ hike.name }}
               </div>
-              <div class="col-4 d-lg-none d-xxl-block">
+              <div class="col-3 d-lg-none d-xxl-block">
                 <span class="badge bg-light simaps-bold">{{ hike.region['name'].toUpperCase() }}</span>
               </div>
               <div class="col-2">
