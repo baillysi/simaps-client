@@ -119,10 +119,10 @@ const sortedHikes = computed(() => {
   return 0;
   }):
   hikes.value.sort((a, b) => {
-  if (a.id < b.id) {
+  if (a.region['id'] < b.region['id']) {
     return -1;
   }
-  if (a.id > b.id) {
+  if (a.region['id'] > b.region['id']) {
     return 1;
   }
   return 0;
@@ -144,6 +144,17 @@ const filteredHikes = computed (() => {
             .includes(searchRegion.value.toString().toLowerCase())
           &&
           hike.trail.geojson)
+})
+const sortedRegions = computed(() => {
+  return regions.value.sort((a, b) => {
+  if (a.id < b.id) {
+    return -1;
+  }
+  if (a.id > b.id) {
+    return 1;
+  }
+  return 0;
+  })
 })
 
 function resetData() {
@@ -546,7 +557,7 @@ onMounted(async () => {
         <div class="col-5" >
           <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Région</option>
-            <option v-for="region in regions" :value="region.id">{{ region.name }}</option>
+            <option v-for="region in sortedRegions" :value="region.id">{{ region.name }}</option>
           </select>
         </div>
         <div class="col-5" >
