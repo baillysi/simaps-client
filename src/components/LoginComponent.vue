@@ -60,7 +60,7 @@ async function signInAsGuest() {
   </div>
 </div>
 
-<div class="modal fade" data-bs-backdrop="static" id="#login" tabindex="-1" aria-labelledby="#login" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" id="#login" tabindex="-1" aria-labelledby="#login" aria-hidden="false">
   <div class="modal-dialog">
     <div class="modal-content simaps-classic">
       <div class="modal-header">

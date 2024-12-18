@@ -86,6 +86,8 @@ const journeys = ref([])
 const viewpoints = ref([])
 const regions = ref([])
 
+const regionsZone = ref([])
+
 const message = ref('')
 const showMessage = ref(false)
 
@@ -107,7 +109,6 @@ const sortedHikes = computed(() => {
   }
   return 0;
   }): currentOrder.value == 'Région' ?
-
   hikes.value.sort((a, b) => {
   let fa = a.region['id'], fb = b.region['id'];
   if (fa < fb) {
@@ -145,8 +146,8 @@ const filteredHikes = computed (() => {
           &&
           hike.trail.geojson)
 })
-const sortedRegions = computed(() => {
-  return regions.value.sort((a, b) => {
+const sortedRegionsZone = computed(() => {
+  return regionsZone.value.sort((a, b) => {
   if (a.id < b.id) {
     return -1;
   }
@@ -162,7 +163,7 @@ function resetData() {
   hideHeightgraph()
 }
 
-function resetFilters() {
+function resetDataAndFilters() {
   selectedHike.value = ''
   hideHeightgraph()
   fitBoundsZone(mapcenter.value)
@@ -180,12 +181,17 @@ async function getZoneDetails() {
   zone_id.value = responseZone.data['id'].toString()
   hikes.value = responseZone.data['hikes']
   viewpoints.value = responseZone.data['viewpoints']
-  regions.value = responseRegion.data
+  regionsZone.value = responseRegion.data
 }
 
 async function getJourneys() {
   const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/journeys')
   journeys.value = response.data
+}
+
+async function getRegions() {
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions')
+  regions.value = response.data
 }
 
 // leaflet map
@@ -278,6 +284,8 @@ function showHeightgraph(geojson) {
 
 function hideHeightgraph() {
   myHeightGraph.remove()
+  // to prevent errors in useResizeObserver
+  myHeightGraph._data = undefined
 }
 
 function fitBounds(geojson) {
@@ -300,12 +308,12 @@ function fitBoundsRegion() {
   myMap.value.leafletObject.fitBounds(bounds)
 }
 
-function zoomUpdated(zoom) {
-  mapzoom.value = zoom
-}
-
 function fitBoundsZone(mapcenter) {
   myMap.value.leafletObject.setView(mapcenter, 10)
+}
+
+function zoomUpdated(zoom) {
+  mapzoom.value = zoom
 }
 
 function downloadGPX(geojson, name) {
@@ -340,7 +348,6 @@ function downloadGPX(geojson, name) {
 useResizeObserver(myMap, (entries) => {
   const entry = entries[0]
   const { width } = entry.contentRect
-
   if (myHeightGraph._data) {
     if (width <= 670 && width > 470) {
       myHeightGraph.resize({width: 450, height: 157.5})
@@ -564,7 +571,7 @@ onMounted(async () => {
   <div class="col-lg-4">
 
     <div class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
-      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), showCreate()) : showLogin()" :disabled="!isAdmin">+ nouvel itinéraire</button>
+      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()" :disabled="!isLoggedIn">+ nouvel itinéraire</button>
     </div>
 
     <div class="dataContainer">
@@ -573,7 +580,7 @@ onMounted(async () => {
         <div class="col-5" >
           <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData(), fitBoundsRegion()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Région</option>
-            <option v-for="region in sortedRegions" :value="region.id">{{ region.name }}</option>
+            <option v-for="region in sortedRegionsZone" :value="region.id">{{ region.name }}</option>
           </select>
         </div>
         <div class="col-5" >
@@ -586,7 +593,7 @@ onMounted(async () => {
           </select>
         </div>
         <div class="col-2 simaps-classic">
-          <button class="btn btn-light btn-sm" @click="resetFilters()" data-toggle="tooltip" title="réinitialiser" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
+          <button class="btn btn-light btn-sm" @click="resetDataAndFilters()" data-toggle="tooltip" title="réinitialiser" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <i class="pi pi-filter-slash" style="color:#3C002E;"></i>
           </button>
         </div>
@@ -624,13 +631,13 @@ onMounted(async () => {
               {{ hike.description }}
               <br/><br/>
               <div class="col text-end">
-                <button v-if="isAdmin" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                <button v-if="isLoggedIn" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                   <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                 </button>
                 <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
                   <i class="pi pi-download" style="color:#3C002E;"></i>
                 </button>
-                <button v-if="isAdmin" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
+                <button v-if="isLoggedIn" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
                   <i class="pi pi-trash" style="color:#FF803D;"></i>
                 </button>
               </div>
@@ -651,30 +658,31 @@ onMounted(async () => {
 </div>
 
 <!-- Create -->
-<CreateComponent :zoneId="zone_id" :journeys="journeys" 
+<CreateComponent :zoneId="zone_id" :regions="regions" :journeys="journeys" 
 @close="hideCreate(), isResponseLoading=true"
-@exit="getZoneDetails(), message = 'Itinéraire créé!', showMessage = true, fitBoundsZone(mapcenter)">
+@exit="getZoneDetails(), resetDataAndFilters(), message = 'Itinéraire créé!', showMessage = true">
 </CreateComponent>
 
 <!-- Update -->
-<UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="zone_id" :journeys="journeys" 
+<UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="zone_id" :journeys="journeys" :regions="regions" 
 :currentName="hikeDetails.name" 
 :currentDistance="hikeDetails.distance" 
 :currentElevation="hikeDetails.elevation" 
 :currentDifficulty="hikeDetails.difficulty" 
 :currentDuration="hikeDetails.duration" 
 :currentJourney="hikeDetails.journey" 
+:currentRegion="hikeDetails.region" 
 :currentRates="hikeDetails.rates" 
-:currentDescription="hikeDetails.description"
-:hasTrail="hikeDetails.trail == 'None' ? false : true"
-@close="hideUpdate(), isResponseLoading=true"
-@exit="getZoneDetails(), message = 'Itinéraire mis à jour!', showMessage = true, fitBoundsZone(mapcenter), hikeDetails = ''">
+:currentDescription="hikeDetails.description" 
+:hasTrail="hikeDetails.trail == 'None' ? false : true" 
+@close="hideUpdate(), isResponseLoading=true" 
+@exit="getZoneDetails(), resetDataAndFilters(), message = 'Itinéraire mis à jour!', showMessage = true, hikeDetails = ''">
 </UpdateComponent>
 
 <!-- Delete -->
 <DeleteComponent :hikeId="String(hikeDetails.id)"
 @close="hideDelete(), isResponseLoading=true"
-@exit="getZoneDetails(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
+@exit="getZoneDetails(), resetDataAndFilters(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
 </DeleteComponent>
 
 <!-- Login -->
