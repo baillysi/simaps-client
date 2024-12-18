@@ -2,6 +2,10 @@
 
 import axios from 'axios';
 
+// user session
+import { useFirebaseAuth } from 'vuefire';
+const auth = useFirebaseAuth()
+
 const emit = defineEmits(['exit', 'close'])
 
 const props = defineProps({
@@ -10,7 +14,14 @@ const props = defineProps({
 
 async function deleteHike() {
   emit('close')
-  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId)
+
+  // add authorization to protect API
+  const token = await auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+
+  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, { headers })
       .then((res) => {
           console.log(res.status);
           emit('exit');
@@ -23,7 +34,7 @@ async function deleteHike() {
 
 <template>
 
-<div class="modal fade" id="#delete" tabindex="-1" aria-labelledby="#delete" aria-hidden="true">
+<div class="modal fade" id="#delete" tabindex="-1" aria-labelledby="#delete" aria-hidden="false">
   <div class="modal-dialog modal-confirm">
     <div class="modal-content simaps-classic">
       <div class="modal-header">

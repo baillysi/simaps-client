@@ -18,9 +18,11 @@ const props = defineProps({
   currentDifficulty: Number,
   currentDuration: Number,
   currentJourney: Object,
+  currentRegion: Object,
   currentRates: Number,
   currentDescription: String,
   journeys: Object,
+  regions: Object,
   hasTrail: Boolean,
 })
 
@@ -30,6 +32,7 @@ const updatedElevation = ref('')
 const updatedDifficulty = ref('')
 const updatedDuration = ref('')
 const updatedJourney = ref([])
+const updatedRegion = ref([])
 const updatedRates = ref('')
 const updatedDescription = ref('')
 
@@ -75,6 +78,10 @@ watch(toRef(props, 'currentJourney'), (value) => {
   updatedJourney.value = toRef(props, 'currentJourney').value; 
 });
 
+watch(toRef(props, 'currentRegion'), (value) => {
+  updatedRegion.value = toRef(props, 'currentRegion').value; 
+});
+
 watch(toRef(props, 'currentRates'), (value) => {
   updatedRates.value = toRef(props, 'currentRates').value; 
 });
@@ -92,6 +99,7 @@ async function updateHike() {
     difficulty: updatedDifficulty.value,
     duration: updatedDuration.value,
     journey: updatedJourney.value,
+    region: updatedRegion.value,
     rates: updatedRates.value,
     description: updatedDescription.value,
   }
@@ -119,6 +127,7 @@ async function resetData() {
   updatedDifficulty.value = toRef(props, 'currentDifficulty').value
   updatedDuration.value = toRef(props, 'currentDuration').value
   updatedJourney.value = toRef(props, 'currentJourney').value
+  updatedRegion.value = toRef(props, 'currentRegion').value
   updatedRates.value = toRef(props, 'currentRates').value
   updatedDescription.value = toRef(props, 'currentDescription').value
   errors.value = []
@@ -143,6 +152,9 @@ async function onSubmit() {
   if (!updatedJourney.value.name) {
     errors.value.push('Le type d\'itinéraire est obligatoire.')
   }
+  if (!updatedRegion.value.name) {
+    errors.value.push('La région est obligatoire.')
+  }
   if (errors.value.length == 0) {
     updateHike()
   }
@@ -152,7 +164,7 @@ async function onSubmit() {
 
 <template>
 
-<div class="modal fade" data-bs-backdrop="static" id="#update" tabindex="-1" aria-labelledby="#update" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" id="#update" tabindex="-1" aria-labelledby="#update" aria-hidden="false">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -170,6 +182,14 @@ async function onSubmit() {
           <div class="form-group simaps-classic">
             <label for="InputName">Nom</label>
             <input type="text" v-model="updatedName" class="form-control simaps-light" id="InputName">
+          </div>
+          <div class="form-group simaps-classic">
+            <label for="InputRegion">Région</label>
+            <select v-model="updatedRegion" class="form-select simaps-light" id="InputRegion">
+              <option v-for="option in regions" :value="option">
+                {{ option.name }}
+              </option>
+            </select>
           </div>
           <div class="form-group simaps-classic">
             <label for="InputDescription">Description</label>

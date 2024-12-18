@@ -12,6 +12,7 @@ const emit = defineEmits(['exit', 'close'])
 const props = defineProps({
   zoneId: String,
   journeys: Object,
+  regions: Object,
 })
 
 const name = ref('')
@@ -20,6 +21,7 @@ const elevation = ref('')
 const difficulty = ref(2)
 const duration = ref('')
 const journey = ref([])
+const region = ref([])
 const rates = ref(2)
 const description = ref('')
 
@@ -51,6 +53,7 @@ async function createHike() {
     difficulty: difficulty.value,
     duration: duration.value,
     journey: journey.value,
+    region: region.value,
     rates: rates.value,
     description: description.value,
     gpx: gpx.value,
@@ -81,6 +84,7 @@ async function resetData() {
   difficulty.value = 2
   duration.value = ''
   journey.value = ''
+  region.value = ''
   rates.value = 2
   description.value = ''
   gpx.value = ''
@@ -106,6 +110,9 @@ async function onSubmit() {
   if (!journey.value.name) {
     errors.value.push('Le type d\'itinéraire est obligatoire.')
   }
+  if (!region.value.name) {
+    errors.value.push('La région est obligatoire.')
+  }
   if (errors.value.length == 0) {
     createHike()
   }
@@ -115,7 +122,7 @@ async function onSubmit() {
 
 <template>
 
-<div class="modal fade" data-bs-backdrop="static" id="#create" tabindex="-1" aria-labelledby="#create" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" id="#create" tabindex="-1" aria-labelledby="#create" aria-hidden="false">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -133,6 +140,14 @@ async function onSubmit() {
           <div class="form-group simaps-classic">
             <label for="InputName">Nom</label>
             <input type="text" v-model="name" class="form-control simaps-light" id="InputName">
+          </div>
+          <div class="form-group simaps-classic">
+            <label for="InputRegion">Région</label>
+            <select v-model="region" class="form-select simaps-light" id="InputRegion">
+              <option v-for="option in regions" :value="option">
+                {{ option.name }}
+              </option>
+            </select>
           </div>
           <div class="form-group simaps-classic">
             <label for="InputDescription">Description</label>

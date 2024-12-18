@@ -26,7 +26,7 @@ async function signout() {
 
 <template>
 
-<div class="modal fade" id="#logout" tabindex="-1" aria-labelledby="#logout" aria-hidden="true">
+<div class="modal fade" id="#logout" tabindex="-1" aria-labelledby="#logout" aria-hidden="false">
   <div class="modal-dialog modal-confirm">
     <div class="modal-content simaps-classic">
       <div class="modal-header">
