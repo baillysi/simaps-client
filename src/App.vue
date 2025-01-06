@@ -10,12 +10,7 @@ import AppHeader from './components/AppHeader.vue'
 
 <template>
   <AppHeader />
-
-  <router-view v-slot="{ Component }">
-    <keep-alive>
-      <component :is="Component" :key="$route.fullPath"></component>
-    </keep-alive>
-  </router-view>
+  <RouterView />
 
   <vue-cookie-accept-decline
     :debug="false"

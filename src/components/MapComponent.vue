@@ -3,15 +3,15 @@
 import L from 'leaflet'
 globalThis.L = L
 
-import 'leaflet/dist/leaflet.css';
+import 'leaflet/dist/leaflet.css'
 
 // vue components for Leaflet Maps - vue3
 // regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
-import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LIcon, LGeoJson, LTooltip } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LIcon, LGeoJson, LTooltip } from '@vue-leaflet/vue-leaflet'
 
 // wrapper seems to be compatible with vue3
-import { LMarkerClusterGroup } from 'vue-leaflet-markercluster';
-import 'vue-leaflet-markercluster/dist/style.css';
+import { LMarkerClusterGroup } from 'vue-leaflet-markercluster'
+import 'vue-leaflet-markercluster/dist/style.css'
 
 // native leaflet plugins
 import 'leaflet.locatecontrol'
@@ -27,22 +27,23 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 import hostCustomMarker from './icons/host.svg'
 import viewpointCustomMarker from './icons/viewpoint.svg'
 
-import { Collapse, Modal } from 'bootstrap';
+import { Collapse, Modal } from 'bootstrap'
 import axios from 'axios';
 import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
 
-import CreateComponent from './CreateComponent.vue';
-import UpdateComponent from './UpdateComponent.vue';
-import DeleteComponent from './DeleteComponent.vue';
-import AlertComponent from './AlertComponent.vue';
-import LoginComponent from './LoginComponent.vue';
+import CreateComponent from './CreateComponent.vue'
+import UpdateComponent from './UpdateComponent.vue'
+import DeleteComponent from './DeleteComponent.vue'
+import AlertComponent from './AlertComponent.vue'
+import LoginComponent from './LoginComponent.vue'
 
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue'
+import router from '../router';
 import { useResizeObserver } from '@vueuse/core'
 
 // user session
-import { useFirebaseAuth} from 'vuefire';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useFirebaseAuth} from 'vuefire'
+import { onAuthStateChanged } from 'firebase/auth'
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
@@ -66,6 +67,11 @@ onAuthStateChanged(auth, (user) => {
 function showLogin() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
   myModal.show();
+}
+
+// access to specific hike details with HikeComponent
+function goToHike(hike) {
+  router.push('/hikes/' + hike.id)
 }
 
 // hikes data form
@@ -631,6 +637,9 @@ onMounted(async () => {
               {{ hike.description }}
               <br/><br/>
               <div class="col text-end">
+                <button v-if="isLoggedIn" class="btn btn-light" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
+                  <i class="pi pi-info-circle" style="color:#3C002E;"></i>
+                </button>
                 <button v-if="isLoggedIn" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                   <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                 </button>
