@@ -24,7 +24,7 @@ function copyToClipboard() {
   <div class="modal-dialog modal-confirm">
     <div class="modal-content simaps-classic">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="#share">Partager l'itinéraire</h1>
+        <h1 class="modal-title fs-5" id="#share">Partager la randonnée</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="message = 'Copier le lien'"></button>
       </div>
       <div class="modal-body">

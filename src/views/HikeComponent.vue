@@ -13,7 +13,9 @@ import { ref, onMounted, watch } from 'vue'
 import { Modal } from 'bootstrap'
 import { useResizeObserver } from '@vueuse/core'
 
-import ShareComponent from './ShareComponent.vue';
+import ShareComponent from '../components/ShareComponent.vue';
+import DetailComponent from '../components/DetailComponent.vue';
+
 
 const props = defineProps({
   id: String
@@ -138,6 +140,16 @@ function hideShare() {
   myModal.show();
 }
 
+function showDetail() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#detail'));
+  myModal.show();
+}
+
+function hideDetail() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#detail'));
+  myModal.show();
+}
+
 onMounted(async () => {
   isResponseLoading.value = true
   getHikeDetails()
@@ -245,7 +257,7 @@ onMounted(async () => {
 
       <div class="row text-center d-none d-xxl-block">
         <div class="btn-group" role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Voir les détails</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Voir les détails</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Laisser un avis</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
         </div>
@@ -253,7 +265,7 @@ onMounted(async () => {
 
       <div class="row text-center d-xxl-none" style="margin-left: 5px; margin-right: 5px; margin-bottom: 5px;">
         <div class="btn-group-vertical" role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Voir les détails</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Voir les détails</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Laisser un avis</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
         </div>
@@ -265,6 +277,9 @@ onMounted(async () => {
 
 <!-- Share hike -->
 <ShareComponent :url="urlToShare" @close="hideShare()"></ShareComponent>
+
+<!-- Get hike details -->
+<DetailComponent :url="urlToShare" @close="hideDetail()"></DetailComponent>
 
 </template>
 

@@ -21,21 +21,20 @@ import 'leaflet.fullscreen/Control.FullScreen.css'
 import 'leaflet.heightgraph'
 import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 
-
 // custom markers
 // todo use font-awesome
-import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/viewpoint.svg'
+import hostCustomMarker from '../components/icons/host.svg'
+import viewpointCustomMarker from '../components/icons/viewpoint.svg'
 
 import { Collapse, Modal } from 'bootstrap'
-import axios from 'axios';
+import axios from 'axios'
 import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
 
-import CreateComponent from './CreateComponent.vue'
-import UpdateComponent from './UpdateComponent.vue'
-import DeleteComponent from './DeleteComponent.vue'
-import AlertComponent from './AlertComponent.vue'
-import LoginComponent from './LoginComponent.vue'
+import CreateComponent from '../components/CreateComponent.vue'
+import UpdateComponent from '../components/UpdateComponent.vue'
+import DeleteComponent from '../components/DeleteComponent.vue'
+import AlertComponent from '../components/AlertComponent.vue'
+import LoginComponent from '../components/LoginComponent.vue'
 
 import { ref, onMounted, watch, computed } from 'vue'
 import router from '../router';

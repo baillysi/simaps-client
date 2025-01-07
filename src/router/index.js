@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
 import AboutPage from '@/views/AboutPage.vue'
-import MapComponent from '@/components/MapComponent.vue'
-import HikeComponent from '@/components/HikeComponent.vue'
+import MapComponent from '@/views/MapComponent.vue'
+import HikeComponent from '@/views/HikeComponent.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
