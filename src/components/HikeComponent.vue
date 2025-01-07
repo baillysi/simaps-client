@@ -3,17 +3,25 @@
 import L from 'leaflet'
 globalThis.L = L
 
+import { useRouter } from 'vue-router'
+
 import 'leaflet/dist/leaflet.css'
 import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip } from '@vue-leaflet/vue-leaflet'
 
 import axios from 'axios';
 import { ref, onMounted, watch } from 'vue'
-
+import { Modal } from 'bootstrap'
 import { useResizeObserver } from '@vueuse/core'
+
+import ShareComponent from './ShareComponent.vue';
 
 const props = defineProps({
   id: String
 })
+
+const router = useRouter()
+const currentPathObject = router.currentRoute.value;
+const urlToShare = window.location.origin + currentPathObject.fullPath
 
 const isResponseLoading = ref(false)
 const hikeDetails = ref([])
@@ -23,7 +31,7 @@ const myMap = ref(null)
 const mapcenter = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
-const attribution = ref ('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
+const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
 
 watch(mapcenter, () => {
   ismapdata.value = true;
@@ -104,7 +112,6 @@ useResizeObserver(myMap, (entries) => {
   }
 })
 
-
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
@@ -119,6 +126,16 @@ async function getHikeDetails() {
   isResponseLoading.value = false
   hikeDetails.value = responseHike.data
   mapcenter.value = [-21.128756, 55.519246]
+}
+
+function showShare() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#share'));
+  myModal.show();
+}
+
+function hideShare() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#share'));
+  myModal.show();
 }
 
 onMounted(async () => {
@@ -230,13 +247,16 @@ onMounted(async () => {
         <div class="btn-group btn-group-justified flex-wrap" role="group" aria-label="Basic example">
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Voir les détails</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Laisser un avis</button>
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Partager l'itinéraire</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager l'itinéraire</button>
         </div>
       </div>
 
     </div>
   </div>
 </div>
+
+<!-- Share hike -->
+<ShareComponent :url="urlToShare" @close="hideShare()"></ShareComponent>
 
 </template>
 
