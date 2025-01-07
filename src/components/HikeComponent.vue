@@ -188,13 +188,13 @@ onMounted(async () => {
         </div>
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="../../public/cilaos.jpg" class="d-block w-100" alt="...">
+            <img src="/cilaos.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="../../public/est.jpg" class="d-block w-100" alt="...">
+            <img src="/est.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="../../public/ouest.jpg" class="d-block w-100" alt="...">
+            <img src="/ouest.jpg" class="d-block w-100" alt="...">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -244,10 +244,18 @@ onMounted(async () => {
       <br/><br/>
 
       <div class="row text-center d-none d-xxl-block">
-        <div class="btn-group btn-group-justified flex-wrap" role="group" aria-label="Basic example">
+        <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Voir les détails</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Laisser un avis</button>
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager l'itinéraire</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
+        </div>
+      </div>
+
+      <div class="row text-center d-xxl-none" style="margin-left: 5px; margin-right: 5px; margin-bottom: 5px;">
+        <div class="btn-group-vertical" role="group" aria-label="Basic example">
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Voir les détails</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Laisser un avis</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
         </div>
       </div>
 
