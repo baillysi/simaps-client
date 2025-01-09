@@ -60,11 +60,11 @@ const hikeDetails = ref([])
 const hikeReviews = ref([])
 
 // hikeGlobalrate : if not reviews then set average rate
-const hikeGlobalrate = computed(() => {
+const hikeGlobalRate = computed(() => {
   let sum = 0;
   let count = hikeReviews.value.length;
   if (Number(count) == 0) {
-    return 3
+    return 2
   }
   for (let i = 0; i < count; i++) {
       sum += hikeReviews.value[i].rate;
@@ -293,8 +293,8 @@ onMounted(async () => {
       </div>
 
       <div>
-        <i v-for="n in Number(hikeGlobalrate)" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
-        <i v-for="n in (5 - Number(hikeGlobalrate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
+        <i v-for="n in Number(hikeGlobalRate)" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
+        <i v-for="n in (5 - Number(hikeGlobalRate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
         <button type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ hikeReviews.length }} avis</u></button>
       </div>
       <br/>
