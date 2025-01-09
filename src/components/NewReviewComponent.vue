@@ -103,7 +103,7 @@ async function onSubmit() {
           </div>
           <br/>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-danger">Envoyer</button> {{ auth.currentUser.isAnonymous }}
+            <button type="submit" class="btn btn-danger">Envoyer</button>
           </div>
         </form>
       </div>

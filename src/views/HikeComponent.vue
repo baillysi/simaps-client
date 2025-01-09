@@ -30,9 +30,13 @@ const isResponseLoading = ref(false)
 const hikeDetails = ref([])
 const hikeReviews = ref([])
 
+// hikeGlobalrate : if not reviews then set average rate
 const hikeGlobalrate = computed(() => {
   let sum = 0;
   let count = hikeReviews.value.length;
+  if (Number(count) == 0) {
+    return 2
+  }
   for (let i = 0; i < count; i++) {
       sum += hikeReviews.value[i].rate;
   }
