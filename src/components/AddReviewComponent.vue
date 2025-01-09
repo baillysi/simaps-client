@@ -77,7 +77,7 @@ async function onSubmit() {
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title simaps-bold fs-5" id="#newReview">Laisser un avis</h1>
+        <h1 class="modal-title simaps-classic fs-5" id="#newReview">Laisser un avis</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
       </div>
       <div class="modal-body">
@@ -89,17 +89,17 @@ async function onSubmit() {
             </ul>
           </p>
           <div class="form-group simaps-classic">
-            <label for="InputTitle">Résumé</label>
+            <label for="InputTitle">Titre</label>
             <input type="text" v-model="title" class="form-control simaps-light" id="InputTitle">
           </div>
           <div class="form-group simaps-classic">
             <label for="InputNote">Description</label>
-            <textarea type="text" v-model="note" class="form-control simaps-light" id="InputNote" rows="4"></textarea>
+            <textarea type="text" v-model="note" class="form-control simaps-light" id="InputNote" rows="4" maxlength="50"></textarea>
           </div>
           <br/>
           <div class="form-group simaps-classic">
             <label for="InputRate">Note</label>
-            <input v-model="rate" type="range" class="form-range range-cust" min="1" max="4" id="InputRate">
+            <input v-model="rate" type="range" class="form-range range-cust" min="1" max="5" id="InputRate">
           </div>
           <br/>
           <div class="modal-footer">

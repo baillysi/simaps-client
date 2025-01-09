@@ -8,12 +8,12 @@
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content simaps-classic">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="#detail">Informations complémentaires</h1>
+        <h1 class="modal-title fs-5" id="#detail">Plus de détails</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="form-group simaps-classic">
-          <span class="simaps-light" readonly>Plus d'infos à venir...
+          <span class="simaps-light" readonly>Informations à venir...
           </span>
         </div>
       </div>

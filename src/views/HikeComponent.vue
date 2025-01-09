@@ -16,7 +16,7 @@ import { useResizeObserver } from '@vueuse/core'
 import ShareComponent from '../components/ShareComponent.vue'
 import DetailComponent from '../components/DetailComponent.vue'
 import ReviewComponent from '../components/ReviewComponent.vue'
-import NewReviewComponent from '../components/NewReviewComponent.vue'
+import AddReviewComponent from '../components/AddReviewComponent.vue'
 import LoginComponent from '../components/LoginComponent.vue'
 
 // user session
@@ -64,7 +64,7 @@ const hikeGlobalrate = computed(() => {
   let sum = 0;
   let count = hikeReviews.value.length;
   if (Number(count) == 0) {
-    return 2
+    return 3
   }
   for (let i = 0; i < count; i++) {
       sum += hikeReviews.value[i].rate;
@@ -294,7 +294,7 @@ onMounted(async () => {
 
       <div>
         <i v-for="n in Number(hikeGlobalrate)" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
-        <i v-for="n in (4 - Number(hikeGlobalrate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
+        <i v-for="n in (5 - Number(hikeGlobalrate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
         <button type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ hikeReviews.length }} avis</u></button>
       </div>
       <br/>
@@ -342,10 +342,10 @@ onMounted(async () => {
 <ReviewComponent :hikeReviews="hikeReviews" :hikeName="hikeDetails.name"></ReviewComponent>
 
 <!-- New Review -->
-<NewReviewComponent :hikeId="String(hikeDetails.id)"
+<AddReviewComponent :hikeId="String(hikeDetails.id)"
 @close="hideNewReview(), isResponseLoading=true"
 @exit="getHikeReviews(), message = 'Merci pour votre avis!', showMessage = true">
-</NewReviewComponent>
+</AddReviewComponent>
 
 <!-- Login -->
 <LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>

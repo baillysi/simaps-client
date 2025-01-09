@@ -31,6 +31,7 @@ const sortedReviews = computed(() => {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div v-if="sortedReviews.length == 0">Aucun avis disponible pour le moment</div>
         <div v-for="review in sortedReviews" class="simaps-classic reviews">
           <div class="row">
             <div class="col-8">
@@ -41,7 +42,7 @@ const sortedReviews = computed(() => {
             </div>
           </div>
           <i v-for="rate in review.rate" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
-          <i v-for="rate in (4 - review.rate)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
+          <i v-for="rate in (5 - review.rate)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
           <br/>
           <br/>
           <span class="simaps-light">{{ review.note }}</span>
