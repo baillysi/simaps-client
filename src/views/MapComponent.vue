@@ -637,23 +637,23 @@ onMounted(async () => {
               <br/><br/>
               <div class="row">
                 <div class="col d-lg-none d-xl-block text-start">
-                  <button v-if="isLoggedIn" class="btn btn-light simaps-classic" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
+                  <button class="btn btn-light simaps-classic" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
                     <i class="pi pi-arrow-circle-right" style="color:#3C002E;"></i> <u>voir le détail</u>
                   </button>
                 </div>
                 <div class="col d-none d-lg-block d-xl-none">
-                  <button v-if="isLoggedIn" class="btn btn-light simaps-classic" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
+                  <button class="btn btn-light simaps-classic" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
                     <i class="pi pi-info-circle" style="color:#3C002E;"></i>
                   </button>
                 </div>
                 <div class="col text-end">
-                  <button v-if="isLoggedIn" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button v-if="isAdmin" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
                     <i class="pi pi-download" style="color:#3C002E;"></i>
                   </button>
-                  <button v-if="isLoggedIn" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
+                  <button v-if="isAdmin" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
                     <i class="pi pi-trash" style="color:#FF803D;"></i>
                   </button>
                 </div>
