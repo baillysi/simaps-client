@@ -3,27 +3,82 @@
 import L from 'leaflet'
 globalThis.L = L
 
+import { useRouter } from 'vue-router'
+
 import 'leaflet/dist/leaflet.css'
 import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip } from '@vue-leaflet/vue-leaflet'
 
 import axios from 'axios';
-import { ref, onMounted, watch } from 'vue'
-
+import { ref, onMounted, watch, computed } from 'vue'
+import { Modal } from 'bootstrap'
 import { useResizeObserver } from '@vueuse/core'
+
+import ShareComponent from '../components/ShareComponent.vue'
+import DetailComponent from '../components/DetailComponent.vue'
+import ReviewComponent from '../components/ReviewComponent.vue'
+import AddReviewComponent from '../components/AddReviewComponent.vue'
+import LoginComponent from '../components/LoginComponent.vue'
+
+// user session
+import { useFirebaseAuth} from 'vuefire'
+import { onAuthStateChanged } from 'firebase/auth'
+
+const auth = useFirebaseAuth()
+const isLoggedIn = ref(false)
+const isAdmin = ref(false)
+
+// native vuefire watcher to check whether user logged or not
+// we wait for user to be loaded to call create / update / delete hike as it requires token
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    isLoggedIn.value = true
+    // check specific user
+    if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
+      isAdmin.value = true
+    } 
+  } 
+  else {
+    isLoggedIn.value = false
+  }
+});
+
+function showLogin() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
+  myModal.show();
+}
 
 const props = defineProps({
   id: String
 })
 
+const router = useRouter()
+const currentPathObject = router.currentRoute.value;
+const urlToShare = window.location.origin + currentPathObject.fullPath
+
 const isResponseLoading = ref(false)
 const hikeDetails = ref([])
+const hikeReviews = ref([])
+
+// hikeGlobalrate : if not reviews then set average rate
+const hikeGlobalRate = computed(() => {
+  let sum = 0;
+  let count = hikeReviews.value.length;
+  if (Number(count) == 0) {
+    return 2
+  }
+  for (let i = 0; i < count; i++) {
+      sum += hikeReviews.value[i].rate;
+  }
+  let rate = Number(sum / count).toFixed(0)
+  return rate;
+})
 
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
-const attribution = ref ('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
+const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
 
 watch(mapcenter, () => {
   ismapdata.value = true;
@@ -104,7 +159,6 @@ useResizeObserver(myMap, (entries) => {
   }
 })
 
-
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds())
@@ -121,9 +175,41 @@ async function getHikeDetails() {
   mapcenter.value = [-21.128756, 55.519246]
 }
 
+async function getHikeReviews() {
+  const responseReviews = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/reviews', { params: { hike_id: props.id } })
+  isResponseLoading.value = false
+  hikeReviews.value = responseReviews.data
+}
+
+function showShare() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#share'));
+  myModal.show();
+}
+
+function showDetail() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#detail'));
+  myModal.show();
+}
+
+function showReview() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#review'));
+  myModal.show();
+}
+
+function showNewReview() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#newReview'));
+  myModal.show();
+}
+
+function hideNewReview() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#newReview'));
+  myModal.hide();
+}
+
 onMounted(async () => {
   isResponseLoading.value = true
   getHikeDetails()
+  getHikeReviews()
 })
 
 </script>
@@ -171,21 +257,21 @@ onMounted(async () => {
         </div>
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="../../public/cilaos.jpg" class="d-block w-100" alt="...">
+            <img src="/cilaos.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="../../public/est.jpg" class="d-block w-100" alt="...">
+            <img src="/est.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="../../public/ouest.jpg" class="d-block w-100" alt="...">
+            <img src="/ouest.jpg" class="d-block w-100" alt="...">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="carousel-control-prev-icon" aria-hidden="false"></span>
           <span class="visually-hidden">Previous</span>
         </button>
         <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="carousel-control-next-icon" aria-hidden="false"></span>
           <span class="visually-hidden">Next</span>
         </button>
       </div>
@@ -207,9 +293,9 @@ onMounted(async () => {
       </div>
 
       <div>
-        <i v-for="rate in hikeDetails.rates" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
-        <i v-for="rate in (4 - hikeDetails.rates)" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
-        <button type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;"><u>22 avis</u></button>
+        <i v-for="n in Number(hikeGlobalRate)" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
+        <i v-for="n in (5 - Number(hikeGlobalRate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
+        <button type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ hikeReviews.length }} avis</u></button>
       </div>
       <br/>
 
@@ -227,16 +313,42 @@ onMounted(async () => {
       <br/><br/>
 
       <div class="row text-center d-none d-xxl-block">
-        <div class="btn-group btn-group-justified flex-wrap" role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Voir les détails</button>
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Laisser un avis</button>
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;">Partager l'itinéraire</button>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Plus de détails</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
+        </div>
+      </div>
+
+      <div class="row text-center d-xxl-none" style="margin-left: 5px; margin-right: 5px; margin-bottom: 5px;">
+        <div class="btn-group-vertical" role="group" aria-label="Basic example">
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Plus de détails</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
         </div>
       </div>
 
     </div>
   </div>
 </div>
+
+<!-- Share hike -->
+<ShareComponent :url="urlToShare"></ShareComponent>
+
+<!-- Get hike details -->
+<DetailComponent></DetailComponent>
+
+<!-- Review hike -->
+<ReviewComponent :hikeReviews="hikeReviews" :hikeName="hikeDetails.name"></ReviewComponent>
+
+<!-- New Review -->
+<AddReviewComponent :hikeId="String(hikeDetails.id)"
+@close="hideNewReview(), isResponseLoading=true"
+@exit="getHikeReviews(), message = 'Merci pour votre avis!', showMessage = true">
+</AddReviewComponent>
+
+<!-- Login -->
+<LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
 
 </template>
 

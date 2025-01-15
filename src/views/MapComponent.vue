@@ -21,21 +21,20 @@ import 'leaflet.fullscreen/Control.FullScreen.css'
 import 'leaflet.heightgraph'
 import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 
-
 // custom markers
 // todo use font-awesome
-import hostCustomMarker from './icons/host.svg'
-import viewpointCustomMarker from './icons/viewpoint.svg'
+import hostCustomMarker from '../components/icons/host.svg'
+import viewpointCustomMarker from '../components/icons/viewpoint.svg'
 
 import { Collapse, Modal } from 'bootstrap'
-import axios from 'axios';
+import axios from 'axios'
 import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
 
-import CreateComponent from './CreateComponent.vue'
-import UpdateComponent from './UpdateComponent.vue'
-import DeleteComponent from './DeleteComponent.vue'
-import AlertComponent from './AlertComponent.vue'
-import LoginComponent from './LoginComponent.vue'
+import CreateComponent from '../components/CreateComponent.vue'
+import UpdateComponent from '../components/UpdateComponent.vue'
+import DeleteComponent from '../components/DeleteComponent.vue'
+import AlertComponent from '../components/AlertComponent.vue'
+import LoginComponent from '../components/LoginComponent.vue'
 
 import { ref, onMounted, watch, computed } from 'vue'
 import router from '../router';
@@ -636,19 +635,28 @@ onMounted(async () => {
               <br/><br/>
               {{ hike.description }}
               <br/><br/>
-              <div class="col text-end">
-                <button v-if="isLoggedIn" class="btn btn-light" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
-                  <i class="pi pi-info-circle" style="color:#3C002E;"></i>
-                </button>
-                <button v-if="isLoggedIn" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
-                  <i class="pi pi-file-edit" style="color:#3C002E;"></i>
-                </button>
-                <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
-                  <i class="pi pi-download" style="color:#3C002E;"></i>
-                </button>
-                <button v-if="isLoggedIn" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
-                  <i class="pi pi-trash" style="color:#FF803D;"></i>
-                </button>
+              <div class="row">
+                <div class="col d-lg-none d-xl-block text-start">
+                  <button class="btn btn-light simaps-classic" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
+                    <i class="pi pi-arrow-circle-right" style="color:#3C002E;"></i> <u>voir le détail</u>
+                  </button>
+                </div>
+                <div class="col d-none d-lg-block d-xl-none">
+                  <button class="btn btn-light simaps-classic" @click="goToHike(hike)" data-toggle="tooltip" title="obtenir plus de détails">
+                    <i class="pi pi-info-circle" style="color:#3C002E;"></i>
+                  </button>
+                </div>
+                <div class="col text-end">
+                  <button v-if="isAdmin" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                    <i class="pi pi-file-edit" style="color:#3C002E;"></i>
+                  </button>
+                  <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
+                    <i class="pi pi-download" style="color:#3C002E;"></i>
+                  </button>
+                  <button v-if="isAdmin" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
+                    <i class="pi pi-trash" style="color:#FF803D;"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
