@@ -575,8 +575,8 @@ onMounted(async () => {
 
   <div class="col-lg-4">
 
-    <div class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
-      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()" :disabled="!isLoggedIn">+ nouvel itinéraire</button>
+    <div v-if="isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
+      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()">+ nouvel itinéraire</button>
     </div>
 
     <div class="dataContainer">
@@ -689,7 +689,6 @@ onMounted(async () => {
 :currentDuration="hikeDetails.duration" 
 :currentJourney="hikeDetails.journey" 
 :currentRegion="hikeDetails.region" 
-:currentRates="hikeDetails.rates" 
 :currentDescription="hikeDetails.description" 
 :hasTrail="hikeDetails.trail == 'None' ? false : true" 
 @close="hideUpdate(), isResponseLoading=true" 

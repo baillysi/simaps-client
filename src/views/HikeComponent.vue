@@ -3,10 +3,14 @@
 import L from 'leaflet'
 globalThis.L = L
 
-import { useRouter } from 'vue-router'
-
 import 'leaflet/dist/leaflet.css'
-import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip } from '@vue-leaflet/vue-leaflet'
+
+import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
+
+import startMarker from '../components/icons/start.svg'
+import endMarker from '../components/icons/end.svg'
+
+import { useRouter } from 'vue-router'
 
 import axios from 'axios';
 import { ref, onMounted, watch, computed } from 'vue'
@@ -18,6 +22,7 @@ import DetailComponent from '../components/DetailComponent.vue'
 import ReviewComponent from '../components/ReviewComponent.vue'
 import AddReviewComponent from '../components/AddReviewComponent.vue'
 import LoginComponent from '../components/LoginComponent.vue'
+
 
 // user session
 import { useFirebaseAuth} from 'vuefire'
@@ -76,6 +81,9 @@ const hikeGlobalRate = computed(() => {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
+const hikeStartLatLng = ref('')
+const hikeEndLatLng = ref('')
+const testVp = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
 const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
@@ -87,7 +95,7 @@ watch(mapcenter, () => {
 const selectedStyle = ref(
   {
     'color':'#9F0000', 
-    'weight': 6
+    'weight': 5
   }
 )
 
@@ -173,6 +181,9 @@ async function getHikeDetails() {
   isResponseLoading.value = false
   hikeDetails.value = responseHike.data
   mapcenter.value = [-21.128756, 55.519246]
+  let hikeLength = hikeDetails.value.trail.geojson.features[0].geometry.coordinates.length
+  hikeStartLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][0]]
+  hikeEndLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][0]]
 }
 
 async function getHikeReviews() {
@@ -241,6 +252,22 @@ onMounted(async () => {
         </l-tooltip>
       </l-geo-json>
       <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
+      <l-marker :lat-lng="hikeStartLatLng">
+        <l-tooltip class="simaps-classic">Départ</l-tooltip>
+        <l-icon
+              :iconSize="mapzoom >= 15 ? [28, 28] : ((mapzoom >= 13 ? [24, 24] : [18, 18]))"
+              :iconAnchor="mapzoom >= 15 ? [14, 28] : ((mapzoom >= 13 ? [12, 24] : [9, 18]))"
+              :icon-url="startMarker"
+            />
+      </l-marker>
+      <l-marker :lat-lng="hikeEndLatLng">
+        <l-tooltip class="simaps-classic">Arrivée</l-tooltip>
+        <l-icon
+              :iconSize="mapzoom >= 15 ? [27, 27] : ((mapzoom >= 13 ? [22, 22] : [18, 18]))"
+              :iconAnchor="mapzoom >= 15 ? [3, 27] : ((mapzoom >= 13 ? [2, 22] : [2, 18]))"
+              :icon-url="endMarker"
+            />
+      </l-marker>
     </l-map>
     </div>
   </div>
