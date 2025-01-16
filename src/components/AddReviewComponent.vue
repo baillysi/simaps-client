@@ -1,7 +1,7 @@
 <script setup>
 
 import axios from 'axios';
-import { ref, toRef } from 'vue';
+import { ref } from 'vue';
 
 // user session
 import { useFirebaseAuth } from 'vuefire';
@@ -17,7 +17,7 @@ const title = ref('')
 const note = ref('')
 
 // star rating
-const rate = ref(0); 
+const rate = ref(''); 
 const maxRatings = ref(5);
 
 function setRating(newRate) {
@@ -98,9 +98,9 @@ async function onSubmit() {
           <div class="form-group simaps-classic">
             <div class="row">
               <div class="col"><label for="InputTitle">Titre</label></div>
-              <div class="col text-end"><small class="simaps-light">(max 100 caractères)</small></div>
+              <div class="col text-end"><small class="simaps-light">(max 50 caractères)</small></div>
             </div>
-            <input type="text" v-model="title" class="form-control simaps-light" id="InputTitle" maxlength="100">
+            <input type="text" v-model="title" class="form-control simaps-light" id="InputTitle" maxlength="50">
           </div>
           <div class="form-group simaps-classic">
             <div class="row">

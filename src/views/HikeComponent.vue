@@ -66,15 +66,21 @@ const hikeDetails = ref([])
 const hikeReviews = ref([])
 const hikeViewpoints = ref([])
 
+
+const validatedReviews = computed (() => {
+  return hikeReviews.value.filter(
+        (review) => review.is_validated === true)
+})
+
 // hikeGlobalrate : if not reviews then set average rate
 const hikeGlobalRate = computed(() => {
   let sum = 0;
-  let count = hikeReviews.value.length;
+  let count = validatedReviews.value.length;
   if (Number(count) == 0) {
-    return 2
+    return 4
   }
   for (let i = 0; i < count; i++) {
-      sum += hikeReviews.value[i].rate;
+      sum += validatedReviews.value[i].rate;
   }
   let rate = Number(sum / count).toFixed(0)
   return rate;
@@ -340,7 +346,7 @@ onMounted(async () => {
       <div>
         <i v-for="n in Number(hikeGlobalRate)" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
         <i v-for="n in (5 - Number(hikeGlobalRate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
-        <button type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ hikeReviews.length }} avis</u></button>
+        <button type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validés</u></button>
       </div>
       <br/>
 
@@ -384,7 +390,9 @@ onMounted(async () => {
 <DetailComponent></DetailComponent>
 
 <!-- Review hike -->
-<ReviewComponent :hikeReviews="hikeReviews" :hikeName="hikeDetails.name"></ReviewComponent>
+<ReviewComponent :hikeReviews="hikeReviews" :hikeName="hikeDetails.name" 
+@exit="getHikeReviews()">
+</ReviewComponent>
 
 <!-- New Review -->
 <AddReviewComponent :hikeId="String(hikeDetails.id)"
