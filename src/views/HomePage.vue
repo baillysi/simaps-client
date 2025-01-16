@@ -92,6 +92,21 @@ async function goToMaps() {
     background-color:#FF803D !important;
   }
 
+  .btn-dark {
+    border-color: #9F0000 !important;
+    background-color: #fff !important;
+    color: #9F0000 !important;
+    font-family: "Inter", sans-serif !important;
+    font-optical-sizing: auto;
+    font-weight: 650 !important;
+    font-style: normal;
+  }
+
+  .btn-dark:hover {
+    color: #fff !important;
+    background-color:#9F0000 !important;
+  }
+
   .simaps-classic {
     color: #3C002E !important;
     font-family: "Inter", sans-serif;
