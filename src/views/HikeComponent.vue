@@ -3,10 +3,15 @@
 import L from 'leaflet'
 globalThis.L = L
 
-import { useRouter } from 'vue-router'
-
 import 'leaflet/dist/leaflet.css'
-import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip } from '@vue-leaflet/vue-leaflet'
+
+import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
+
+import startMarker from '../components/icons/start.svg'
+import endMarker from '../components/icons/end.svg'
+import viewpointMarker from '../components/icons/viewpoint.svg'
+
+import { useRouter } from 'vue-router'
 
 import axios from 'axios';
 import { ref, onMounted, watch, computed } from 'vue'
@@ -18,6 +23,7 @@ import DetailComponent from '../components/DetailComponent.vue'
 import ReviewComponent from '../components/ReviewComponent.vue'
 import AddReviewComponent from '../components/AddReviewComponent.vue'
 import LoginComponent from '../components/LoginComponent.vue'
+
 
 // user session
 import { useFirebaseAuth} from 'vuefire'
@@ -58,6 +64,7 @@ const urlToShare = window.location.origin + currentPathObject.fullPath
 const isResponseLoading = ref(false)
 const hikeDetails = ref([])
 const hikeReviews = ref([])
+const hikeViewpoints = ref([])
 
 // hikeGlobalrate : if not reviews then set average rate
 const hikeGlobalRate = computed(() => {
@@ -76,6 +83,8 @@ const hikeGlobalRate = computed(() => {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
+const hikeStartLatLng = ref('')
+const hikeEndLatLng = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
 const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
@@ -87,7 +96,7 @@ watch(mapcenter, () => {
 const selectedStyle = ref(
   {
     'color':'#9F0000', 
-    'weight': 6
+    'weight': 5
   }
 )
 
@@ -173,12 +182,21 @@ async function getHikeDetails() {
   isResponseLoading.value = false
   hikeDetails.value = responseHike.data
   mapcenter.value = [-21.128756, 55.519246]
+  let hikeLength = hikeDetails.value.trail.geojson.features[0].geometry.coordinates.length
+  hikeStartLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][0]]
+  hikeEndLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][0]]
 }
 
 async function getHikeReviews() {
   const responseReviews = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/reviews', { params: { hike_id: props.id } })
   isResponseLoading.value = false
   hikeReviews.value = responseReviews.data
+}
+
+async function getHikeViewpoints() {
+  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/viewpoints', { params: { hike_id: props.id } })
+  isResponseLoading.value = false
+  hikeViewpoints.value = responseViewpoints.data
 }
 
 function showShare() {
@@ -210,6 +228,7 @@ onMounted(async () => {
   isResponseLoading.value = true
   getHikeDetails()
   getHikeReviews()
+  getHikeViewpoints()
 })
 
 </script>
@@ -241,6 +260,32 @@ onMounted(async () => {
         </l-tooltip>
       </l-geo-json>
       <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
+      <l-marker :lat-lng="hikeStartLatLng">
+        <l-tooltip class="simaps-classic">Départ</l-tooltip>
+        <l-icon
+              :iconSize="mapzoom >= 15 ? [28, 28] : ((mapzoom >= 13 ? [24, 24] : [18, 18]))"
+              :iconAnchor="mapzoom >= 15 ? [14, 28] : ((mapzoom >= 13 ? [12, 24] : [9, 18]))"
+              :icon-url="startMarker"
+            />
+      </l-marker>
+      <l-marker :lat-lng="hikeEndLatLng">
+        <l-tooltip class="simaps-classic">Arrivée</l-tooltip>
+        <l-icon
+              :iconSize="mapzoom >= 15 ? [27, 27] : ((mapzoom >= 13 ? [22, 22] : [18, 18]))"
+              :iconAnchor="mapzoom >= 15 ? [3, 27] : ((mapzoom >= 13 ? [2, 22] : [2, 18]))"
+              :icon-url="endMarker"
+            />
+      </l-marker>
+      <l-marker
+            v-for="(item, index) in hikeViewpoints"
+            :key="index"
+            :lat-lng="[item.lat, item.lng]">
+            <l-tooltip class="simaps-classic">{{ item.name }}</l-tooltip>
+            <l-icon
+              :iconSize="mapzoom >= 15 ? [45, 45] : ((mapzoom >= 13 ? [30, 30] : [22, 22]))"
+              :icon-url="viewpointMarker"
+            />
+          </l-marker>
     </l-map>
     </div>
   </div>

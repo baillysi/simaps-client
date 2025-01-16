@@ -19,7 +19,6 @@ const props = defineProps({
   currentDuration: Number,
   currentJourney: Object,
   currentRegion: Object,
-  currentRates: Number,
   currentDescription: String,
   journeys: Object,
   regions: Object,
@@ -33,7 +32,6 @@ const updatedDifficulty = ref('')
 const updatedDuration = ref('')
 const updatedJourney = ref([])
 const updatedRegion = ref([])
-const updatedRates = ref('')
 const updatedDescription = ref('')
 
 // "writable" computed property to handle duration in hh:mm format
@@ -82,10 +80,6 @@ watch(toRef(props, 'currentRegion'), (value) => {
   updatedRegion.value = toRef(props, 'currentRegion').value; 
 });
 
-watch(toRef(props, 'currentRates'), (value) => {
-  updatedRates.value = toRef(props, 'currentRates').value; 
-});
-
 watch(toRef(props, 'currentDescription'), (value) => {
   updatedDescription.value = toRef(props, 'currentDescription').value; 
 });
@@ -100,7 +94,6 @@ async function updateHike() {
     duration: updatedDuration.value,
     journey: updatedJourney.value,
     region: updatedRegion.value,
-    rates: updatedRates.value,
     description: updatedDescription.value,
   }
 
@@ -128,7 +121,6 @@ async function resetData() {
   updatedDuration.value = toRef(props, 'currentDuration').value
   updatedJourney.value = toRef(props, 'currentJourney').value
   updatedRegion.value = toRef(props, 'currentRegion').value
-  updatedRates.value = toRef(props, 'currentRates').value
   updatedDescription.value = toRef(props, 'currentDescription').value
   errors.value = []
 }
@@ -224,10 +216,6 @@ async function onSubmit() {
           <div class="form-group simaps-classic">
             <label for="InputDifficulty">Difficulté</label>
             <input v-model="updatedDifficulty" type="range" class="range-cust form-range" min="1" max="4" id="InputDifficulty">
-          </div>
-          <div class="form-group simaps-classic">
-            <label for="InputRates">Intérêt</label>
-            <input v-model="updatedRates" type="range" class="range-cust form-range" min="1" max="4" id="InputRates">
           </div>
           <br/>
           <div class="modal-footer">

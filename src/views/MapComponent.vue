@@ -23,8 +23,8 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 
 // custom markers
 // todo use font-awesome
-import hostCustomMarker from '../components/icons/host.svg'
-import viewpointCustomMarker from '../components/icons/viewpoint.svg'
+import hostMarker from '../components/icons/host.svg'
+import viewpointMarker from '../components/icons/viewpoint.svg'
 
 import { Collapse, Modal } from 'bootstrap'
 import axios from 'axios'
@@ -181,11 +181,12 @@ function resetDataAndFilters() {
 async function getZoneDetails() {
   const responseZone = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
   const responseRegion = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions/'+ props.zone)
+  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/viewpoints')
   isResponseLoading.value = false
   mapcenter.value = [parseFloat(responseZone.data['lat']), parseFloat(responseZone.data['lng'])]
   zone_id.value = responseZone.data['id'].toString()
   hikes.value = responseZone.data['hikes']
-  viewpoints.value = responseZone.data['viewpoints']
+  viewpoints.value = responseViewpoints.data
   regionsZone.value = responseRegion.data
 }
 
@@ -543,28 +544,10 @@ onMounted(async () => {
             :lat-lng="[item.lat, item.lng]">
             <l-popup class="simaps-classic">{{ item.name }}</l-popup>
             <l-icon
-              :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
-              :icon-url="viewpointCustomMarker"
+              :iconSize="mapzoom >= 15 ? [45, 45] : ((mapzoom >= 13 ? [30, 30] : [22, 22]))"
+              :icon-url="viewpointMarker"
             />
           </l-marker>
-        </l-layer-group>
-
-        <l-layer-group
-          :visible="false"
-          layerType="overlay"
-          name="Gîtes">
-          <l-marker-cluster-group>
-            <l-marker
-              v-for="(item, index) in hosts"
-              :key="index"
-              :lat-lng="[item.coordinates[0], item.coordinates[1]]">
-              <l-popup class="simaps-classic">{{ item.content }}</l-popup>
-              <l-icon
-                :iconSize="mapzoom >= 15 ? [35, 35] : ((mapzoom >= 13 ? [25, 25] : [18, 18]))"
-                :icon-url="hostCustomMarker"
-              />
-            </l-marker>
-          </l-marker-cluster-group>
         </l-layer-group>
 
         <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
@@ -575,8 +558,8 @@ onMounted(async () => {
 
   <div class="col-lg-4">
 
-    <div class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
-      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()" :disabled="!isLoggedIn">+ nouvel itinéraire</button>
+    <div v-if="isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
+      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()">+ nouvel itinéraire</button>
     </div>
 
     <div class="dataContainer">
@@ -689,7 +672,6 @@ onMounted(async () => {
 :currentDuration="hikeDetails.duration" 
 :currentJourney="hikeDetails.journey" 
 :currentRegion="hikeDetails.region" 
-:currentRates="hikeDetails.rates" 
 :currentDescription="hikeDetails.description" 
 :hasTrail="hikeDetails.trail == 'None' ? false : true" 
 @close="hideUpdate(), isResponseLoading=true" 

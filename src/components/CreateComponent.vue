@@ -22,7 +22,6 @@ const difficulty = ref(2)
 const duration = ref('')
 const journey = ref([])
 const region = ref([])
-const rates = ref(2)
 const description = ref('')
 
 const durationHHMM = computed({
@@ -54,7 +53,6 @@ async function createHike() {
     duration: duration.value,
     journey: journey.value,
     region: region.value,
-    rates: rates.value,
     description: description.value,
     gpx: gpx.value,
   }
@@ -85,7 +83,6 @@ async function resetData() {
   duration.value = ''
   journey.value = ''
   region.value = ''
-  rates.value = 2
   description.value = ''
   gpx.value = ''
   errors.value = []
@@ -182,10 +179,6 @@ async function onSubmit() {
           <div class="form-group simaps-classic">
             <label for="InputDifficulty">Difficulté</label>
             <input v-model="difficulty" type="range" class="form-range range-cust" min="1" max="4" id="InputDifficulty">
-          </div>
-          <div class="form-group simaps-classic">
-            <label for="InputRates">Intérêt</label>
-            <input v-model="rates" type="range" class="form-range range-cust" min="1" max="4" id="InputRates">
           </div>
           <br/>
           <div class="modal-footer">
