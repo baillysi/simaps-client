@@ -9,6 +9,7 @@ import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon } f
 
 import startMarker from '../components/icons/start.svg'
 import endMarker from '../components/icons/end.svg'
+import viewpointMarker from '../components/icons/viewpoint.svg'
 
 import { useRouter } from 'vue-router'
 
@@ -63,6 +64,7 @@ const urlToShare = window.location.origin + currentPathObject.fullPath
 const isResponseLoading = ref(false)
 const hikeDetails = ref([])
 const hikeReviews = ref([])
+const hikeViewpoints = ref([])
 
 // hikeGlobalrate : if not reviews then set average rate
 const hikeGlobalRate = computed(() => {
@@ -83,7 +85,6 @@ const myMap = ref(null)
 const mapcenter = ref('')
 const hikeStartLatLng = ref('')
 const hikeEndLatLng = ref('')
-const testVp = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
 const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
@@ -192,6 +193,12 @@ async function getHikeReviews() {
   hikeReviews.value = responseReviews.data
 }
 
+async function getHikeViewpoints() {
+  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/viewpoints', { params: { hike_id: props.id } })
+  isResponseLoading.value = false
+  hikeViewpoints.value = responseViewpoints.data
+}
+
 function showShare() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#share'));
   myModal.show();
@@ -221,6 +228,7 @@ onMounted(async () => {
   isResponseLoading.value = true
   getHikeDetails()
   getHikeReviews()
+  getHikeViewpoints()
 })
 
 </script>
@@ -268,6 +276,16 @@ onMounted(async () => {
               :icon-url="endMarker"
             />
       </l-marker>
+      <l-marker
+            v-for="(item, index) in hikeViewpoints"
+            :key="index"
+            :lat-lng="[item.lat, item.lng]">
+            <l-tooltip class="simaps-classic">{{ item.name }}</l-tooltip>
+            <l-icon
+              :iconSize="mapzoom >= 15 ? [45, 45] : ((mapzoom >= 13 ? [30, 30] : [22, 22]))"
+              :icon-url="viewpointMarker"
+            />
+          </l-marker>
     </l-map>
     </div>
   </div>
