@@ -7,15 +7,23 @@ import AppFooter from '../components/AppFooter.vue'
 <template>
 
 <div class="container simaps-classic" style="text-align:justify;">
-  <p>Kavalé est une application web ayant pour objectif de valoriser la cartographie des sentiers de randonnées en France.
-  </p>
   <br/>
-  <h5 class="simaps-bold">Édition</h5>
-  <ul class="simaps-light">
-    <li>Simon BAILLY</li>
-    <li>9 rue deshoulieres 44000 Nantes</li>
-    <li>simon.bailly5@gmail.com</li>
-  </ul>
+  <h5 class="simaps-bold">Qui suis-je ?</h5>
+  <div class="row" style="margin-top:15px;">
+    <div class="col-xxl-2 col-xl-3 col-lg-4 d-none d-lg-block">
+      <img src="/simon.jpg" style="width: 100%;">
+    </div>
+    <div class="col-xxl-10 col-xl-9 col-lg-8">
+      <span>J’ai grandi dans le sud du Jura, avec des grands parents qui m’emmenaient crapahuter dès que l’occasion se présentait. 30 ans plus tard je suis toujours aussi sensible à la beauté des nuits de bivouac face au massif du Mont-Blanc, et à celle des cartes IGN. <br/> <br/> 
+        Je suis ingénieur de formation et donc passionné de cartographie. Mon objectif est de conduire des projets qui cherchent à mettre en avant la donnée géographique, principalement par la conception d’applications web. <br/><br/>
+        Kavalé est une application web ayant pour objectif de valoriser la cartographie des sentiers de randonnées en France. Les premières données mises en ligne concernent l'île de la Réunion, d'autres zones arriveront prochainement.
+      </span>
+    </div>
+  </div>
+  <br/><hr/><br/>
+  <h5 class="simaps-bold">Édition et contact</h5>
+  <p class="simaps-light">Simon BAILLY - simon.bailly5@gmail.com
+  </p>
   <br/>
   <h5 class="simaps-bold">Hébergement</h5>
   <ul class="simaps-light">
@@ -30,11 +38,12 @@ import AppFooter from '../components/AppFooter.vue'
     
   <br/>
   <h5 class="simaps-bold">Propriété intellectuelle</h5>
-  <p class="simaps-light">Le nom de domaine, le logo, les images et les tracés gpx sont la propriété exclusive de l'éditeur.</p>
+  <p class="simaps-light">Le nom de domaine, les photos et les tracés gpx sont la propriété exclusive de l'éditeur. L'éditeur possède également les droits de reproduction et de représentation du logo Kavalé et de l'illustration de la Barre des Écrins.</p>
   <br/>
   <h5 class="simaps-bold">Conditions d'utilisation et responsabilité</h5>
   <p class="simaps-light">L'éditeur ne pourra être tenu responsable de l'utilisation des informations proposées via l'application.
     En particuliter l'éditeur ne pourra être tenu pour responsable d'un incident ou accident survenu lors d'une randonnée figurant parmi la liste des sorties proposées.
+    La montagne est un milieu à risque, veillez à vous renseigner sur l'état des sentiers et la météo avant de vous engager. 
   </p>
   <br/>
   <h5 class="simaps-bold">Utilisation des données personnelles</h5>
