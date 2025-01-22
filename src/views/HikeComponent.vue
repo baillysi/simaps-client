@@ -340,14 +340,20 @@ onMounted(async () => {
       <div>
         <i v-for="n in Number(hikeGlobalRate)" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
         <i v-for="n in (5 - Number(hikeGlobalRate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
-        <button type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validés</u></button>
+        <button v-if="validatedReviews.length <= 1" type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validé</u></button>
+        <button v-if="validatedReviews.length > 1" type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validés</u></button>
       </div>
       <br/>
 
       <div>
+        <span data-toggle="tooltip" title="Randonnée classique" class="badge bg-info" style="margin-top: 3px;">
+          <img src="/hiker.svg" style="width: 13px;"> {{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(14, 16) }}
+        </span>
+        <span data-toggle="tooltip" title="Trail" class="badge bg-info" style="margin-top: 3px;">
+          <img src="/runner.svg" style="width: 15px;"> {{ (new Date(hikeDetails.duration * 1000 / 2.5)).toISOString().substring(11, 13) }}h{{ (new Date(hikeDetails.duration * 1000 / 2.5)).toISOString().substring(14, 16) }}
+        </span>
         <span class="badge bg-info">{{ hikeDetails.distance }} km</span>
         <span class="badge bg-info">{{ hikeDetails.elevation }} m+</span> 
-        <span class="badge bg-info">{{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(14, 16) }}</span>
         <span class="badge bg-info">{{ hikeDetails.journey.name }}</span>
       </div>
       <br/>
