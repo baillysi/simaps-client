@@ -3,10 +3,11 @@
 import axios from 'axios';
 import { ref, computed } from 'vue';
 
-
 // user session
 import { useFirebaseAuth} from 'vuefire'
 import { onAuthStateChanged } from 'firebase/auth'
+
+const emit = defineEmits(['update'])
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
@@ -27,8 +28,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-const emit = defineEmits(['close'])
-
 const props = defineProps({
   hikeReviews: Object,
   hikeName: String,
@@ -36,7 +35,7 @@ const props = defineProps({
 
 async function submitReview(review_id) {
   const payload = {
-    id_validated: true,
+    is_validated: true,
   }
 
   // add authorization to protect API
@@ -48,11 +47,28 @@ async function submitReview(review_id) {
   await axios.put(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + review_id, payload, { headers })
       .then((res) => {
           console.log(res.status);
-          emit('exit');
+          emit('update');
       })
       .catch((error) => {
           console.log(error);
       })
+}
+
+async function deleteReview(review_id) {
+  // add authorization to protect API
+  const token = await auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+
+  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + review_id, { headers })
+      .then((res) => {
+          console.log(res.status);
+          emit('update');
+      })
+      .catch((error) => {
+          console.log(error);
+      });
 }
 
 const sortedReviews = computed(() => {
@@ -94,7 +110,10 @@ const standbyReviews = computed (() => {
           <div class="row">
             <div class="col-9">
               <span class="simaps-bold">{{ review.title }}</span> 
-              <span class="badge bg-primary" style="margin-left: 5px !important;">Avis validé</span>
+              <span class="badge bg-primary" style="margin-left: 5px !important;">Avis validé</span> 
+              <button v-if="isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
+                <i class="pi pi-trash" style="color:#9F0000;"></i>
+              </button>
             </div>
             <div class="col-3 text-end">
               <small class="simaps-light">écrit le {{ review.created_at }}</small>
@@ -110,7 +129,10 @@ const standbyReviews = computed (() => {
           <div class="row">
             <div class="col-9">
               <span class="simaps-bold">{{ review.title }}</span> 
-              <button type="button" class="btn btn-dark btn-sm" @click="submitReview(review.id)" style="margin-left: 5px !important; color:">Avis en attente</button>
+              <button type="button" class="btn btn-dark btn-sm" @click="submitReview(review.id)" style="margin-left: 5px !important; color:">Avis en attente</button> 
+              <button v-if="isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
+                <i class="pi pi-trash" style="color:#9F0000;"></i>
+              </button>
             </div>
             <div class="col-3 text-end">
               <small class="simaps-light">écrit le {{ review.created_at }}</small>

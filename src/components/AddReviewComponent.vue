@@ -3,15 +3,23 @@
 import axios from 'axios';
 import { ref } from 'vue';
 
+import AlertComponent from './AlertComponent.vue';
+
 // user session
 import { useFirebaseAuth } from 'vuefire';
 const auth = useFirebaseAuth()
 
-const emit = defineEmits(['exit', 'close'])
+const emit = defineEmits(['exit'])
 
 const props = defineProps({
   hikeId: String,
 })
+
+// handle axios response 
+const isResponseLoading = ref(false)
+const showResponse = ref(false)
+const message = ref('')
+const success = ref(false)
 
 const title = ref('')
 const note = ref('')
@@ -25,7 +33,7 @@ function setRating(newRate) {
 }
 
 async function createReview() {
-  emit('close')
+  isResponseLoading.value = true
   const payload = {
     hike_id: props.hikeId,
     title: title.value,
@@ -42,12 +50,17 @@ async function createReview() {
   await axios.post(import.meta.env.VITE_APP_ROOT_API + '/reviews', payload, { headers })
       .then((res) => {
           console.log(res.status);
-          resetData();
-          emit('exit');
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = true
+          message.value = 'Merci pour votre avis ! Il sera bientôt visible'
       })
       .catch((error) => {
           console.log(error);
-          resetData();
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = false
+          message.value = 'Une erreur est survenue'
       })
 }
 
@@ -56,6 +69,10 @@ async function resetData() {
   note.value = ''
   rate.value = 0
   errors.value = []
+
+  showResponse.value = false
+  success.value = false
+  message.value = ''
 }
 
 // custom form validation
@@ -80,14 +97,24 @@ async function onSubmit() {
 
 <template>
 
+<div v-if="isResponseLoading" class="overlay">
+  <div class="overlay__wrapper">
+    <div class="overlay__spinner">
+      <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="#newReview" tabindex="-1" aria-labelledby="#newReview" aria-hidden="false">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title simaps-classic fs-5" id="#newReview">Laisser un avis</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
       </div>
-      <div class="modal-body">
+      <div v-if="!showResponse" class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate> 
           <p v-if="errors.length">
             <b>Veuillez corriger les erreurs suivantes :</b>
@@ -118,6 +145,11 @@ async function onSubmit() {
             <button type="submit" class="btn btn-danger">Envoyer</button>
           </div>
         </form>
+      </div>
+      <div v-if="showResponse" class="modal-body">
+        <div class="row" style="margin-left: 10px; margin-right: 10px;">
+          <AlertComponent :message="message" :success="success"></AlertComponent>
+        </div>
       </div>
     </div>
   </div>

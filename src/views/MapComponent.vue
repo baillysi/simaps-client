@@ -23,7 +23,6 @@ import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 
 // custom markers
 // todo use font-awesome
-import hostMarker from '../components/icons/host.svg'
 import viewpointMarker from '../components/icons/viewpoint.svg'
 
 import { Collapse, Modal } from 'bootstrap'
@@ -659,8 +658,7 @@ onMounted(async () => {
 
 <!-- Create -->
 <CreateComponent :zoneId="zone_id" :regions="regions" :journeys="journeys" 
-@close="hideCreate(), isResponseLoading=true"
-@exit="getZoneDetails(), resetDataAndFilters(), message = 'Itinéraire créé!', showMessage = true">
+@exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters()">
 </CreateComponent>
 
 <!-- Update -->
@@ -674,14 +672,12 @@ onMounted(async () => {
 :currentRegion="hikeDetails.region" 
 :currentDescription="hikeDetails.description" 
 :hasTrail="hikeDetails.trail == 'None' ? false : true" 
-@close="hideUpdate(), isResponseLoading=true" 
-@exit="getZoneDetails(), resetDataAndFilters(), message = 'Itinéraire mis à jour!', showMessage = true, hikeDetails = ''">
+@exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </UpdateComponent>
 
 <!-- Delete -->
 <DeleteComponent :hikeId="String(hikeDetails.id)"
-@close="hideDelete(), isResponseLoading=true"
-@exit="getZoneDetails(), resetDataAndFilters(), message = 'Itinéraire supprimé!', showMessage = true, hikeDetails = ''">
+@exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </DeleteComponent>
 
 <!-- Login -->
@@ -766,6 +762,7 @@ onMounted(async () => {
   font-optical-sizing: auto;
   font-weight: 500 !important;
   font-style: normal;
+  cursor: default;
 }
 
 .badge.bg-success {
