@@ -3,11 +3,13 @@
 import axios from 'axios';
 import { ref, toRef, watch, computed } from 'vue';
 
+import AlertComponent from './AlertComponent.vue';
+
 // user session
 import { useFirebaseAuth } from 'vuefire';
 const auth = useFirebaseAuth()
 
-const emit = defineEmits(['exit', 'close'])
+const emit = defineEmits(['exit'])
 
 const props = defineProps({
   zoneId: String,
@@ -24,6 +26,12 @@ const props = defineProps({
   regions: Object,
   hasTrail: Boolean,
 })
+
+// handle axios response 
+const isResponseLoading = ref(false)
+const showResponse = ref(false)
+const message = ref('')
+const success = ref(false)
 
 const updatedName = ref('')
 const updatedDistance = ref('')
@@ -85,7 +93,7 @@ watch(toRef(props, 'currentDescription'), (value) => {
 });
 
 async function updateHike() {
-  emit('close')
+  isResponseLoading.value = true
   const payload = {
     name: updatedName.value,
     distance: updatedDistance.value,
@@ -105,11 +113,18 @@ async function updateHike() {
 
   await axios.put(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, payload, { headers })
       .then((res) => {
-          console.log(res.status);
-          emit('exit');
+          console.log(res.status)
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = true
+          message.value = 'Itinéraire mis à jour'
       })
       .catch((error) => {
-          console.log(error);
+          console.log(error)
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = false
+          message.value = 'Une erreur est survenue'
       })
 }
 
@@ -123,6 +138,10 @@ async function resetData() {
   updatedRegion.value = toRef(props, 'currentRegion').value
   updatedDescription.value = toRef(props, 'currentDescription').value
   errors.value = []
+
+  showResponse.value = false
+  success.value = false
+  message.value = ''
 }
 
 // custom form validation
@@ -161,9 +180,9 @@ async function onSubmit() {
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title simaps-bold fs-5" id="#update">Mettre à jour l'itinéraire</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
       </div>
-      <div class="modal-body">
+      <div v-if="!showResponse" class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate>
           <p v-if="errors.length" style="color:#FF803D;">
             <b>Veuillez corriger les erreurs suivantes :</b>
@@ -222,6 +241,11 @@ async function onSubmit() {
             <button type="submit" class="btn btn-danger">Mettre à jour</button>
           </div>
         </form>
+      </div>
+      <div v-if="showResponse" class="modal-body">
+        <div class="row" style="margin-left: 10px; margin-right: 10px;">
+          <AlertComponent :message="message" :success="success"></AlertComponent>
+        </div>
       </div>
     </div>
   </div>

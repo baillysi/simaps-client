@@ -24,7 +24,6 @@ import ReviewComponent from '../components/ReviewComponent.vue'
 import AddReviewComponent from '../components/AddReviewComponent.vue'
 import LoginComponent from '../components/LoginComponent.vue'
 
-
 // user session
 import { useFirebaseAuth} from 'vuefire'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -225,11 +224,6 @@ function showNewReview() {
   myModal.show();
 }
 
-function hideNewReview() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#newReview'));
-  myModal.hide();
-}
-
 onMounted(async () => {
   isResponseLoading.value = true
   getHikeDetails()
@@ -391,13 +385,12 @@ onMounted(async () => {
 
 <!-- Review hike -->
 <ReviewComponent :hikeReviews="hikeReviews" :hikeName="hikeDetails.name" 
-@exit="getHikeReviews()">
+@update="getHikeReviews()">
 </ReviewComponent>
 
 <!-- New Review -->
 <AddReviewComponent :hikeId="String(hikeDetails.id)"
-@close="hideNewReview(), isResponseLoading=true"
-@exit="getHikeReviews(), message = 'Merci pour votre avis!', showMessage = true">
+@exit="getHikeReviews()">
 </AddReviewComponent>
 
 <!-- Login -->

@@ -117,8 +117,9 @@ async function signInAsGuest() {
 
       <div v-if="isLoggedIn" class="modal-body" style="text-align:center;">
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="'Vous êtes correctement identifié !'"></AlertComponent>
+          <AlertComponent :message="'Vous êtes correctement identifié !'" :success="true"></AlertComponent>
         </div>
+        <br/>
         <div v-if="currentUser.isAnonymous">Utilisateur : Invité </div>
         <div v-if="!currentUser.isAnonymous">Utilisateur : {{ currentUser.displayName }} </div>
         <div v-if="!currentUser.isAnonymous">Email : {{ currentUser.email }} </div>

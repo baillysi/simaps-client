@@ -8,12 +8,12 @@ import { signOut } from 'firebase/auth'
 
 const auth = useFirebaseAuth()
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['exit'])
 
 // SignOut
 async function signout() {
   signOut(auth).then((data) => {
-      emit('close')
+      emit('exit')
       router.push('/')
     })
     .catch(error => {

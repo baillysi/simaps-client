@@ -3,17 +3,25 @@
 import axios from 'axios';
 import { ref, computed } from 'vue';
 
+import AlertComponent from './AlertComponent.vue';
+
 // user session
 import { useFirebaseAuth } from 'vuefire';
 const auth = useFirebaseAuth()
 
-const emit = defineEmits(['exit', 'close'])
+const emit = defineEmits(['exit'])
 
 const props = defineProps({
   zoneId: String,
   journeys: Object,
   regions: Object,
 })
+
+// handle axios response 
+const isResponseLoading = ref(false)
+const showResponse = ref(false)
+const message = ref('')
+const success = ref(false)
 
 const name = ref('')
 const distance = ref('')
@@ -43,7 +51,7 @@ const durationHHMM = computed({
 const gpx = ref('')
 
 async function createHike() {
-  emit('close')
+  isResponseLoading.value = true
   const payload = {
     zone_id: props.zoneId,
     name: name.value,
@@ -65,13 +73,18 @@ async function createHike() {
 
   await axios.post(import.meta.env.VITE_APP_ROOT_API + '/hikes', payload, { headers })
       .then((res) => {
-          console.log(res.status);
-          resetData();
-          emit('exit');
+          console.log(res.status)
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = true
+          message.value = 'Itinéraire créé'
       })
       .catch((error) => {
           console.log(error);
-          resetData();
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = false
+          message.value = 'Une erreur est survenue'
       })
 }
 
@@ -86,6 +99,10 @@ async function resetData() {
   description.value = ''
   gpx.value = ''
   errors.value = []
+
+  showResponse.value = false
+  success.value = false
+  message.value = ''
 }
 
 // custom form validation
@@ -124,9 +141,9 @@ async function onSubmit() {
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title simaps-bold fs-5" id="#create">Créer un itinéraire</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
       </div>
-      <div class="modal-body">
+      <div v-if="!showResponse" class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate> 
           <p v-if="errors.length">
             <b>Veuillez corriger les erreurs suivantes :</b>
@@ -185,6 +202,11 @@ async function onSubmit() {
             <button type="submit" class="btn btn-danger">Créer</button>
           </div>
         </form>
+      </div>
+      <div v-if="showResponse" class="modal-body">
+        <div class="row" style="margin-left: 10px; margin-right: 10px;">
+          <AlertComponent :message="message" :success="success"></AlertComponent>
+        </div>
       </div>
     </div>
   </div>

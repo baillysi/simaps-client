@@ -1,19 +1,29 @@
 <script setup>
 
+import { ref } from 'vue';
+
 import axios from 'axios';
+
+import AlertComponent from './AlertComponent.vue';
 
 // user session
 import { useFirebaseAuth } from 'vuefire';
 const auth = useFirebaseAuth()
 
-const emit = defineEmits(['exit', 'close'])
+const emit = defineEmits(['exit'])
 
 const props = defineProps({
   hikeId: String,
 })
 
+// handle axios response 
+const isResponseLoading = ref(false)
+const showResponse = ref(false)
+const message = ref('')
+const success = ref(false)
+
 async function deleteHike() {
-  emit('close')
+  isResponseLoading.value = true
 
   // add authorization to protect API
   const token = await auth.currentUser.getIdToken()
@@ -23,11 +33,18 @@ async function deleteHike() {
 
   await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, { headers })
       .then((res) => {
-          console.log(res.status);
-          emit('exit');
+          console.log(res.status)
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = true
+          message.value = 'Itinéraire supprimé'
       })
       .catch((error) => {
-          console.log(error);
+          console.log(error)
+          isResponseLoading.value = false
+          showResponse.value = true
+          success.value = false
+          message.value = 'Une erreur est survenue'
       });
 }
 </script>
@@ -39,13 +56,18 @@ async function deleteHike() {
     <div class="modal-content simaps-classic">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="#delete">Êtes-vous certain ?</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="emit('exit')"></button>
       </div>
-      <div class="modal-body">
+      <div v-if="!showResponse" class="modal-body">
         <p>Voulez-vous vraiment supprimer l'itinéraire ? Cette action est irréversible.</p>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-danger" @click="deleteHike">Supprimer l'itinéraire</button>
+      <div v-if="!showResponse"  class="modal-footer">
+        <button class="btn btn-danger" @click="deleteHike()">Supprimer l'itinéraire</button>
+      </div>
+      <div v-if="showResponse" class="modal-body">
+        <div class="row" style="margin-left: 10px; margin-right: 10px;">
+          <AlertComponent :message="message" :success="success"></AlertComponent>
+        </div>
       </div>
     </div>
   </div>

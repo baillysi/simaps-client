@@ -113,7 +113,7 @@ onMounted(async () => {
 <LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
 
 <!-- Logout -->
-<LogoutComponent @close="hideLogout()"></LogoutComponent>
+<LogoutComponent @exit="hideLogout()"></LogoutComponent>
 
 </template>
 
