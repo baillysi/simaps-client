@@ -19,16 +19,8 @@ async function goToMaps() {
 <div class="container-fluid" style="text-align:center;">
   
   <h1 class="simaps-bold" style="font-size: 75px;">Cartes & Randonnées.</h1>
+  <h6 class="simaps-light" style="padding-bottom: 30px;">La cartographie des plus beaux massifs, pour préparer vos trails et randonnées.</h6>
 
-  <figure class="text-center">
-    <blockquote class="blockquote">
-      <h6 class="simaps-light">A mes montagnes, reconnaissant, infiniment, pour le bien-être intérieur que ma jeunesse a retiré de leur sévère école.</h6>
-    </blockquote>
-    <figcaption class="blockquote-footer">
-      Walter Bonatti
-    </figcaption>
-  </figure>
-  
   <div class="container" >
     <img src="/illustration.svg" style="max-width: 80%;">
   </div>

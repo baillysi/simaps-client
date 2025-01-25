@@ -8,13 +8,12 @@ import AppFooter from '../components/AppFooter.vue'
 
 <div class="container simaps-classic" style="text-align:justify;">
   <br/>
-  <h5 class="simaps-bold">Qui suis-je ?</h5>
   <div class="row" style="margin-top:15px;">
     <div class="col-xxl-2 col-xl-3 col-lg-4 d-none d-lg-block">
       <img src="/simon.jpg" style="width: 100%;">
     </div>
     <div class="col-xxl-10 col-xl-9 col-lg-8">
-      <span>J’ai grandi dans le sud du Jura, avec des grands parents qui m’emmenaient crapahuter dès que l’occasion se présentait. 30 ans plus tard je suis toujours aussi sensible à la beauté des nuits de bivouac face au massif du Mont-Blanc, et à celle des cartes IGN. <br/> <br/> 
+      <span>Hello, moi c'est Simon &#128578; J’ai grandi dans le Jura, avec des grands parents qui m’emmenaient crapahuter dès que l’occasion se présentait. 30 ans plus tard je suis toujours aussi sensible à la beauté des nuits de bivouac face au massif du Mont-Blanc, et à celle des cartes IGN. <br/> <br/> 
         Je suis ingénieur de formation et donc passionné de cartographie. Mon objectif est de conduire des projets qui cherchent à mettre en avant la donnée géographique, principalement par la conception d’applications web. <br/><br/>
         Kavalé est une application web ayant pour objectif de valoriser la cartographie des sentiers de randonnées en France. Les premières données mises en ligne concernent l'île de la Réunion, d'autres zones arriveront prochainement.
       </span>
