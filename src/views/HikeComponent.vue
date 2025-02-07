@@ -7,6 +7,14 @@ import 'leaflet/dist/leaflet.css'
 
 import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
 
+// native leaflet plugins
+import 'leaflet.locatecontrol'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
+import 'leaflet.fullscreen'
+import 'leaflet.fullscreen/Control.FullScreen.css'
+import 'leaflet.heightgraph'
+import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
+
 import startMarker from '../components/icons/start.svg'
 import endMarker from '../components/icons/end.svg'
 import viewpointMarker from '../components/icons/viewpoint.svg'
@@ -175,7 +183,7 @@ useResizeObserver(myMap, (entries) => {
 
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
-  myMap.value.leafletObject.fitBounds(feature.getBounds())
+  myMap.value.leafletObject.fitBounds(feature.getBounds(), true)
 }
 
 function zoomUpdated(zoom) {

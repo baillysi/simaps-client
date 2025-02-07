@@ -295,7 +295,7 @@ function hideHeightgraph() {
 
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
-  myMap.value.leafletObject.fitBounds(feature.getBounds())
+  myMap.value.leafletObject.fitBounds(feature.getBounds(), true)
 }
 
 function fitBoundsRegion() {
