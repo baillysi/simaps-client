@@ -295,7 +295,7 @@ function hideHeightgraph() {
 
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
-  myMap.value.leafletObject.fitBounds(feature.getBounds())
+  myMap.value.leafletObject.fitBounds(feature.getBounds(), true)
 }
 
 function fitBoundsRegion() {
@@ -310,7 +310,7 @@ function fitBoundsRegion() {
     let feature = L.geoJSON(filteredHikes.value[i].trail.geojson)
     bounds.extend(feature.getBounds())
   }
-  myMap.value.leafletObject.fitBounds(bounds)
+  myMap.value.leafletObject.fitBounds(bounds, true)
 }
 
 function fitBoundsZone(mapcenter) {
@@ -454,21 +454,6 @@ function showUpdate() {
 function showDelete() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#delete'));
   myModal.show();
-}
-
-function hideCreate() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#create'));
-  myModal.hide();
-}
-
-function hideUpdate() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#update'));
-  myModal.hide();
-}
-
-function hideDelete() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#delete'));
-  myModal.hide();
 }
 
 function showSelected(hike) {

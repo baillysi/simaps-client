@@ -7,6 +7,14 @@ import 'leaflet/dist/leaflet.css'
 
 import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
 
+// native leaflet plugins
+import 'leaflet.locatecontrol'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
+import 'leaflet.fullscreen'
+import 'leaflet.fullscreen/Control.FullScreen.css'
+import 'leaflet.heightgraph'
+import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
+
 import startMarker from '../components/icons/start.svg'
 import endMarker from '../components/icons/end.svg'
 import viewpointMarker from '../components/icons/viewpoint.svg'
@@ -65,6 +73,10 @@ const hikeDetails = ref([])
 const hikeReviews = ref([])
 const hikeViewpoints = ref([])
 
+async function goBackToMaps() {
+  console.log(hikeDetails)
+  router.push('/maps/' + hikeDetails.value.zone)
+}
 
 const validatedReviews = computed (() => {
   return hikeReviews.value.filter(
@@ -175,7 +187,7 @@ useResizeObserver(myMap, (entries) => {
 
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
-  myMap.value.leafletObject.fitBounds(feature.getBounds())
+  myMap.value.leafletObject.fitBounds(feature.getBounds(), true)
 }
 
 function zoomUpdated(zoom) {
@@ -292,9 +304,9 @@ onMounted(async () => {
 
   <div class="col-lg-4" >
 
-    <div class="dataContainer" v-if="ismapdata">
+    <div class="dataContainer" v-if="ismapdata" style="min-height: 100%; display: grid; grid-template-rows: column dense; /* dispaly grid to have sticky footer */">
 
-      <div id="carouselExampleIndicators" class="carousel slide">
+      <div id="carouselExampleIndicators" class="carousel slide" style="width: 92%; margin: auto;">
         <div class="carousel-indicators">
           <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
           <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -343,7 +355,6 @@ onMounted(async () => {
         <button v-if="validatedReviews.length <= 1" type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validé</u></button>
         <button v-if="validatedReviews.length > 1" type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validés</u></button>
       </div>
-      <br/>
 
       <div>
         <span data-toggle="tooltip" title="Randonnée classique" class="badge bg-info" style="margin-top: 3px;">
@@ -361,7 +372,7 @@ onMounted(async () => {
       <div class="simaps-classic">
         {{ hikeDetails.description }}
       </div>
-      <br/><br/>
+      <br/>
 
       <div class="row text-center d-none d-xxl-block">
         <div class="btn-group" role="group" aria-label="Basic example">
@@ -377,6 +388,12 @@ onMounted(async () => {
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
         </div>
+      </div>
+
+      <div style="margin-top: 10px; margin-bottom: 10px; text-align: end;">
+        <button class="btn btn-light simaps-classic" style="font-size: 12px;" @click="goBackToMaps()" data-toggle="tooltip" title="obtenir plus de détails">
+          <i class="pi pi-arrow-circle-left" style="color:#3C002E;"></i> <u>Retour à la liste complète</u>
+        </button>
       </div>
 
     </div>
@@ -428,20 +445,6 @@ onMounted(async () => {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-}
-
-.mapContainer {
-  position: relative;
-  height: 100%;
-  width: 100%; 
-}
-
-.dataContainer {
-  position: relative;
-  max-height: calc(100vh - 137px);
-  width: 100%;  /* This means "100% of the width of its container", the .col-lg-4 */
-  overflow: auto;
-  padding-right: 12px;
 }
 
 </style>
