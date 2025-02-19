@@ -306,7 +306,7 @@ onMounted(async () => {
 
     <div class="dataContainer" v-if="ismapdata" style="min-height: 100%; display: grid; grid-template-rows: column dense; /* dispaly grid to have sticky footer */">
 
-      <div id="carouselExampleIndicators" class="carousel slide" style="width: 92%; margin: auto;">
+      <div id="carouselExampleIndicators" class="carousel slide d-none d-lg-block" style="width: 100%;">
         <div class="carousel-indicators">
           <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
           <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -335,7 +335,7 @@ onMounted(async () => {
       <br/>
 
       <div class="row">
-        <div class="col-7 simaps-bold fs-5" style="padding-right: 10px !important;">
+        <div class="col-7 simaps-bold fs-5">
             {{ hikeDetails.name }}
         </div>
         <div class="col-3 d-lg-none d-xxl-block">
@@ -374,7 +374,7 @@ onMounted(async () => {
       </div>
       <br/>
 
-      <div class="row text-center d-none d-xxl-block">
+      <div class="row text-center d-lg-none d-xxl-block">
         <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Plus de détails</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
@@ -382,7 +382,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="row text-center d-xxl-none" style="margin-left: 5px; margin-right: 5px; margin-bottom: 5px;">
+      <div class="row text-center d-none d-lg-block d-xxl-none" style="margin-left: 5px; margin-right: 5px; margin-bottom: 5px;">
         <div class="btn-group-vertical" role="group" aria-label="Basic example">
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Plus de détails</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>

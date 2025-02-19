@@ -98,11 +98,9 @@ onMounted(async () => {
       </ul>
 
       <form class="form-inline">
-        <button v-if="isLoggedIn" class="btn btn-outline-secondary" style="margin-right: 8px;" type="button" @click="showLogin()">Mon compte</button>
-        <button v-if="!isLoggedIn" class="btn btn-outline-secondary" style="margin-right: 8px;" type="button" @click="showLogin()">Se connecter</button>
-        <button class="btn btn-outline-primary" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter" :disabled="!isLoggedIn">
-          <i class="pi pi-sign-out"></i>
-        </button>
+        <button v-if="isLoggedIn" class="btn btn-outline-secondary" type="button" @click="showLogin()">Mon compte</button>
+        <button v-if="isLoggedIn" class="btn btn-outline-primary" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Se déconnecter"><i class="pi pi-sign-out"></i></button>
+        <button v-if="!isLoggedIn" class="btn btn-outline-secondary" type="button" @click="showLogin()">Se connecter</button>
       </form>
 
     </div>
