@@ -32,7 +32,6 @@ async function goToMaps() {
 
   <div class="btn-group" role="group">
     <button type="button" class="btn btn-outline-secondary" @click="zone = 'reunion', goToMaps()">Île de la Réunion</button>
-    <button type="button" class="btn btn-outline-secondary disabled" @click="zone = 'ecrins', goToMaps()">Massif des Écrins</button>
   </div>
 
 </div>

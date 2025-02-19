@@ -89,7 +89,6 @@ onMounted(async () => {
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li class="nav-item"><button class="dropdown-item simaps-classic" @click="zone = 'reunion', goToMaps()">Réunion</button></li>
-            <li class="nav-item"><button class="dropdown-item simaps-classic" @click="zone = 'ecrins', goToMaps()" disabled>Écrins</button></li>
           </ul>
         </li>
         <li class="nav-item">
