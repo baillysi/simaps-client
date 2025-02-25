@@ -205,6 +205,7 @@ const myMap = ref(null)
 const mapcenter = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
+const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
 
 watch(mapcenter, () => {
   ismapdata.value = true;
@@ -367,77 +368,6 @@ useResizeObserver(myMap, (entries) => {
   }
 })
 
-const tileProviders = ref([
-  {
-    name: 'OpenStreetMap',
-    visible: true,
-    attribution:
-      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  },
-  {
-    name: 'OpenTopoMap',
-    visible: false,
-    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    attribution:
-      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>,'+
-      ' <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy;'+
-      ' <a href="https://opentopomap.org">OpenTopoMap</a>'+ 
-      ' (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-  },
-  {
-    name: 'Satellite IGN',
-    visible: false,
-    url : "https://data.geopf.fr/wmts?" +
-        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-        "&STYLE=normal" +
-        "&TILEMATRIXSET=PM" +
-        "&FORMAT=image/jpeg"+
-        "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS"+
-	      "&TILEMATRIX={z}" +
-        "&TILEROW={y}" +
-        "&TILECOL={x}",
-    attribution : "Orthophotos - © IGN",
-    maxZoom: 18,
-	},
-  {
-    name: 'Plan IGN',
-    visible: false,
-    url :"https://data.geopf.fr/wmts?" +
-        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-        "&STYLE=normal" +
-        "&TILEMATRIXSET=PM" +
-        "&FORMAT=image/png"+
-        "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2"+
-	      "&TILEMATRIX={z}" +
-        "&TILEROW={y}" +
-        "&TILECOL={x}",
-    attribution: 'Plan IGNV2 - Carte © IGN/Geoportail',
-    maxNativeZoom: 19,
-    maxZoom: 22,
-	}
-])
-
-// hosts mock
-const hosts = ref([
-  {
-    coordinates: [-21.102668429846773, 55.43360219548072],
-    content : "Gîte Expédit Orchidée Sauvage",
-  },
-  {
-    coordinates: [-21.039630277641255, 55.42612640797504],
-    content : "Gîte de l'Îlet à Bourse",
-  },
-  {
-    coordinates: [-21.02746246920337, 55.42801488437272],
-    content : "Chez Rudy",
-  },
-  {
-    coordinates: [-21.079125627796877, 55.423750907575055],
-    content : "Chez Marie France et Crissou",
-  },
-])
-
 // custom validation 
 // check bootstrap native validation or third part library like veevalidate + server side validation
 // use of js functions to show or hide modals instead of native data-bs-dismiss to add form validation logic
@@ -491,18 +421,7 @@ onMounted(async () => {
     <div class="mapContainer" v-if="ismapdata">
 
       <l-map ref="myMap" :zoom="10" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
-
-        <l-control-layers position="topright"></l-control-layers>
-
-        <l-tile-layer
-          v-for="tileProvider in tileProviders"
-          :key="tileProvider.name"
-          :name="tileProvider.name"
-          :visible="tileProvider.visible"
-          :url="tileProvider.url"
-          :attribution="tileProvider.attribution"
-          layer-type="base"
-        />
+        <l-tile-layer :url="'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'" :attribution="attribution"></l-tile-layer>
 
         <l-geo-json @click="selectedHike=hike.id, showSelected(hike), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
         @mouseover="hoveredHike=hike.id" 
