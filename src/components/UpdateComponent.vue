@@ -180,7 +180,8 @@ async function onSubmit() {
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title simaps-bold fs-5" id="#update">Mettre à jour l'itinéraire</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
+        <button v-if="!showResponse" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
+        <button v-if="showResponse" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
       </div>
       <div v-if="!showResponse" class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate>
