@@ -5,7 +5,7 @@ globalThis.L = L
 
 import 'leaflet/dist/leaflet.css'
 
-import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
+import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon, LControlLayers} from '@vue-leaflet/vue-leaflet'
 
 // native leaflet plugins
 import 'leaflet.locatecontrol'
@@ -74,7 +74,6 @@ const hikeReviews = ref([])
 const hikeViewpoints = ref([])
 
 async function goBackToMaps() {
-  console.log(hikeDetails)
   router.push('/maps/' + hikeDetails.value.zone)
 }
 
@@ -100,11 +99,11 @@ const hikeGlobalRate = computed(() => {
 // leaflet map
 const myMap = ref(null)
 const mapcenter = ref('')
-const hikeStartLatLng = ref('')
-const hikeEndLatLng = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
 const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
+const hikeStartLatLng = ref('')
+const hikeEndLatLng = ref('')
 
 watch(mapcenter, () => {
   ismapdata.value = true;
@@ -185,6 +184,57 @@ useResizeObserver(myMap, (entries) => {
   }
 })
 
+const tileProviders = ref([
+  {
+    name: 'OpenStreetMap',
+    visible: true,
+    attribution:
+      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  },
+  {
+    name: 'OpenTopoMap',
+    visible: false,
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution:
+      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>,'+
+      ' <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy;'+
+      ' <a href="https://opentopomap.org">OpenTopoMap</a>'+ 
+      ' (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+  },
+  {
+    name: 'Satellite IGN',
+    visible: false,
+    url : "https://data.geopf.fr/wmts?" +
+        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
+        "&STYLE=normal" +
+        "&TILEMATRIXSET=PM" +
+        "&FORMAT=image/jpeg"+
+        "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS"+
+	      "&TILEMATRIX={z}" +
+        "&TILEROW={y}" +
+        "&TILECOL={x}",
+    attribution : "Orthophotos - © IGN",
+    maxZoom: 18,
+	},
+  {
+    name: 'Plan IGN',
+    visible: false,
+    url :"https://data.geopf.fr/wmts?" +
+        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
+        "&STYLE=normal" +
+        "&TILEMATRIXSET=PM" +
+        "&FORMAT=image/png"+
+        "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2"+
+	      "&TILEMATRIX={z}" +
+        "&TILEROW={y}" +
+        "&TILECOL={x}",
+    attribution: 'Plan IGNV2 - Carte © IGN/Geoportail',
+    maxNativeZoom: 19,
+    maxZoom: 22,
+	}
+])
+
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds(), true)
@@ -236,6 +286,10 @@ function showNewReview() {
   myModal.show();
 }
 
+function makeImgPath(id) {
+  return '/' + id + '.jpg'
+}
+
 onMounted(async () => {
   isResponseLoading.value = true
   getHikeDetails()
@@ -262,7 +316,18 @@ onMounted(async () => {
   <div class="col-lg-8">
     <div class="mapContainer" v-if="ismapdata">
       <l-map ref="myMap" :zoom="mapzoom" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
-      <l-tile-layer :url="'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'" :attribution="attribution"></l-tile-layer>
+      <l-control-layers position="topright"></l-control-layers>
+
+      <l-tile-layer
+        v-for="tileProvider in tileProviders"
+        :key="tileProvider.name"
+        :name="tileProvider.name"
+        :visible="tileProvider.visible"
+        :url="tileProvider.url"
+        :attribution="tileProvider.attribution"
+        layer-type="base"
+      />
+
       <l-geo-json :geojson="hikeDetails.trail.geojson" :options-style="function() {return selectedStyle}">
         <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hikeDetails.name }}<br/> 
           <span v-if="hikeDetails.difficulty == 1" class="badge bg-success">Facile</span>
@@ -306,31 +371,8 @@ onMounted(async () => {
 
     <div class="dataContainer" v-if="ismapdata" style="min-height: 100%; display: grid; grid-template-rows: column dense; /* dispaly grid to have sticky footer */">
 
-      <div id="carouselExampleIndicators" class="carousel slide d-none d-lg-block" style="width: 100%;">
-        <div class="carousel-indicators">
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-        </div>
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="/cilaos.jpg" class="d-block w-100" alt="...">
-          </div>
-          <div class="carousel-item">
-            <img src="/est.jpg" class="d-block w-100" alt="...">
-          </div>
-          <div class="carousel-item">
-            <img src="/ouest.jpg" class="d-block w-100" alt="...">
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="false"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="false"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
+      <div class="d-none d-lg-block">
+        <img :src="makeImgPath(props.id)" class="d-block w-100" alt="...">
       </div>
       <br/>
 
