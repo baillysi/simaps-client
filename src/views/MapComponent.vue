@@ -7,11 +7,7 @@ import 'leaflet/dist/leaflet.css'
 
 // vue components for Leaflet Maps - vue3
 // regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
-import { LMap, LTileLayer, LPopup, LControlScale, LControlLayers, LLayerGroup, LMarker, LIcon, LGeoJson, LTooltip } from '@vue-leaflet/vue-leaflet'
-
-// wrapper seems to be compatible with vue3
-import { LMarkerClusterGroup } from 'vue-leaflet-markercluster'
-import 'vue-leaflet-markercluster/dist/style.css'
+import { LMap, LTileLayer, LControlScale, LGeoJson, LTooltip } from '@vue-leaflet/vue-leaflet'
 
 // native leaflet plugins
 import 'leaflet.locatecontrol'
@@ -21,10 +17,6 @@ import 'leaflet.fullscreen/Control.FullScreen.css'
 import 'leaflet.heightgraph'
 import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
 
-// custom markers
-// todo use font-awesome
-import viewpointMarker from '../components/icons/viewpoint.svg'
-
 import { Collapse, Modal } from 'bootstrap'
 import axios from 'axios'
 import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
@@ -32,7 +24,6 @@ import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
 import CreateComponent from '../components/CreateComponent.vue'
 import UpdateComponent from '../components/UpdateComponent.vue'
 import DeleteComponent from '../components/DeleteComponent.vue'
-import AlertComponent from '../components/AlertComponent.vue'
 import LoginComponent from '../components/LoginComponent.vue'
 
 import { ref, onMounted, watch, computed } from 'vue'
@@ -42,7 +33,6 @@ import { useResizeObserver } from '@vueuse/core'
 // user session
 import { useFirebaseAuth} from 'vuefire'
 import { onAuthStateChanged } from 'firebase/auth'
-import { deleteAllPersistentCacheIndexes } from 'firebase/firestore'
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
@@ -53,7 +43,6 @@ const isAdmin = ref(false)
 onAuthStateChanged(auth, (user) => {
   if (user) {
     isLoggedIn.value = true
-    // check specific user
     if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
       isAdmin.value = true
     } 
@@ -63,43 +52,28 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-function showLogin() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
-  myModal.show();
-}
 
-// access to specific hike details with HikeComponent
-function goToHike(hike) {
-  router.push('/hikes/' + hike.id)
-}
-
-// hikes data form
 const props = defineProps({
   zone: String
 })
 
 const isResponseLoading = ref(false)
 
+// hikes data variables
 const hikes = ref([])
 const hikeDetails = ref('')
-const zone_id = ref('')
+const zoneId = ref('')
 
 const hoveredHike = ref('')
 const selectedHike = ref('')
 
 const journeys = ref([])
-const viewpoints = ref([])
 const regions = ref([])
-
-const regionsZone = ref([])
-
-const message = ref('')
-const showMessage = ref(false)
+const regionsAll = ref([])
 
 const searchName = ref('')
 const searchDifficulty = ref('')
 const searchRegion = ref('')
-
 const currentOrder = ref('')
 
 const sortedHikes = computed(() => {
@@ -151,8 +125,8 @@ const filteredHikes = computed (() => {
           &&
           hike.trail.geojson)
 })
-const sortedRegionsZone = computed(() => {
-  return regionsZone.value.sort((a, b) => {
+const sortedRegionsAll = computed(() => {
+  return regionsAll.value.sort((a, b) => {
   if (a.id < b.id) {
     return -1;
   }
@@ -163,53 +137,12 @@ const sortedRegionsZone = computed(() => {
   })
 })
 
-function resetData() {
-  selectedHike.value = ''
-  hideHeightgraph()
-}
-
-function resetDataAndFilters() {
-  selectedHike.value = ''
-  hideHeightgraph()
-  fitBoundsZone(mapcenter.value)
-  searchDifficulty.value = ''
-  searchRegion.value = ''
-  searchName.value = ''
-  currentOrder.value = ''
-}
-
-async function getZoneDetails() {
-  const responseZone = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
-  const responseRegion = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions/'+ props.zone)
-  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/viewpoints')
-  isResponseLoading.value = false
-  mapcenter.value = [parseFloat(responseZone.data['lat']), parseFloat(responseZone.data['lng'])]
-  zone_id.value = responseZone.data['id'].toString()
-  hikes.value = responseZone.data['hikes']
-  viewpoints.value = responseViewpoints.data
-  regionsZone.value = responseRegion.data
-}
-
-async function getJourneys() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/journeys')
-  journeys.value = response.data
-}
-
-async function getRegions() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions')
-  regions.value = response.data
-}
-
-// leaflet map
+// leaflet map variables
 const myMap = ref(null)
-const mapcenter = ref('')
-const mapzoom = ref(11)
-const ismapdata = ref(false)
+const mapCenter = ref('')
+const mapZoom = ref(11)
+const isMapDataLoaded = ref(false)
 const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
-
-watch(mapcenter, () => {
-  ismapdata.value = true;
-})
 
 const selectedStyle = ref(
   {
@@ -235,8 +168,6 @@ const outedLightStyle = ref(
     'weight': 3
   }
 )
-
-// leaflet elevation profile
 const colorMappings = {
     Simaps: {
         'Elevation': {
@@ -245,7 +176,6 @@ const colorMappings = {
         }
     }
   }
-
 const heightgraphOptions = {
     mappings: colorMappings,
     width: 650,
@@ -279,6 +209,42 @@ const myFullscreenControl = L.control
     fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
   })
 
+
+async function getZoneDetails() {
+  const responseZone = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
+  const responseRegion = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions/'+ props.zone)
+  isResponseLoading.value = false
+  mapCenter.value = [parseFloat(responseZone.data['lat']), parseFloat(responseZone.data['lng'])]
+  zoneId.value = responseZone.data['id'].toString()
+  hikes.value = responseZone.data['hikes']
+  regionsAll.value = responseRegion.data
+}
+
+async function getJourneys() {
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/journeys')
+  journeys.value = response.data
+}
+
+async function getRegions() {
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions')
+  regions.value = response.data
+}
+
+function resetData() {
+  selectedHike.value = ''
+  hideHeightgraph()
+}
+
+function resetDataAndFilters() {
+  selectedHike.value = ''
+  hideHeightgraph()
+  fitBoundsZone(mapCenter.value)
+  searchDifficulty.value = ''
+  searchRegion.value = ''
+  searchName.value = ''
+  currentOrder.value = ''
+}
+
 function onReady() {
   myLocateControl.addTo(myMap.value.leafletObject)
   myFullscreenControl.addTo(myMap.value.leafletObject)
@@ -293,6 +259,10 @@ function hideHeightgraph() {
   myHeightGraph.remove()
   // to prevent errors in useResizeObserver
   myHeightGraph._data = undefined
+}
+
+function zoomUpdated(zoom) {
+  mapZoom.value = zoom
 }
 
 function fitBounds(geojson) {
@@ -315,16 +285,11 @@ function fitBoundsRegion() {
   myMap.value.leafletObject.fitBounds(bounds, true)
 }
 
-function fitBoundsZone(mapcenter) {
-  myMap.value.leafletObject.setView(mapcenter, 10)
-}
-
-function zoomUpdated(zoom) {
-  mapzoom.value = zoom
+function fitBoundsZone(mapCenter) {
+  myMap.value.leafletObject.setView(mapCenter, 10)
 }
 
 function downloadGPX(geojson, name) {
-
   const options = {
     metadata: {
       name: name,
@@ -336,14 +301,8 @@ function downloadGPX(geojson, name) {
       }
     }
   }
-
-  // Will convert geojson into xml document
   const gpx = GeoJsonToGpx(geojson, options);
-
-  // convert document to string or post process it
   const gpxString = new XMLSerializer().serializeToString(gpx);
-
-  // @see https://stackoverflow.com/questions/10654971/create-text-file-from-string-using-js-and-html5
   const link = document.createElement('a');
   link.download = name.concat(".gpx");
   const blob = new Blob([gpxString], {type: 'text/xml'});
@@ -351,7 +310,11 @@ function downloadGPX(geojson, name) {
   link.click();
 }
 
-// make heightgraph responsive
+// watchers to load map and make heightgraph responsive
+watch(mapCenter, () => {
+  isMapDataLoaded.value = true;
+})
+
 useResizeObserver(myMap, (entries) => {
   const entry = entries[0]
   const { width } = entry.contentRect
@@ -368,10 +331,7 @@ useResizeObserver(myMap, (entries) => {
   }
 })
 
-// custom validation 
-// check bootstrap native validation or third part library like veevalidate + server side validation
-// use of js functions to show or hide modals instead of native data-bs-dismiss to add form validation logic
-
+// use of js functions to show or hide modals instead of native bootstrap data-bs-dismiss to add form validation logic
 function showCreate() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#create'));
   myModal.show();
@@ -387,6 +347,11 @@ function showDelete() {
   myModal.show();
 }
 
+function showLogin() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
+  myModal.show();
+}
+
 function showSelected(hike) {
   const details = document.getElementById('flush-collapseOne'+hike.id);
   const detailsCollapse = Collapse.getOrCreateInstance(details);
@@ -396,6 +361,13 @@ function showSelected(hike) {
   });
 }
 
+// routing
+function goToHike(hike) {
+  router.push({ name: 'HikeComponent', params: { id: hike.id } })
+
+}
+
+// lifecycle hook
 onMounted(async () => {
   isResponseLoading.value = true
   getZoneDetails()
@@ -418,43 +390,25 @@ onMounted(async () => {
 <div class="row">
 
   <div class="col-lg-8">
-    <div class="mapContainer" v-if="ismapdata">
+    <div class="mapContainer" v-if="isMapDataLoaded">
 
-      <l-map ref="myMap" :zoom="10" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
+      <l-map ref="myMap" :zoom="10" :center="mapCenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
+
+        <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
         <l-tile-layer :url="'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'" :attribution="attribution"></l-tile-layer>
 
         <l-geo-json @click="selectedHike=hike.id, showSelected(hike), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
         @mouseover="hoveredHike=hike.id" 
         @mouseout="hoveredHike=''" 
         v-for="hike in filteredHikes" :key="hike.id" :geojson="hike.trail.geojson" 
-        :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : ( mapzoom >= 13 ? function() {return outedStyle} : function() {return outedLightStyle} ) )">
-
+        :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : ( mapZoom >= 13 ? function() {return outedStyle} : function() {return outedLightStyle} ) )">
           <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hike.name }}<br/> 
             <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
             <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
             <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
             <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
           </l-tooltip>
-
         </l-geo-json> 
-
-        <l-layer-group 
-          :visible="false"
-          layerType="overlay"
-          name="Points de vue">
-          <l-marker
-            v-for="(item, index) in viewpoints"
-            :key="index"
-            :lat-lng="[item.lat, item.lng]">
-            <l-tooltip class="simaps-classic">{{ item.name }}</l-tooltip>
-            <l-icon
-              :iconSize="mapzoom >= 15 ? [45, 45] : ((mapzoom >= 13 ? [30, 30] : [22, 22]))"
-              :icon-url="viewpointMarker"
-            />
-          </l-marker>
-        </l-layer-group>
-
-        <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
 
       </l-map>
     </div>
@@ -472,7 +426,7 @@ onMounted(async () => {
         <div class="col-lg-5 col-4" >
           <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData(), fitBoundsRegion()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Région</option>
-            <option v-for="region in sortedRegionsZone" :value="region.id">{{ region.name }}</option>
+            <option v-for="region in sortedRegionsAll" :value="region.id">{{ region.name }}</option>
           </select>
         </div>
         <div class="col-lg-5 col-4" >
@@ -548,25 +502,18 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-
-      <br/>
-
-      <div class="row" style="margin-left: 10px; margin-right: 10px;">
-        <AlertComponent :message="message" v-if="showMessage"></AlertComponent>
-      </div>
-
     </div>
   </div>
 
 </div>
 
-<!-- Create -->
-<CreateComponent :zoneId="zone_id" :regions="regions" :journeys="journeys" 
+<!-- Create new hike -->
+<CreateComponent :zoneId="zoneId" :regions="regions" :journeys="journeys" 
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters()">
 </CreateComponent>
 
-<!-- Update -->
-<UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="zone_id" :journeys="journeys" :regions="regions" 
+<!-- Update hike -->
+<UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="zoneId" :journeys="journeys" :regions="regions" 
 :currentName="hikeDetails.name" 
 :currentDistance="hikeDetails.distance" 
 :currentElevation="hikeDetails.elevation" 
@@ -579,7 +526,7 @@ onMounted(async () => {
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </UpdateComponent>
 
-<!-- Delete -->
+<!-- Delete hike -->
 <DeleteComponent :hikeId="String(hikeDetails.id)"
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </DeleteComponent>

@@ -12,7 +12,7 @@ import AppHeader from './components/AppHeader.vue'
   <AppHeader />
 
   <router-view v-slot="{ Component }">
-    <keep-alive :exclude="'HikeComponent'">
+    <keep-alive :include="['HikeComponent', 'MapComponent']">
       <component :is="Component" :key="$route.fullPath"></component>
     </keep-alive>
   </router-view>
