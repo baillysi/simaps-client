@@ -287,7 +287,8 @@ function makeImgPath(id) {
 }
 
 function goBackToMaps() {
-  router.push('/maps/' + hikeDetails.value.zone)
+  router.push({ name: 'MapComponent', params: { zone: hikeDetails.value.zone } })
+
 }
 
 // lifecycle hook

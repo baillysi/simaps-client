@@ -363,7 +363,8 @@ function showSelected(hike) {
 
 // routing
 function goToHike(hike) {
-  router.push('/hikes/' + hike.id)
+  router.push({ name: 'HikeComponent', params: { id: hike.id } })
+
 }
 
 // lifecycle hook
