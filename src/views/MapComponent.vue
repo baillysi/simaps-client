@@ -42,6 +42,7 @@ import { useResizeObserver } from '@vueuse/core'
 // user session
 import { useFirebaseAuth} from 'vuefire'
 import { onAuthStateChanged } from 'firebase/auth'
+import { deleteAllPersistentCacheIndexes } from 'firebase/firestore'
 
 const auth = useFirebaseAuth()
 const isLoggedIn = ref(false)
@@ -204,6 +205,7 @@ const myMap = ref(null)
 const mapcenter = ref('')
 const mapzoom = ref(11)
 const ismapdata = ref(false)
+const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
 
 watch(mapcenter, () => {
   ismapdata.value = true;
@@ -355,7 +357,7 @@ useResizeObserver(myMap, (entries) => {
   const { width } = entry.contentRect
   if (myHeightGraph._data) {
     if (width <= 670 && width > 470) {
-      myHeightGraph.resize({width: 450, height: 157.5})
+      myHeightGraph.resize({width: 450, height: 192.5})
     }
     else if (width <= 470){
       myHeightGraph.resize({width: 350, height: 157.5})
@@ -365,77 +367,6 @@ useResizeObserver(myMap, (entries) => {
     }
   }
 })
-
-const tileProviders = ref([
-  {
-    name: 'OpenStreetMap',
-    visible: true,
-    attribution:
-      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  },
-  {
-    name: 'OpenTopoMap',
-    visible: false,
-    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    attribution:
-      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>,'+
-      ' <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy;'+
-      ' <a href="https://opentopomap.org">OpenTopoMap</a>'+ 
-      ' (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-  },
-  {
-    name: 'Satellite IGN',
-    visible: false,
-    url : "https://data.geopf.fr/wmts?" +
-        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-        "&STYLE=normal" +
-        "&TILEMATRIXSET=PM" +
-        "&FORMAT=image/jpeg"+
-        "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS"+
-	      "&TILEMATRIX={z}" +
-        "&TILEROW={y}" +
-        "&TILECOL={x}",
-    attribution : "Orthophotos - © IGN",
-    maxZoom: 18,
-	},
-  {
-    name: 'Plan IGN',
-    visible: false,
-    url :"https://data.geopf.fr/wmts?" +
-        "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-        "&STYLE=normal" +
-        "&TILEMATRIXSET=PM" +
-        "&FORMAT=image/png"+
-        "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2"+
-	      "&TILEMATRIX={z}" +
-        "&TILEROW={y}" +
-        "&TILECOL={x}",
-    attribution: 'Plan IGNV2 - Carte © IGN/Geoportail',
-    maxNativeZoom: 19,
-    maxZoom: 22,
-	}
-])
-
-// hosts mock
-const hosts = ref([
-  {
-    coordinates: [-21.102668429846773, 55.43360219548072],
-    content : "Gîte Expédit Orchidée Sauvage",
-  },
-  {
-    coordinates: [-21.039630277641255, 55.42612640797504],
-    content : "Gîte de l'Îlet à Bourse",
-  },
-  {
-    coordinates: [-21.02746246920337, 55.42801488437272],
-    content : "Chez Rudy",
-  },
-  {
-    coordinates: [-21.079125627796877, 55.423750907575055],
-    content : "Chez Marie France et Crissou",
-  },
-])
 
 // custom validation 
 // check bootstrap native validation or third part library like veevalidate + server side validation
@@ -490,18 +421,7 @@ onMounted(async () => {
     <div class="mapContainer" v-if="ismapdata">
 
       <l-map ref="myMap" :zoom="10" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
-
-        <l-control-layers position="topright"></l-control-layers>
-
-        <l-tile-layer
-          v-for="tileProvider in tileProviders"
-          :key="tileProvider.name"
-          :name="tileProvider.name"
-          :visible="tileProvider.visible"
-          :url="tileProvider.url"
-          :attribution="tileProvider.attribution"
-          layer-type="base"
-        />
+        <l-tile-layer :url="'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'" :attribution="attribution"></l-tile-layer>
 
         <l-geo-json @click="selectedHike=hike.id, showSelected(hike), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
         @mouseover="hoveredHike=hike.id" 
@@ -526,7 +446,7 @@ onMounted(async () => {
             v-for="(item, index) in viewpoints"
             :key="index"
             :lat-lng="[item.lat, item.lng]">
-            <l-popup class="simaps-classic">{{ item.name }}</l-popup>
+            <l-tooltip class="simaps-classic">{{ item.name }}</l-tooltip>
             <l-icon
               :iconSize="mapzoom >= 15 ? [45, 45] : ((mapzoom >= 13 ? [30, 30] : [22, 22]))"
               :icon-url="viewpointMarker"
@@ -549,13 +469,13 @@ onMounted(async () => {
     <div class="dataContainer">
 
       <div class="row" style="margin: 10px;">
-        <div class="col-5" >
+        <div class="col-lg-5 col-4" >
           <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData(), fitBoundsRegion()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Région</option>
             <option v-for="region in sortedRegionsZone" :value="region.id">{{ region.name }}</option>
           </select>
         </div>
-        <div class="col-5" >
+        <div class="col-lg-5 col-4" >
           <select class="form-select form-select-sm simaps-classic" v-model="searchDifficulty" @click="resetData()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Niveau</option>
             <option value="1">Facile</option>
@@ -564,13 +484,12 @@ onMounted(async () => {
             <option value="4">Expert</option>
           </select>
         </div>
-        <div class="col-2 simaps-classic">
+        <div class="col-lg-2 col-4 simaps-classic">
           <button class="btn btn-light btn-sm" @click="resetDataAndFilters()" data-toggle="tooltip" title="réinitialiser" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <i class="pi pi-filter-slash" style="color:#3C002E;"></i>
           </button>
         </div>
       </div>
-      <br/>
 
       <div class="accordion accordion-flush" id="accordionFlushParent">
         <div class="accordion-item" v-for="hike in filteredHikes" :key="hike.id">
@@ -674,6 +593,7 @@ onMounted(async () => {
 
 .mapContainer {
   position: relative;
+  min-height: 600px;
   height: 100%;
   width: 100%;  /* This means "100% of the width of its container", the .col-lg-8 */
   /* filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); */
@@ -681,10 +601,11 @@ onMounted(async () => {
 
 .dataContainer {
   position: relative;
-  max-height: calc(100vh - 141px - 12px - 62px);
+  max-height: calc(100vh - 110px);
   width: 100%;  /* This means "100% of the width of its container", the .col-lg-4 */
   overflow: auto;
   padding-right: 12px;
+  padding-left: 6px;
 }
 
 .overlay {
@@ -741,8 +662,8 @@ onMounted(async () => {
   color:#3C002E !important; 
   background-color: #fff !important;
   border: #3C002E solid 1px;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-right: 8px;
+  margin-bottom: 2px;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: 500 !important;

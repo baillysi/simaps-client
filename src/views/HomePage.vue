@@ -18,11 +18,13 @@ async function goToMaps() {
 
 <div class="container-fluid" style="text-align:center;">
   
-  <h1 class="simaps-bold" style="font-size: 75px;">Cartes & Randonnées.</h1>
+  <h1 class="simaps-bold d-none d-lg-block" style="font-size: 75px;">Cartes & Randonnées.</h1>
+  <h1 class="simaps-bold d-lg-none" style="font-size: 55px;">Cartes & Randonnées.</h1>
+
   <h6 class="simaps-light" style="padding-bottom: 30px;">La cartographie des plus beaux massifs, pour préparer vos trails et randonnées.</h6>
 
-  <div class="container" >
-    <img src="/illustration.svg" style="max-width: 80%;">
+  <div class="container-fluid">
+    <img src="/illustration.svg" style="max-height: 500px;">
   </div>
 
   <br/>
@@ -30,7 +32,6 @@ async function goToMaps() {
 
   <div class="btn-group" role="group">
     <button type="button" class="btn btn-outline-secondary" @click="zone = 'reunion', goToMaps()">Île de la Réunion</button>
-    <button type="button" class="btn btn-outline-secondary disabled" @click="zone = 'ecrins', goToMaps()">Massif des Écrins</button>
   </div>
 
 </div>
@@ -43,10 +44,6 @@ async function goToMaps() {
 
   @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-  img {
-    max-width: 100%;
-    height: auto;
-  }
 
   .btn-outline-primary {
     border-color: #FF803D !important;
@@ -60,8 +57,8 @@ async function goToMaps() {
     font-optical-sizing: auto;
     font-weight: 650 !important;
     font-style: normal;
-    padding-right: 50px !important;
-    padding-left: 50px !important;
+    padding-right: 45px !important;
+    padding-left: 45px !important;
   }
 
   .btn-outline-secondary:hover {
