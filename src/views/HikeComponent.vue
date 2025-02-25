@@ -287,7 +287,8 @@ function showNewReview() {
 }
 
 function makeImgPath(id) {
-  return '/' + id + '.jpg'
+  return '/mock_img.jpg'
+  // return '/' + id + '.jpg'
 }
 
 onMounted(async () => {
