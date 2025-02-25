@@ -5,7 +5,7 @@ globalThis.L = L
 
 import 'leaflet/dist/leaflet.css'
 
-import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon, LControlLayers} from '@vue-leaflet/vue-leaflet'
+import { LMap, LTileLayer, LGeoJson, LControlScale, LTooltip, LMarker, LIcon, LControlLayers } from '@vue-leaflet/vue-leaflet'
 
 // native leaflet plugins
 import 'leaflet.locatecontrol'
@@ -55,34 +55,26 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-function showLogin() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
-  myModal.show();
-}
-
 const props = defineProps({
   id: String
 })
+
+const isResponseLoading = ref(false)
 
 const router = useRouter()
 const currentPathObject = router.currentRoute.value;
 const urlToShare = window.location.origin + currentPathObject.fullPath
 
-const isResponseLoading = ref(false)
+// hikes data variables
 const hikeDetails = ref([])
 const hikeReviews = ref([])
 const hikeViewpoints = ref([])
-
-async function goBackToMaps() {
-  router.push('/maps/' + hikeDetails.value.zone)
-}
 
 const validatedReviews = computed (() => {
   return hikeReviews.value.filter(
         (review) => review.is_validated === true)
 })
 
-// hikeGlobalrate : if not reviews then set average rate
 const hikeGlobalRate = computed(() => {
   let sum = 0;
   let count = validatedReviews.value.length;
@@ -96,18 +88,13 @@ const hikeGlobalRate = computed(() => {
   return rate;
 })
 
-// leaflet map
+// leaflet map variables
 const myMap = ref(null)
-const mapcenter = ref('')
-const mapzoom = ref(11)
-const ismapdata = ref(false)
-const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
+const mapCenter = ref('')
+const mapZoom = ref(11)
+const isMapDataLoaded = ref(false)
 const hikeStartLatLng = ref('')
 const hikeEndLatLng = ref('')
-
-watch(mapcenter, () => {
-  ismapdata.value = true;
-})
 
 const selectedStyle = ref(
   {
@@ -116,7 +103,6 @@ const selectedStyle = ref(
   }
 )
 
-// leaflet elevation profile
 const colorMappings = {
     Simaps: {
         'Elevation': {
@@ -159,30 +145,27 @@ const myFullscreenControl = L.control
     fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
   })
 
-function onReady() {
-  fitBounds(hikeDetails.value.trail.geojson)
-  myLocateControl.addTo(myMap.value.leafletObject)
-  myFullscreenControl.addTo(myMap.value.leafletObject)
-  myHeightGraph.addTo(myMap.value.leafletObject)
-  myHeightGraph.addData([hikeDetails.value.trail.geojson])
+async function getHikeDetails() {
+  const responseHike = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.id)
+  isResponseLoading.value = false
+  hikeDetails.value = responseHike.data
+  mapCenter.value = [-21.128756, 55.519246]
+  let hikeLength = hikeDetails.value.trail.geojson.features[0].geometry.coordinates.length
+  hikeStartLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][0]]
+  hikeEndLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][0]]
 }
 
-// make heightgraph responsive
-useResizeObserver(myMap, (entries) => {
-  const entry = entries[0]
-  const { width } = entry.contentRect
-  if (myHeightGraph._data) {
-    if (width <= 670 && width > 470) {
-      myHeightGraph.resize({width: 450, height: 157.5})
-    }
-    else if (width <= 470){
-      myHeightGraph.resize({width: 350, height: 157.5})
-    }
-    else {
-      myHeightGraph.resize({width: 650, height: 227.5})
-    }
-  }
-})
+async function getHikeReviews() {
+  const responseReviews = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/reviews', { params: { hike_id: props.id } })
+  isResponseLoading.value = false
+  hikeReviews.value = responseReviews.data
+}
+
+async function getHikeViewpoints() {
+  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/viewpoints', { params: { hike_id: props.id } })
+  isResponseLoading.value = false
+  hikeViewpoints.value = responseViewpoints.data
+}
 
 const tileProviders = ref([
   {
@@ -235,36 +218,43 @@ const tileProviders = ref([
 	}
 ])
 
+function onReady() {
+  fitBounds(hikeDetails.value.trail.geojson)
+  myLocateControl.addTo(myMap.value.leafletObject)
+  myFullscreenControl.addTo(myMap.value.leafletObject)
+  myHeightGraph.addTo(myMap.value.leafletObject)
+  myHeightGraph.addData([hikeDetails.value.trail.geojson])
+}
+
 function fitBounds(geojson) {
   let feature = L.geoJSON(geojson)
   myMap.value.leafletObject.fitBounds(feature.getBounds(), true)
 }
 
 function zoomUpdated(zoom) {
-  mapzoom.value = zoom
+  mapZoom.value = zoom
 }
 
-async function getHikeDetails() {
-  const responseHike = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.id)
-  isResponseLoading.value = false
-  hikeDetails.value = responseHike.data
-  mapcenter.value = [-21.128756, 55.519246]
-  let hikeLength = hikeDetails.value.trail.geojson.features[0].geometry.coordinates.length
-  hikeStartLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[0][0]]
-  hikeEndLatLng.value = [hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][1], hikeDetails.value.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][0]]
-}
+// watchers to load map and make heightgraph responsive
+watch(mapCenter, () => {
+  isMapDataLoaded.value = true;
+})
 
-async function getHikeReviews() {
-  const responseReviews = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/reviews', { params: { hike_id: props.id } })
-  isResponseLoading.value = false
-  hikeReviews.value = responseReviews.data
-}
-
-async function getHikeViewpoints() {
-  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/viewpoints', { params: { hike_id: props.id } })
-  isResponseLoading.value = false
-  hikeViewpoints.value = responseViewpoints.data
-}
+useResizeObserver(myMap, (entries) => {
+  const entry = entries[0]
+  const { width } = entry.contentRect
+  if (myHeightGraph._data) {
+    if (width <= 670 && width > 470) {
+      myHeightGraph.resize({width: 450, height: 192.5})
+    }
+    else if (width <= 470){
+      myHeightGraph.resize({width: 350, height: 157.5})
+    }
+    else {
+      myHeightGraph.resize({width: 650, height: 227.5})
+    }
+  }
+})
 
 function showShare() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#share'));
@@ -286,11 +276,21 @@ function showNewReview() {
   myModal.show();
 }
 
+function showLogin() {
+  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
+  myModal.show();
+}
+
 function makeImgPath(id) {
   return '/mock_img.jpg'
   // return '/' + id + '.jpg'
 }
 
+function goBackToMaps() {
+  router.push('/maps/' + hikeDetails.value.zone)
+}
+
+// lifecycle hook
 onMounted(async () => {
   isResponseLoading.value = true
   getHikeDetails()
@@ -315,62 +315,61 @@ onMounted(async () => {
 <div class="row">
 
   <div class="col-lg-8">
-    <div class="mapContainer" v-if="ismapdata">
-      <l-map ref="myMap" :zoom="mapzoom" :center="mapcenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
-      <l-control-layers position="topright"></l-control-layers>
+    <div class="mapContainer" v-if="isMapDataLoaded">
+      <l-map ref="myMap" :zoom="mapZoom" :center="mapCenter" :use-global-leaflet="true" @ready="onReady()" @update:zoom="zoomUpdated">
 
-      <l-tile-layer
-        v-for="tileProvider in tileProviders"
-        :key="tileProvider.name"
-        :name="tileProvider.name"
-        :visible="tileProvider.visible"
-        :url="tileProvider.url"
-        :attribution="tileProvider.attribution"
-        layer-type="base"
-      />
+        <l-control-layers position="topright"></l-control-layers>
+        <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
 
-      <l-geo-json :geojson="hikeDetails.trail.geojson" :options-style="function() {return selectedStyle}">
-        <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hikeDetails.name }}<br/> 
-          <span v-if="hikeDetails.difficulty == 1" class="badge bg-success">Facile</span>
-          <span v-if="hikeDetails.difficulty == 2" class="badge bg-primary">Moyen</span>
-          <span v-if="hikeDetails.difficulty == 3" class="badge bg-danger">Difficile</span>
-          <span v-if="hikeDetails.difficulty == 4" class="badge bg-dark">Expert</span>
-        </l-tooltip>
-      </l-geo-json>
-      <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
+        <l-tile-layer
+          v-for="tileProvider in tileProviders"
+          :key="tileProvider.name"
+          :name="tileProvider.name"
+          :visible="tileProvider.visible"
+          :url="tileProvider.url"
+          :attribution="tileProvider.attribution"
+          layer-type="base"/>
+
+        <l-geo-json :geojson="hikeDetails.trail.geojson" :options-style="function() {return selectedStyle}">
+          <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hikeDetails.name }}<br/> 
+            <span v-if="hikeDetails.difficulty == 1" class="badge bg-success">Facile</span>
+            <span v-if="hikeDetails.difficulty == 2" class="badge bg-primary">Moyen</span>
+            <span v-if="hikeDetails.difficulty == 3" class="badge bg-danger">Difficile</span>
+            <span v-if="hikeDetails.difficulty == 4" class="badge bg-dark">Expert</span>
+          </l-tooltip>
+        </l-geo-json>
+
       <l-marker :lat-lng="hikeStartLatLng">
         <l-tooltip class="simaps-classic">Départ</l-tooltip>
         <l-icon
-              :iconSize="mapzoom >= 15 ? [28, 28] : ((mapzoom >= 13 ? [24, 24] : [18, 18]))"
-              :iconAnchor="mapzoom >= 15 ? [14, 28] : ((mapzoom >= 13 ? [12, 24] : [9, 18]))"
-              :icon-url="startMarker"
-            />
+          :iconSize="mapZoom >= 15 ? [28, 28] : ((mapZoom >= 13 ? [24, 24] : [18, 18]))"
+          :iconAnchor="mapZoom >= 15 ? [14, 28] : ((mapZoom >= 13 ? [12, 24] : [9, 18]))"
+          :icon-url="startMarker"/>
       </l-marker>
       <l-marker :lat-lng="hikeEndLatLng">
         <l-tooltip class="simaps-classic">Arrivée</l-tooltip>
         <l-icon
-              :iconSize="mapzoom >= 15 ? [27, 27] : ((mapzoom >= 13 ? [22, 22] : [18, 18]))"
-              :iconAnchor="mapzoom >= 15 ? [3, 27] : ((mapzoom >= 13 ? [2, 22] : [2, 18]))"
-              :icon-url="endMarker"
-            />
+          :iconSize="mapZoom >= 15 ? [27, 27] : ((mapZoom >= 13 ? [22, 22] : [18, 18]))"
+          :iconAnchor="mapZoom >= 15 ? [3, 27] : ((mapZoom >= 13 ? [2, 22] : [2, 18]))"
+          :icon-url="endMarker"/>
       </l-marker>
       <l-marker
-            v-for="(item, index) in hikeViewpoints"
-            :key="index"
-            :lat-lng="[item.lat, item.lng]">
-            <l-tooltip class="simaps-classic">{{ item.name }}</l-tooltip>
-            <l-icon
-              :iconSize="mapzoom >= 15 ? [45, 45] : ((mapzoom >= 13 ? [30, 30] : [22, 22]))"
-              :icon-url="viewpointMarker"
-            />
-          </l-marker>
+        v-for="(item, index) in hikeViewpoints"
+        :key="index"
+        :lat-lng="[item.lat, item.lng]">
+        <l-tooltip class="simaps-classic">{{ item.name }}</l-tooltip>
+        <l-icon
+          :iconSize="mapZoom >= 15 ? [45, 45] : ((mapZoom >= 13 ? [30, 30] : [22, 22]))"
+          :icon-url="viewpointMarker"/>
+      </l-marker>
+
     </l-map>
     </div>
   </div>
 
   <div class="col-lg-4" >
 
-    <div class="dataContainer" v-if="ismapdata" style="min-height: 100%; display: grid; grid-template-rows: column dense; /* dispaly grid to have sticky footer */">
+    <div class="dataContainer" v-if="isMapDataLoaded" style="min-height: 100%; display: grid; grid-template-rows: column dense; /* dispaly grid to have sticky footer */">
 
       <div class="d-none d-lg-block">
         <img :src="makeImgPath(props.id)" class="d-block w-100" alt="...">
