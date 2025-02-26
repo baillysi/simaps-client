@@ -470,7 +470,11 @@ onMounted(async () => {
             <div class="accordion-body simaps-light">
               <span class="badge bg-info">{{ hike.distance }} km</span>
               <span class="badge bg-info">{{ hike.elevation }} m+</span> 
-              <span class="badge bg-info">{{ (new Date(hike.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hike.duration * 1000)).toISOString().substring(14, 16) }}</span>
+              <span class="badge bg-info">{{ (new Date(hike.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hike.duration * 1000)).toISOString().substring(14, 16) }} 
+                <i v-if="hike.journey.id == 1" class="pi pi-replay" style="color:#3C002E;"></i>
+                <i v-else-if="hike.journey.id == 2" class="pi pi-arrow-right-arrow-left" style="color:#3C002E;"></i>
+                <i v-else class="pi pi-arrow-right" style="color:#3C002E;"></i>
+              </span>
               <span class="badge bg-info">{{ hike.journey.name }}</span>
               <br/><br/>
               {{ hike.description }}

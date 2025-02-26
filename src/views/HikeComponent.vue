@@ -400,15 +400,21 @@ onMounted(async () => {
       </div>
 
       <div>
-        <span data-toggle="tooltip" title="Randonnée classique" class="badge bg-info" style="margin-top: 3px;">
-          <img src="/hiker.svg" style="width: 13px;"> {{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(14, 16) }}
-        </span>
-        <span data-toggle="tooltip" title="Trail" class="badge bg-info" style="margin-top: 3px;">
-          <img src="/runner.svg" style="width: 15px;"> {{ (new Date(hikeDetails.duration * 1000 / 2.5)).toISOString().substring(11, 13) }}h{{ (new Date(hikeDetails.duration * 1000 / 2.5)).toISOString().substring(14, 16) }}
-        </span>
         <span class="badge bg-info">{{ hikeDetails.distance }} km</span>
         <span class="badge bg-info">{{ hikeDetails.elevation }} m+</span> 
         <span class="badge bg-info">{{ hikeDetails.journey.name }}</span>
+        <span data-toggle="tooltip" title="Randonnée classique" class="badge bg-info" style="margin-top: 3px;">
+          <img src="/hiker.svg" style="width: 13px;"> {{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hikeDetails.duration * 1000)).toISOString().substring(14, 16) }} 
+          <i v-if="hikeDetails.journey.id == 1" class="pi pi-replay" style="color:#3C002E;"></i>
+          <i v-else-if="hikeDetails.journey.id == 2" class="pi pi-arrow-right-arrow-left" style="color:#3C002E;"></i>
+          <i v-else class="pi pi-arrow-right" style="color:#3C002E;"></i>
+        </span>
+        <span data-toggle="tooltip" title="Trail" class="badge bg-info" style="margin-top: 3px;">
+          <img src="/runner.svg" style="width: 15px;"> {{ (new Date(hikeDetails.duration * 1000 / 2.5)).toISOString().substring(11, 13) }}h{{ (new Date(hikeDetails.duration * 1000 / 2.5)).toISOString().substring(14, 16) }} 
+          <i v-if="hikeDetails.journey.id == 1" class="pi pi-replay" style="color:#3C002E;"></i>
+          <i v-else-if="hikeDetails.journey.id == 2" class="pi pi-arrow-right-arrow-left" style="color:#3C002E;"></i>
+          <i v-else class="pi pi-arrow-right" style="color:#3C002E;"></i>
+        </span>
       </div>
       <br/>
 
