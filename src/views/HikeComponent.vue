@@ -32,28 +32,8 @@ import ReviewComponent from '../components/ReviewComponent.vue'
 import AddReviewComponent from '../components/AddReviewComponent.vue'
 import LoginComponent from '../components/LoginComponent.vue'
 
-// user session
-import { useFirebaseAuth} from 'vuefire'
-import { onAuthStateChanged } from 'firebase/auth'
-
-const auth = useFirebaseAuth()
-const isLoggedIn = ref(false)
-const isAdmin = ref(false)
-
-// native vuefire watcher to check whether user logged or not
-// we wait for user to be loaded to call create / update / delete hike as it requires token
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    isLoggedIn.value = true
-    // check specific user
-    if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
-      isAdmin.value = true
-    } 
-  } 
-  else {
-    isLoggedIn.value = false
-  }
-});
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 const props = defineProps({
   id: String
@@ -426,7 +406,7 @@ onMounted(async () => {
       <div class="row text-center d-lg-none d-xxl-block">
         <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Plus de détails</button>
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="authStore.isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
         </div>
       </div>
@@ -434,7 +414,7 @@ onMounted(async () => {
       <div class="row text-center d-none d-lg-block d-xxl-none" style="margin-left: 5px; margin-right: 5px; margin-bottom: 5px;">
         <div class="btn-group-vertical" role="group" aria-label="Basic example">
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showDetail()">Plus de détails</button>
-          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
+          <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="authStore.isLoggedIn ? showNewReview() : showLogin()">Laisser un avis</button>
           <button type="button" class="btn btn-outline-secondary" style="padding-left: 5px !important; padding-right: 5px !important;" @click="showShare()">Partager la rando</button>
         </div>
       </div>
@@ -466,7 +446,7 @@ onMounted(async () => {
 </AddReviewComponent>
 
 <!-- Login -->
-<LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
+<LoginComponent></LoginComponent>
 
 </template>
 

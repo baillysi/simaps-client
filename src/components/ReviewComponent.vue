@@ -3,30 +3,10 @@
 import axios from 'axios';
 import { ref, computed } from 'vue';
 
-// user session
-import { useFirebaseAuth} from 'vuefire'
-import { onAuthStateChanged } from 'firebase/auth'
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 const emit = defineEmits(['update'])
-
-const auth = useFirebaseAuth()
-const isLoggedIn = ref(false)
-const isAdmin = ref(false)
-
-// native vuefire watcher to check whether user logged or not
-// we wait for user to be loaded to call create / update / delete hike as it requires token
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    isLoggedIn.value = true
-    // check specific user
-    if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
-      isAdmin.value = true
-    } 
-  } 
-  else {
-    isLoggedIn.value = false
-  }
-});
 
 const props = defineProps({
   hikeReviews: Object,
@@ -39,7 +19,7 @@ async function submitReview(review_id) {
   }
 
   // add authorization to protect API
-  const token = await auth.currentUser.getIdToken()
+  const token = await authStore.auth.currentUser.getIdToken()
   const headers = { 
     Authorization: 'Bearer ' + token
   };
@@ -56,7 +36,7 @@ async function submitReview(review_id) {
 
 async function deleteReview(review_id) {
   // add authorization to protect API
-  const token = await auth.currentUser.getIdToken()
+  const token = await authStore.auth.currentUser.getIdToken()
   const headers = { 
     Authorization: 'Bearer ' + token
   };
@@ -111,7 +91,7 @@ const standbyReviews = computed (() => {
             <div class="col-9">
               <span class="simaps-bold">{{ review.title }}</span> 
               <span class="badge bg-primary" style="margin-left: 5px !important;">Avis validé</span> 
-              <button v-if="isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
+              <button v-if="authStore.isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
                 <i class="pi pi-trash" style="color:#9F0000;"></i>
               </button>
             </div>
@@ -125,12 +105,12 @@ const standbyReviews = computed (() => {
           <br/>
           <span class="simaps-light">{{ review.note }}</span>
         </div>
-        <div v-if="isAdmin" v-for="review in standbyReviews" class="simaps-classic reviews">
+        <div v-if="authStore.isAdmin" v-for="review in standbyReviews" class="simaps-classic reviews">
           <div class="row">
             <div class="col-9">
               <span class="simaps-bold">{{ review.title }}</span> 
               <button type="button" class="btn btn-dark btn-sm" @click="submitReview(review.id)" style="margin-left: 5px !important; color:">Avis en attente</button> 
-              <button v-if="isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
+              <button v-if="authStore.isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
                 <i class="pi pi-trash" style="color:#9F0000;"></i>
               </button>
             </div>

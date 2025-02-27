@@ -1,56 +1,15 @@
 <script setup>
 
-import { ref } from 'vue'
-
 import AlertComponent from './AlertComponent.vue';
 
-// user session
-import { useFirebaseAuth } from 'vuefire'
-import { GoogleAuthProvider, GithubAuthProvider, signInWithRedirect, signInAnonymously } from 'firebase/auth'
-
-const props = defineProps({
-  isLoggedIn: Boolean,
-  currentUser: Object,
-})
-
-const auth = useFirebaseAuth()
-const isAuthLoading = ref(false)
-const googleProvider = new GoogleAuthProvider()
-const githubProvider = new GithubAuthProvider()
-
-// Google provider. Check GetRedirectResult in to get results & handle errors.
-async function signInWithGoogle() {
-  isAuthLoading.value = true
-  await signInWithRedirect(auth, googleProvider)
-}
-
-// GitHub provider. Check GetRedirectResult in to get results & handle errors.
-async function signInWithGitHub() {
-  isAuthLoading.value = true
-  await signInWithRedirect(auth, githubProvider)
-}
-
-// Guest Anonymous Login
-async function signInAsGuest() {
-  isAuthLoading.value = true
-  signInAnonymously(auth)
-    .then(() => {
-      // Signed in.
-      isAuthLoading.value = false
-      console.log('Logged in as guest !')
-    })
-    .catch((error) => {
-      // Handle Errors here.
-      isAuthLoading.value = false
-      alert(error.message)
-    });
-}
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 </script>
 
 <template>
 
-<div v-if="isAuthLoading" class="overlay">
+<div v-if="authStore.isAuthLoading" class="overlay">
   <div class="overlay__wrapper">
     <div class="overlay__spinner">
       <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">
@@ -64,14 +23,14 @@ async function signInAsGuest() {
   <div class="modal-dialog">
     <div class="modal-content simaps-classic">
       <div class="modal-header">
-        <h1 v-if="!isLoggedIn" class="modal-title fs-5" id="#login">Se connecter</h1>
-        <h1 v-if="isLoggedIn" class="modal-title fs-5" id="#login">Mon compte</h1>
+        <h1 v-if="authStore.isLoggedIn" class="modal-title fs-5" id="#login">Mon compte</h1>
+        <h1 v-else class="modal-title fs-5" id="#login">Se connecter</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div v-if="!isLoggedIn" class="modal-body" style="text-align:center;">
+      <div v-if="!authStore.isLoggedIn" class="modal-body" style="text-align:center;">
 
-        <button class="gsi-material-button" @click="signInWithGoogle()">
+        <button class="gsi-material-button" @click="authStore.signInWithGoogle">
           <div class="gsi-material-button-state"></div>
           <div class="gsi-material-button-content-wrapper">
             <div class="gsi-material-button-icon">
@@ -91,7 +50,7 @@ async function signInAsGuest() {
         <br/>
         <br/>
 
-        <button class="gsi-material-button" @click="signInWithGitHub()">
+        <button class="gsi-material-button" @click="authStore.signInWithGithub">
           <div class="gsi-material-button-state"></div>
           <div class="gsi-material-button-content-wrapper">
             <div class="gsi-material-button-icon">
@@ -107,7 +66,7 @@ async function signInAsGuest() {
 
         <div>
           Continuer en tant qu'invité &#x1F609;
-          <button class="btn btn-outline-primary btn-sm" style="margin-left: 5px;" type="button" @click="signInAsGuest()">
+          <button class="btn btn-outline-primary btn-sm" style="margin-left: 5px;" type="button" @click="authStore.signInAsGuest">
             <i class="pi pi-sign-in"></i>
           </button>
           <br/>
@@ -115,14 +74,14 @@ async function signInAsGuest() {
 
       </div>
 
-      <div v-if="isLoggedIn" class="modal-body" style="text-align:center;">
+      <div v-if="authStore.isLoggedIn" class="modal-body" style="text-align:center;">
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
           <AlertComponent :message="'Vous êtes correctement identifié !'" :success="true"></AlertComponent>
         </div>
         <br/>
-        <div v-if="currentUser.isAnonymous">Utilisateur : Invité </div>
-        <div v-if="!currentUser.isAnonymous">Utilisateur : {{ currentUser.displayName }} </div>
-        <div v-if="!currentUser.isAnonymous">Email : {{ currentUser.email }} </div>
+        <div v-if="!authStore.auth.currentUser.isAnonymous">Utilisateur : {{ authStore.auth.currentUser.displayName }} </div>
+        <div v-if="!authStore.auth.currentUser.isAnonymous">Email : {{ authStore.auth.currentUser.email }} </div>
+        <div v-else>Utilisateur : Invité </div>
       </div>
 
     </div>

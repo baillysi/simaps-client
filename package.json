@@ -20,6 +20,7 @@
     "leaflet.fullscreen": "^3.0.2",
     "leaflet.heightgraph": "^1.4.0",
     "leaflet.locatecontrol": "^0.81.0",
+    "pinia": "^3.0.1",
     "primeicons": "^6.0.1",
     "vue": "^3.2.47",
     "vue-cookie-accept-decline": "^6.1.0",

@@ -6,9 +6,8 @@ import axios from 'axios';
 
 import AlertComponent from './AlertComponent.vue';
 
-// user session
-import { useFirebaseAuth } from 'vuefire';
-const auth = useFirebaseAuth()
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 const emit = defineEmits(['exit'])
 
@@ -26,7 +25,7 @@ async function deleteHike() {
   isResponseLoading.value = true
 
   // add authorization to protect API
-  const token = await auth.currentUser.getIdToken()
+  const token = await authStore.auth.currentUser.getIdToken()
   const headers = { 
     Authorization: 'Bearer ' + token
   };

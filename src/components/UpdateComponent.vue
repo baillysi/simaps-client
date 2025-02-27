@@ -5,9 +5,8 @@ import { ref, toRef, watch, computed } from 'vue';
 
 import AlertComponent from './AlertComponent.vue';
 
-// user session
-import { useFirebaseAuth } from 'vuefire';
-const auth = useFirebaseAuth()
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 const emit = defineEmits(['exit'])
 
@@ -106,7 +105,7 @@ async function updateHike() {
   }
 
   // add authorization to protect API
-  const token = await auth.currentUser.getIdToken()
+  const token = await authStore.auth.currentUser.getIdToken()
   const headers = { 
     Authorization: 'Bearer ' + token
   };
@@ -185,12 +184,12 @@ async function onSubmit() {
       </div>
       <div v-if="!showResponse" class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate>
-          <p v-if="errors.length" style="color:#FF803D;">
+          <div v-if="errors.length" style="color:#FF803D;">
             <b>Veuillez corriger les erreurs suivantes :</b>
             <ul>
               <li v-for="error in errors">{{ error }}</li>
             </ul>
-          </p>
+          </div>
           <div class="form-group simaps-classic">
             <label for="InputName">Nom</label>
             <input type="text" v-model="updatedName" class="form-control simaps-light" id="InputName">
