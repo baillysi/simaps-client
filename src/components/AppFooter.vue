@@ -5,7 +5,7 @@
 <template>
   
 <div id="footer">
-  <span class="simaps-footer">&#127279;2024 Simon BAILLY. Licence publique générale GNU v3.0.</span>
+  <span class="simaps-footer">&#127279;2025 Simon BAILLY. Licence publique générale GNU v3.0.</span>
 </div>
 
 </template>

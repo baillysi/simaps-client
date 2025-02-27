@@ -30,28 +30,8 @@ import { ref, onMounted, watch, computed } from 'vue'
 import router from '../router';
 import { useResizeObserver } from '@vueuse/core'
 
-// user session
-import { useFirebaseAuth} from 'vuefire'
-import { onAuthStateChanged } from 'firebase/auth'
-
-const auth = useFirebaseAuth()
-const isLoggedIn = ref(false)
-const isAdmin = ref(false)
-
-// native vuefire watcher to check whether user logged or not
-// we wait for user to be loaded to call create / update / delete hike as it requires token
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    isLoggedIn.value = true
-    if (auth.currentUser.uid == 'iREE0Ruwi8gskaW6511J2ceYMdE3') {
-      isAdmin.value = true
-    } 
-  } 
-  else {
-    isLoggedIn.value = false
-  }
-});
-
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 const props = defineProps({
   zone: String
@@ -364,7 +344,6 @@ function showSelected(hike) {
 // routing
 function goToHike(hike) {
   router.push({ name: 'HikeComponent', params: { id: hike.id } })
-
 }
 
 // lifecycle hook
@@ -416,7 +395,7 @@ onMounted(async () => {
 
   <div class="col-lg-4">
 
-    <div v-if="isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
+    <div v-if="authStore.isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
       <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()">+ nouvel itinéraire</button>
     </div>
 
@@ -470,7 +449,11 @@ onMounted(async () => {
             <div class="accordion-body simaps-light">
               <span class="badge bg-info">{{ hike.distance }} km</span>
               <span class="badge bg-info">{{ hike.elevation }} m+</span> 
-              <span class="badge bg-info">{{ (new Date(hike.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hike.duration * 1000)).toISOString().substring(14, 16) }}</span>
+              <span class="badge bg-info">{{ (new Date(hike.duration * 1000)).toISOString().substring(11, 13) }}h{{ (new Date(hike.duration * 1000)).toISOString().substring(14, 16) }} 
+                <i v-if="hike.journey.id == 1" class="pi pi-replay" style="color:#3C002E;"></i>
+                <i v-else-if="hike.journey.id == 2" class="pi pi-arrow-right-arrow-left" style="color:#3C002E;"></i>
+                <i v-else class="pi pi-arrow-right" style="color:#3C002E;"></i>
+              </span>
               <span class="badge bg-info">{{ hike.journey.name }}</span>
               <br/><br/>
               {{ hike.description }}
@@ -487,13 +470,13 @@ onMounted(async () => {
                   </button>
                 </div>
                 <div class="col text-end">
-                  <button v-if="isAdmin" class="btn btn-light" @click="isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="authStore.isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
                     <i class="pi pi-download" style="color:#3C002E;"></i>
                   </button>
-                  <button v-if="isAdmin" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
+                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
                     <i class="pi pi-trash" style="color:#FF803D;"></i>
                   </button>
                 </div>
@@ -532,7 +515,7 @@ onMounted(async () => {
 </DeleteComponent>
 
 <!-- Login -->
-<LoginComponent :isLoggedIn="isLoggedIn" :currentUser="auth.currentUser"></LoginComponent>
+<LoginComponent></LoginComponent>
 
 </template>
 

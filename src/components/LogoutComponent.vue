@@ -1,26 +1,7 @@
 <script setup>
 
-import router from '../router'
-
-// user session
-import { useFirebaseAuth } from 'vuefire'
-import { signOut } from 'firebase/auth'
-
-const auth = useFirebaseAuth()
-
-const emit = defineEmits(['exit'])
-
-// SignOut
-async function signout() {
-  signOut(auth).then((data) => {
-      emit('exit')
-      router.push('/')
-    })
-    .catch(error => {
-      // Handle Errors here.
-      alert(error.message)
-    });
-}
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 </script>
 
@@ -37,7 +18,7 @@ async function signout() {
         <p>Voulez-vous vraiment fermer votre session ?</p>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-danger" @click="signout()">Se déconnecter</button>
+        <button class="btn btn-danger" @click="authStore.signOutAll" data-bs-dismiss="modal" aria-label="Logout">Se déconnecter</button>
       </div>
     </div>
   </div>
