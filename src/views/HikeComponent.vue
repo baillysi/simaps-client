@@ -268,7 +268,6 @@ function makeImgPath(id) {
 
 function goBackToMaps() {
   router.push({ name: 'MapComponent', params: { zone: hikeDetails.value.zone } })
-
 }
 
 // lifecycle hook
@@ -429,23 +428,18 @@ onMounted(async () => {
   </div>
 </div>
 
-<!-- Share hike -->
 <ShareComponent :url="urlToShare"></ShareComponent>
 
-<!-- Get hike details -->
 <DetailComponent></DetailComponent>
 
-<!-- Review hike -->
 <ReviewComponent :hikeReviews="hikeReviews" :hikeName="hikeDetails.name" 
 @update="getHikeReviews()">
 </ReviewComponent>
 
-<!-- New Review -->
 <AddReviewComponent :hikeId="String(hikeDetails.id)"
 @exit="getHikeReviews()">
 </AddReviewComponent>
 
-<!-- Login -->
 <LoginComponent></LoginComponent>
 
 </template>

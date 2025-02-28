@@ -10,7 +10,7 @@ import AppHeader from './components/AppHeader.vue'
 
 <template>
   <AppHeader />
-
+  
   <router-view v-slot="{ Component }">
     <keep-alive :include="['HikeComponent', 'MapComponent']">
       <component :is="Component" :key="$route.fullPath"></component>
@@ -41,7 +41,6 @@ import AppHeader from './components/AppHeader.vue'
 
     <!-- Optional -->
     <template #acceptContent>J'accepte!</template>
-
   </vue-cookie-accept-decline>
 
 </template>

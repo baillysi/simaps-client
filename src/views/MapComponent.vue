@@ -395,8 +395,8 @@ onMounted(async () => {
 
   <div class="col-lg-4">
 
-    <div v-if="authStore.isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
-      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()">+ nouvel itinéraire</button>
+    <div v-if="authStore.isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 20px;" >
+      <button class="btn btn-outline-secondary" @click="getJourneys(), getRegions(), showCreate()">+ nouvel itinéraire</button>
     </div>
 
     <div class="dataContainer">
@@ -470,7 +470,7 @@ onMounted(async () => {
                   </button>
                 </div>
                 <div class="col text-end">
-                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="authStore.isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="getJourneys(), getRegions(), showUpdate(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
@@ -490,12 +490,10 @@ onMounted(async () => {
 
 </div>
 
-<!-- Create new hike -->
 <CreateComponent :zoneId="zoneId" :regions="regions" :journeys="journeys" 
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters()">
 </CreateComponent>
 
-<!-- Update hike -->
 <UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="zoneId" :journeys="journeys" :regions="regions" 
 :currentName="hikeDetails.name" 
 :currentDistance="hikeDetails.distance" 
@@ -509,12 +507,10 @@ onMounted(async () => {
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </UpdateComponent>
 
-<!-- Delete hike -->
 <DeleteComponent :hikeId="String(hikeDetails.id)"
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </DeleteComponent>
 
-<!-- Login -->
 <LoginComponent></LoginComponent>
 
 </template>

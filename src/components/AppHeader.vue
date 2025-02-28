@@ -26,11 +26,6 @@ async function showLogout() {
   myModal.show();
 }
 
-async function hideLogout() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#logout'));
-  myModal.hide();
-}
-
 </script>
 
 <template>
@@ -38,9 +33,7 @@ async function hideLogout() {
 <div id="header">
   <nav class="navbar navbar-expand-md navbar-light">
     <div class="container-fluid">
-
       <router-link class="navbar-brand" to="/"><img src="./icons/logo.svg" alt="Kavalé Logo"/></router-link>
-
       <ul class="navbar-nav me-auto"> 
         <li class="nav-item">
           <router-link class="nav-link simaps-classic" to="/">Accueil</router-link>
@@ -57,21 +50,16 @@ async function hideLogout() {
           <router-link class="nav-link simaps-classic" to="/about">À propos</router-link>
         </li>
       </ul>
-
       <form class="form-inline">
         <button v-if="authStore.isLoggedIn" class="btn btn-outline-secondary" type="button" @click="showLogin()">Mon compte</button>
         <button v-if="authStore.isLoggedIn" class="btn btn-outline-primary" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Logout"><i class="pi pi-sign-out"></i></button>
         <button v-else class="btn btn-outline-secondary" type="button" @click="showLogin()">Se connecter</button>
       </form>
-
     </div>
   </nav>
 </div>
 
-<!-- Login -->
 <LoginComponent></LoginComponent>
-
-<!-- Logout -->
 <LogoutComponent></LogoutComponent>
 
 </template>
