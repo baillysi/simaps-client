@@ -6,14 +6,14 @@ const props = defineProps({
   url: String
 })
 
-const message = ref('Copier le lien')
+const userMessage = ref('Copier le lien')
 
 function copyToClipboard() {
   var copyText = document.getElementById("urlToShare");
   copyText.select();
   copyText.setSelectionRange(0, 99999);
   navigator.clipboard.writeText(copyText.value);
-  message.value = ('Lien copié!')
+  userMessage.value = ('Lien copié!')
 }
 
 </script>
@@ -25,7 +25,7 @@ function copyToClipboard() {
     <div class="modal-content simaps-classic">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="#share">Partager la randonnée</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="message = 'Copier le lien'"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="userMessage = 'Copier le lien'"></button>
       </div>
       <div class="modal-body">
         <div class="form-group simaps-classic">
@@ -33,7 +33,7 @@ function copyToClipboard() {
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-danger" @click="copyToClipboard()" data-toggle="tooltip" :title="'Copier le lien dans le presse-papier'">{{ message }}</button>
+        <button class="btn btn-danger" @click="copyToClipboard()" data-toggle="tooltip" :title="'Copier le lien dans le presse-papier'">{{ userMessage }}</button>
       </div>
     </div>
   </div>

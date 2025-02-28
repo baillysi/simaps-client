@@ -14,33 +14,35 @@ const props = defineProps({
   hikeId: String,
 })
 
-// handle axios response 
+// handle axios response data
 const isResponseLoading = ref(false)
-const showResponse = ref(false)
-const message = ref('')
-const success = ref(false)
+const isResponseLoaded = ref(false)
+const alertMessage = ref('')
+const alertSuccess = ref(false)
 
-const title = ref('')
-const note = ref('')
+const reviewTitle = ref('')
+const reviewNote = ref('')
+
+const errors = ref([])
 
 // star rating
-const rate = ref(''); 
+const reviewRate = ref(''); 
 const maxRatings = ref(5);
 
 function setRating(newRate) {
-  rate.value = newRate;
+  reviewRate.value = newRate;
 }
 
 async function createReview() {
   isResponseLoading.value = true
+
   const payload = {
     hike_id: props.hikeId,
-    title: title.value,
-    note: note.value,
-    rate: rate.value,
+    title: reviewTitle.value,
+    note: reviewNote.value,
+    rate: reviewRate.value,
   }
 
-  // add authorization to protect API
   const token = await authStore.auth.currentUser.getIdToken()
   const headers = { 
     Authorization: 'Bearer ' + token
@@ -50,46 +52,44 @@ async function createReview() {
       .then((res) => {
           console.log(res.status);
           isResponseLoading.value = false
-          showResponse.value = true
-          success.value = true
-          message.value = 'Merci pour votre avis ! Il sera bientôt visible'
+          isResponseLoaded.value = true
+          alertSuccess.value = true
+          alertMessage.value = 'Merci pour votre avis ! Il sera bientôt visible.'
       })
       .catch((error) => {
           console.log(error);
           isResponseLoading.value = false
-          showResponse.value = true
-          success.value = false
-          message.value = 'Une erreur est survenue'
+          isResponseLoaded.value = true
+          alertSuccess.value = false
+          alertMessage.value = 'Une erreur est survenue.'
       })
 }
 
-async function resetData() {
-  title.value = ''
-  note.value = ''
-  rate.value = 0
-  errors.value = []
-
-  showResponse.value = false
-  success.value = false
-  message.value = ''
-}
-
 // custom form validation
-const errors = ref([])
-async function onSubmit() {
+function onSubmit() {
   errors.value = []
-  if (!title.value) {
+  if (!reviewTitle.value) {
     errors.value.push('Le titre est obligatoire.')
   }
-  if (!note.value) {
+  if (!reviewNote.value) {
     errors.value.push('La description est obligatoire.')
   }
-  if (!rate.value) {
+  if (!reviewRate.value) {
     errors.value.push('La note est obligatoire.')
   }
   if (errors.value.length == 0) {
     createReview()
   }
+}
+
+function resetData() {
+  reviewTitle.value = ''
+  reviewNote.value = ''
+  reviewRate.value = 0
+  errors.value = []
+  isResponseLoaded.value = false
+  alertSuccess.value = false
+  alertMessage.value = ''
 }
 
 </script>
@@ -111,9 +111,10 @@ async function onSubmit() {
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title simaps-classic fs-5" id="#newReview">Laisser un avis</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
+        <button v-if="isResponseLoaded" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
+        <button v-else type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
       </div>
-      <div v-if="!showResponse" class="modal-body">
+      <div v-if="!isResponseLoaded" class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate> 
           <div v-if="errors.length">
             <b>Veuillez corriger les erreurs suivantes :</b>
@@ -126,18 +127,18 @@ async function onSubmit() {
               <div class="col"><label for="InputTitle">Titre</label></div>
               <div class="col text-end"><small class="simaps-light">(max 50 caractères)</small></div>
             </div>
-            <input type="text" v-model="title" class="form-control simaps-light" id="InputTitle" maxlength="50">
+            <input type="text" v-model="reviewTitle" class="form-control simaps-light" id="InputTitle" maxlength="50">
           </div>
           <div class="form-group simaps-classic">
             <div class="row">
               <div class="col"><label for="InputNote">Description</label></div>
               <div class="col text-end"><small class="simaps-light">(max 500 caractères)</small></div>
             </div>
-            <textarea type="text" v-model="note" class="form-control simaps-light" id="InputNote" rows="4" maxlength="500"></textarea>
+            <textarea type="text" v-model="reviewNote" class="form-control simaps-light" id="InputNote" rows="4" maxlength="500"></textarea>
           </div>
           <br/>
           <div class="simaps-classic wrapper">
-            Note : <span v-for="star in maxRatings" :key="star" class="star" :class="{ filled: star <= rate }" @click="setRating(star)"><i class="pi pi-star-fill"></i></span>
+            Note : <span v-for="star in maxRatings" :key="star" class="star" :class="{ filled: star <= reviewRate }" @click="setRating(star)"><i class="pi pi-star-fill"></i></span>
           </div>
           <br/>
           <div class="modal-footer">
@@ -145,9 +146,9 @@ async function onSubmit() {
           </div>
         </form>
       </div>
-      <div v-if="showResponse" class="modal-body">
+      <div v-if="isResponseLoaded" class="modal-body">
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" :success="success"></AlertComponent>
+          <AlertComponent :message="alertMessage" :success="alertSuccess"></AlertComponent>
         </div>
       </div>
     </div>

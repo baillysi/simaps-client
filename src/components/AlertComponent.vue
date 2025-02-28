@@ -11,7 +11,7 @@ const props = defineProps({
   
 <div>
   <div v-if="success" class="alert alert-success" role="alert">{{ message }} &#x1F609</div>
-  <div v-if="!success" class="alert alert-danger" role="alert">{{ message }} &#x1F609</div>
+  <div v-else class="alert alert-danger" role="alert">{{ message }} &#x1F609</div>
 </div>
 
 </template>

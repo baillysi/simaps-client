@@ -327,11 +327,6 @@ function showDelete() {
   myModal.show();
 }
 
-function showLogin() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
-  myModal.show();
-}
-
 function showSelected(hike) {
   const details = document.getElementById('flush-collapseOne'+hike.id);
   const detailsCollapse = Collapse.getOrCreateInstance(details);
@@ -383,9 +378,9 @@ onMounted(async () => {
         :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : ( mapZoom >= 13 ? function() {return outedStyle} : function() {return outedLightStyle} ) )">
           <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hike.name }}<br/> 
             <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
-            <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
-            <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
-            <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
+            <span v-else-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
+            <span v-else-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
+            <span v-else class="badge bg-dark">Expert</span>
           </l-tooltip>
         </l-geo-json> 
 
@@ -395,8 +390,8 @@ onMounted(async () => {
 
   <div class="col-lg-4">
 
-    <div v-if="authStore.isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 40px;" >
-      <button class="btn btn-outline-secondary" @click="isLoggedIn ? (getJourneys(), getRegions(), showCreate()) : showLogin()">+ nouvel itinéraire</button>
+    <div v-if="authStore.isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 20px;" >
+      <button class="btn btn-outline-secondary" @click="getJourneys(), getRegions(), showCreate()">+ nouvel itinéraire</button>
     </div>
 
     <div class="dataContainer">
@@ -439,9 +434,9 @@ onMounted(async () => {
               </div>
               <div class="col-2">
                 <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
-                <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
-                <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
-                <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
+                <span v-else-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
+                <span v-else-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
+                <span v-else class="badge bg-dark">Expert</span>
               </div>
             </button>
           </h2>
@@ -470,7 +465,7 @@ onMounted(async () => {
                   </button>
                 </div>
                 <div class="col text-end">
-                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="authStore.isLoggedIn ? (getJourneys(), getRegions(), showUpdate(), hikeDetails = hike) : showLogin()" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="getJourneys(), getRegions(), showUpdate(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
@@ -490,12 +485,10 @@ onMounted(async () => {
 
 </div>
 
-<!-- Create new hike -->
 <CreateComponent :zoneId="zoneId" :regions="regions" :journeys="journeys" 
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters()">
 </CreateComponent>
 
-<!-- Update hike -->
 <UpdateComponent :hikeId="String(hikeDetails.id)" :zoneId="zoneId" :journeys="journeys" :regions="regions" 
 :currentName="hikeDetails.name" 
 :currentDistance="hikeDetails.distance" 
@@ -509,12 +502,10 @@ onMounted(async () => {
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </UpdateComponent>
 
-<!-- Delete hike -->
 <DeleteComponent :hikeId="String(hikeDetails.id)"
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </DeleteComponent>
 
-<!-- Login -->
 <LoginComponent></LoginComponent>
 
 </template>

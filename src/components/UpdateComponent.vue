@@ -26,11 +26,12 @@ const props = defineProps({
   hasTrail: Boolean,
 })
 
-// handle axios response 
 const isResponseLoading = ref(false)
-const showResponse = ref(false)
-const message = ref('')
-const success = ref(false)
+const isResponseLoaded = ref(false)
+const alertMessage = ref('')
+const alertSuccess = ref(false)
+
+const errors = ref([])
 
 const updatedName = ref('')
 const updatedDistance = ref('')
@@ -43,16 +44,13 @@ const updatedDescription = ref('')
 
 // "writable" computed property to handle duration in hh:mm format
 // https://vuejs.org/guide/essentials/computed.html
-
 const durationHHMM = computed({
-  // getter
   get() {
     if ( updatedDuration.value !== undefined ) { // to prevent error when updatedDuration is accessed during render but not defined 
       const date = new Date(updatedDuration.value * 1000)
       return date.toISOString().substring(11, 16)
     }
   },
-  // setter
   set(val) {
     var ts = val.split(':');
     updatedDuration.value  = Date.UTC(1970, 0, 1, ts[0], ts[1]) / 1000;
@@ -104,7 +102,6 @@ async function updateHike() {
     description: updatedDescription.value,
   }
 
-  // add authorization to protect API
   const token = await authStore.auth.currentUser.getIdToken()
   const headers = { 
     Authorization: 'Bearer ' + token
@@ -114,38 +111,21 @@ async function updateHike() {
       .then((res) => {
           console.log(res.status)
           isResponseLoading.value = false
-          showResponse.value = true
-          success.value = true
-          message.value = 'Itinéraire mis à jour'
+          isResponseLoaded.value = true
+          alertSuccess.value = true
+          alertMessage.value = 'Itinéraire mis à jour'
       })
       .catch((error) => {
           console.log(error)
           isResponseLoading.value = false
-          showResponse.value = true
-          success.value = false
-          message.value = 'Une erreur est survenue'
+          isResponseLoaded.value = true
+          alertSuccess.value = false
+          alertMessage.value = 'Une erreur est survenue'
       })
 }
 
-async function resetData() {
-  updatedName.value = toRef(props, 'currentName').value
-  updatedDistance.value = toRef(props, 'currentDistance').value
-  updatedElevation.value = toRef(props, 'currentElevation').value
-  updatedDifficulty.value = toRef(props, 'currentDifficulty').value
-  updatedDuration.value = toRef(props, 'currentDuration').value
-  updatedJourney.value = toRef(props, 'currentJourney').value
-  updatedRegion.value = toRef(props, 'currentRegion').value
-  updatedDescription.value = toRef(props, 'currentDescription').value
-  errors.value = []
-
-  showResponse.value = false
-  success.value = false
-  message.value = ''
-}
-
 // custom form validation
-const errors = ref([])
-async function onSubmit() {
+function onSubmit() {
   errors.value = []
   if (!updatedName.value) {
     errors.value.push('Le nom est obligatoire.')
@@ -170,6 +150,21 @@ async function onSubmit() {
   }
 }
 
+function resetData() {
+  updatedName.value = toRef(props, 'currentName').value
+  updatedDistance.value = toRef(props, 'currentDistance').value
+  updatedElevation.value = toRef(props, 'currentElevation').value
+  updatedDifficulty.value = toRef(props, 'currentDifficulty').value
+  updatedDuration.value = toRef(props, 'currentDuration').value
+  updatedJourney.value = toRef(props, 'currentJourney').value
+  updatedRegion.value = toRef(props, 'currentRegion').value
+  updatedDescription.value = toRef(props, 'currentDescription').value
+  errors.value = []
+  isResponseLoaded.value = false
+  alertSuccess.value = false
+  alertMessage.value = ''
+}
+
 </script>
 
 <template>
@@ -179,10 +174,10 @@ async function onSubmit() {
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title simaps-bold fs-5" id="#update">Mettre à jour l'itinéraire</h1>
-        <button v-if="!showResponse" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
-        <button v-if="showResponse" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
+        <button v-if="isResponseLoaded" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData(), emit('exit')"></button>
+        <button v-else type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="resetData()"></button>
       </div>
-      <div v-if="!showResponse" class="modal-body">
+      <div v-if="!isResponseLoaded" class="modal-body">
         <form @submit.prevent="onSubmit()" novalidate>
           <div v-if="errors.length" style="color:#FF803D;">
             <b>Veuillez corriger les erreurs suivantes :</b>
@@ -242,9 +237,9 @@ async function onSubmit() {
           </div>
         </form>
       </div>
-      <div v-if="showResponse" class="modal-body">
+      <div v-if="isResponseLoaded" class="modal-body">
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" :success="success"></AlertComponent>
+          <AlertComponent :message="alertMessage" :success="alertSuccess"></AlertComponent>
         </div>
       </div>
     </div>

@@ -27,9 +27,7 @@ const authStore = useAuthStore()
         <h1 v-else class="modal-title fs-5" id="#login">Se connecter</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
       <div v-if="!authStore.isLoggedIn" class="modal-body" style="text-align:center;">
-
         <button class="gsi-material-button" @click="authStore.signInWithGoogle">
           <div class="gsi-material-button-state"></div>
           <div class="gsi-material-button-content-wrapper">
@@ -46,10 +44,8 @@ const authStore = useAuthStore()
             <span style="display: none;">Continuer avec Google</span>
           </div>
         </button>
-
         <br/>
         <br/>
-
         <button class="gsi-material-button" @click="authStore.signInWithGithub">
           <div class="gsi-material-button-state"></div>
           <div class="gsi-material-button-content-wrapper">
@@ -60,10 +56,8 @@ const authStore = useAuthStore()
             <span style="display: none;">Continuer avec GitHub</span>
           </div>
         </button>
-
         <br/>
         <br/>
-
         <div>
           Continuer en tant qu'invité &#x1F609;
           <button class="btn btn-outline-primary btn-sm" style="margin-left: 5px;" type="button" @click="authStore.signInAsGuest">
@@ -71,9 +65,7 @@ const authStore = useAuthStore()
           </button>
           <br/>
         </div>
-
       </div>
-
       <div v-if="authStore.isLoggedIn" class="modal-body" style="text-align:center;">
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
           <AlertComponent :message="'Vous êtes correctement identifié !'" :success="true"></AlertComponent>
@@ -83,7 +75,6 @@ const authStore = useAuthStore()
         <div v-if="!authStore.auth.currentUser.isAnonymous">Email : {{ authStore.auth.currentUser.email }} </div>
         <div v-else>Utilisateur : Invité </div>
       </div>
-
     </div>
   </div>
 </div>

@@ -1,7 +1,6 @@
 <script setup>
 
 import { ref } from 'vue';
-
 import axios from 'axios';
 
 import AlertComponent from './AlertComponent.vue';
@@ -15,16 +14,13 @@ const props = defineProps({
   hikeId: String,
 })
 
-// handle axios response 
 const isResponseLoading = ref(false)
-const showResponse = ref(false)
-const message = ref('')
-const success = ref(false)
+const isResponseLoaded = ref(false)
+const alertMessage = ref('')
+const alertSuccess = ref(false)
 
 async function deleteHike() {
   isResponseLoading.value = true
-
-  // add authorization to protect API
   const token = await authStore.auth.currentUser.getIdToken()
   const headers = { 
     Authorization: 'Bearer ' + token
@@ -34,16 +30,16 @@ async function deleteHike() {
       .then((res) => {
           console.log(res.status)
           isResponseLoading.value = false
-          showResponse.value = true
-          success.value = true
-          message.value = 'Itinéraire supprimé'
+          isResponseLoaded.value = true
+          alertSuccess.value = true
+          alertMessage.value = 'Itinéraire supprimé'
       })
       .catch((error) => {
           console.log(error)
           isResponseLoading.value = false
-          showResponse.value = true
-          success.value = false
-          message.value = 'Une erreur est survenue'
+          isResponseLoaded.value = true
+          alertSuccess.value = false
+          alertMessage.value = 'Une erreur est survenue'
       });
 }
 </script>
@@ -55,17 +51,18 @@ async function deleteHike() {
     <div class="modal-content simaps-classic">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="#delete">Êtes-vous certain ?</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="emit('exit')"></button>
+        <button v-if="isResponseLoaded" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="emit('exit')"></button>
+        <button v-else type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
       </div>
-      <div v-if="!showResponse" class="modal-body">
+      <div v-if="!isResponseLoaded" class="modal-body">
         <p>Voulez-vous vraiment supprimer l'itinéraire ? Cette action est irréversible.</p>
       </div>
-      <div v-if="!showResponse"  class="modal-footer">
+      <div v-if="!isResponseLoaded"  class="modal-footer">
         <button class="btn btn-danger" @click="deleteHike()">Supprimer l'itinéraire</button>
       </div>
-      <div v-if="showResponse" class="modal-body">
+      <div v-else class="modal-body">
         <div class="row" style="margin-left: 10px; margin-right: 10px;">
-          <AlertComponent :message="message" :success="success"></AlertComponent>
+          <AlertComponent :message="alertMessage" :success="alertSuccess"></AlertComponent>
         </div>
       </div>
     </div>

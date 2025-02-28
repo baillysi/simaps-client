@@ -1,7 +1,7 @@
 <script setup>
 
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 
 import { useAuthStore } from '@/stores/auth'
 const authStore = useAuthStore()
@@ -12,44 +12,6 @@ const props = defineProps({
   hikeReviews: Object,
   hikeName: String,
 })
-
-async function submitReview(review_id) {
-  const payload = {
-    is_validated: true,
-  }
-
-  // add authorization to protect API
-  const token = await authStore.auth.currentUser.getIdToken()
-  const headers = { 
-    Authorization: 'Bearer ' + token
-  };
-
-  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + review_id, payload, { headers })
-      .then((res) => {
-          console.log(res.status);
-          emit('update');
-      })
-      .catch((error) => {
-          console.log(error);
-      })
-}
-
-async function deleteReview(review_id) {
-  // add authorization to protect API
-  const token = await authStore.auth.currentUser.getIdToken()
-  const headers = { 
-    Authorization: 'Bearer ' + token
-  };
-
-  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + review_id, { headers })
-      .then((res) => {
-          console.log(res.status);
-          emit('update');
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-}
 
 const sortedReviews = computed(() => {
   return props.hikeReviews.sort((a, b) => {
@@ -72,6 +34,42 @@ const standbyReviews = computed (() => {
   return sortedReviews.value.filter(
         (review) => review.is_validated === false)
 })
+
+async function submitReview(reviewId) {
+  const payload = {
+    is_validated: true,
+  }
+
+  const token = await authStore.auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+
+  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + reviewId, payload, { headers })
+      .then((res) => {
+          console.log(res.status);
+          emit('update');
+      })
+      .catch((error) => {
+          console.log(error);
+      })
+}
+
+async function deleteReview(reviewId) {
+  const token = await authStore.auth.currentUser.getIdToken()
+  const headers = { 
+    Authorization: 'Bearer ' + token
+  };
+
+  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + reviewId, { headers })
+      .then((res) => {
+          console.log(res.status);
+          emit('update');
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+}
 
 </script>
 
