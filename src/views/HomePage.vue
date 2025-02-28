@@ -7,7 +7,7 @@ import router from '../router'
 
 const zone = ref('')
 
-async function goToMaps() {
+function goToMaps() {
   router.push({ name: 'MapComponent', params: { zone: zone.value } })
 }
  

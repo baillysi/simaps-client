@@ -12,16 +12,16 @@ const authStore = useAuthStore()
 
 const zone = ref('')
 
-async function goToMaps() {
+function goToMaps() {
   router.push({ name: 'MapComponent', params: { zone: zone.value } })
 }
 
-async function showLogin() {
+function showLogin() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
   myModal.show();
 }
 
-async function showLogout() {
+function showLogout() {
   let myModal = Modal.getOrCreateInstance(document.getElementById('#logout'));
   myModal.show();
 }
