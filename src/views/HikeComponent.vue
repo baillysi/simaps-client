@@ -313,9 +313,9 @@ onMounted(async () => {
         <l-geo-json :geojson="hikeDetails.trail.geojson" :options-style="function() {return selectedStyle}">
           <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hikeDetails.name }}<br/> 
             <span v-if="hikeDetails.difficulty == 1" class="badge bg-success">Facile</span>
-            <span v-if="hikeDetails.difficulty == 2" class="badge bg-primary">Moyen</span>
-            <span v-if="hikeDetails.difficulty == 3" class="badge bg-danger">Difficile</span>
-            <span v-if="hikeDetails.difficulty == 4" class="badge bg-dark">Expert</span>
+            <span v-else-if="hikeDetails.difficulty == 2" class="badge bg-primary">Moyen</span>
+            <span v-else-if="hikeDetails.difficulty == 3" class="badge bg-danger">Difficile</span>
+            <span v-else class="badge bg-dark">Expert</span>
           </l-tooltip>
         </l-geo-json>
 
@@ -365,9 +365,9 @@ onMounted(async () => {
         </div>
         <div class="col-2">
           <span v-if="hikeDetails.difficulty == 1" class="badge bg-success">Facile</span>
-          <span v-if="hikeDetails.difficulty == 2" class="badge bg-primary">Moyen</span>
-          <span v-if="hikeDetails.difficulty == 3" class="badge bg-danger">Difficile</span>
-          <span v-if="hikeDetails.difficulty == 4" class="badge bg-dark">Expert</span>
+          <span v-else-if="hikeDetails.difficulty == 2" class="badge bg-primary">Moyen</span>
+          <span v-else-if="hikeDetails.difficulty == 3" class="badge bg-danger">Difficile</span>
+          <span v-else class="badge bg-dark">Expert</span>
         </div>
       </div>
 
@@ -375,7 +375,7 @@ onMounted(async () => {
         <i v-for="n in Number(hikeGlobalRate)" class="pi pi-star-fill" style="font-size: 1rem; color:#3C002E;"></i> 
         <i v-for="n in (5 - Number(hikeGlobalRate))" class="pi pi-star" style="font-size: 1rem; color:#3C002E;"></i>
         <button v-if="validatedReviews.length <= 1" type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validé</u></button>
-        <button v-if="validatedReviews.length > 1" type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validés</u></button>
+        <button v-else type="button" class="btn btn-light btn-sm simaps-light" style="font-size: 12px; margin-left: 5px;" @click="showReview()"><u>{{ validatedReviews.length }} avis validés</u></button>
       </div>
 
       <div>

@@ -383,9 +383,9 @@ onMounted(async () => {
         :options-style="selectedHike == hike.id ? function() {return selectedStyle} : ( hoveredHike == hike.id ? function() {return hoveredStyle} : ( mapZoom >= 13 ? function() {return outedStyle} : function() {return outedLightStyle} ) )">
           <l-tooltip :options="{ sticky:true }" style="font-size: 14px !important; border-radius: 2px;" class="simaps-bold">{{ hike.name }}<br/> 
             <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
-            <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
-            <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
-            <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
+            <span v-else-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
+            <span v-else-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
+            <span v-else class="badge bg-dark">Expert</span>
           </l-tooltip>
         </l-geo-json> 
 
@@ -439,9 +439,9 @@ onMounted(async () => {
               </div>
               <div class="col-2">
                 <span v-if="hike.difficulty == 1" class="badge bg-success">Facile</span>
-                <span v-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
-                <span v-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
-                <span v-if="hike.difficulty == 4" class="badge bg-dark">Expert</span>
+                <span v-else-if="hike.difficulty == 2" class="badge bg-primary">Moyen</span>
+                <span v-else-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
+                <span v-else class="badge bg-dark">Expert</span>
               </div>
             </button>
           </h2>
