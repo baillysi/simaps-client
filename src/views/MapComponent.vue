@@ -327,11 +327,6 @@ function showDelete() {
   myModal.show();
 }
 
-function showLogin() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
-  myModal.show();
-}
-
 function showSelected(hike) {
   const details = document.getElementById('flush-collapseOne'+hike.id);
   const detailsCollapse = Collapse.getOrCreateInstance(details);
