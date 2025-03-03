@@ -43,6 +43,15 @@ export const useAuthStore = defineStore('store', () => {
     async function signInWithGoogle() {
         isAuthLoading.value = true
         await signInWithRedirect(auth, googleProvider)
+
+        // After returning from the redirect when your app initializes you can obtain the result
+        await getRedirectResult(auth)
+            .then(() => {
+                console.log('Logged in with Google !')
+            })
+            .catch((error) => {
+                alert(error.message)
+            });
     }
     
     async function signInWithGithub() {
