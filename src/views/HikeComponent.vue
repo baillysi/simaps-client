@@ -282,7 +282,7 @@ onMounted(async () => {
 
 <template>
 
-<div v-if="isResponseLoading" class="overlay">
+<div v-if="isResponseLoading && !authStore.isAuthLoading" class="overlay">
   <div class="overlay__wrapper">
       <div class="overlay__spinner">
         <div class="spinner-grow" style="width: 3rem; height: 3rem; color:#3C002E" role="status">

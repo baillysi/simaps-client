@@ -88,5 +88,4 @@ function showLogout() {
   color: #fff !important;
 }
 
-
 </style>
