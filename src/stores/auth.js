@@ -44,6 +44,15 @@ export const useAuthStore = defineStore('store', () => {
     async function signInWithGoogle() {
         isAuthLoading.value = true
         await signInWithRedirect(auth, googleProvider)
+        await getRedirectResult(auth)
+            .then(() => {
+                console.log('Logged in with Google !')
+                isAuthLoading.value = false
+            })
+            .catch((error) => {
+                alert(error.message)
+                isAuthLoading.value = false
+            });
     }
     
     async function signInWithGithub() {
