@@ -24,7 +24,6 @@ import GeoJsonToGpx from "@dwayneparton/geojson-to-gpx"
 import CreateComponent from '../components/CreateComponent.vue'
 import UpdateComponent from '../components/UpdateComponent.vue'
 import DeleteComponent from '../components/DeleteComponent.vue'
-import LoginComponent from '../components/LoginComponent.vue'
 
 import { ref, onMounted, watch, computed } from 'vue'
 import router from '../router';
@@ -506,7 +505,6 @@ onMounted(async () => {
 @exit="isResponseLoading=true, getZoneDetails(), resetDataAndFilters(), hikeDetails = ''">
 </DeleteComponent>
 
-<LoginComponent></LoginComponent>
 
 </template>
 

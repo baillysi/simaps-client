@@ -30,7 +30,6 @@ import ShareComponent from '../components/ShareComponent.vue'
 import DetailComponent from '../components/DetailComponent.vue'
 import ReviewComponent from '../components/ReviewComponent.vue'
 import AddReviewComponent from '../components/AddReviewComponent.vue'
-import LoginComponent from '../components/LoginComponent.vue'
 
 import { useAuthStore } from '@/stores/auth'
 const authStore = useAuthStore()
@@ -440,7 +439,6 @@ onMounted(async () => {
 @exit="getHikeReviews()">
 </AddReviewComponent>
 
-<LoginComponent></LoginComponent>
 
 </template>
 
