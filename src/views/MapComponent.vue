@@ -25,7 +25,7 @@ import CreateComponent from '../components/CreateComponent.vue'
 import UpdateComponent from '../components/UpdateComponent.vue'
 import DeleteComponent from '../components/DeleteComponent.vue'
 
-import { ref, onMounted, watch, computed, onActivated } from 'vue'
+import { ref, onMounted, watch, computed, onActivated, onDeactivated } from 'vue'
 import router from '../router';
 import { useResizeObserver } from '@vueuse/core'
 
@@ -348,6 +348,10 @@ onMounted(function () {
 
 onActivated(function () {
   window.dispatchEvent(new Event('resize'));
+})
+
+onDeactivated(function () {
+  resetDataAndFilters();
 })
 
 </script>
