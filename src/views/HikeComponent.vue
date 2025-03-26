@@ -22,7 +22,7 @@ import viewpointMarker from '../components/icons/viewpoint.svg'
 import { useRouter } from 'vue-router'
 
 import axios from 'axios';
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, onActivated } from 'vue'
 import { Modal } from 'bootstrap'
 import { useResizeObserver } from '@vueuse/core'
 
@@ -30,7 +30,6 @@ import ShareComponent from '../components/ShareComponent.vue'
 import DetailComponent from '../components/DetailComponent.vue'
 import ReviewComponent from '../components/ReviewComponent.vue'
 import AddReviewComponent from '../components/AddReviewComponent.vue'
-import LoginComponent from '../components/LoginComponent.vue'
 
 import { useAuthStore } from '@/stores/auth'
 const authStore = useAuthStore()
@@ -270,12 +269,16 @@ function goBackToMaps() {
   router.push({ name: 'MapComponent', params: { zone: hikeDetails.value.zone } })
 }
 
-// lifecycle hook
-onMounted(async () => {
+// lifecycle hooks
+onMounted(function () {
   isResponseLoading.value = true
   getHikeDetails()
   getHikeReviews()
   getHikeViewpoints()
+})
+
+onActivated(function () {
+  window.dispatchEvent(new Event('resize'));
 })
 
 </script>
@@ -440,7 +443,6 @@ onMounted(async () => {
 @exit="getHikeReviews()">
 </AddReviewComponent>
 
-<LoginComponent></LoginComponent>
 
 </template>
 
