@@ -5,19 +5,23 @@ import 'vue-cookie-accept-decline/dist/vue-cookie-accept-decline.css';
 
 import { RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
+import Maintenance from '@/views/Maintenance.vue'
+
+const isMaintenance = import.meta.env.VITE_APP_MAINTENANCE === 'true'
 
 </script>
 
 <template>
-  <AppHeader />
+  <Maintenance v-if="isMaintenance" />
+  <AppHeader v-if="!isMaintenance"/>
   
-  <router-view v-slot="{ Component }">
+  <router-view v-slot="{ Component }" v-if="!isMaintenance">
     <keep-alive :include="['HikeComponent', 'MapComponent']">
       <component :is="Component" :key="$route.fullPath"></component>
     </keep-alive>
   </router-view>
 
-  <vue-cookie-accept-decline
+  <vue-cookie-accept-decline v-if="!isMaintenance"
     :debug="false"
     :disableDecline="true"
     :showPostponeButton="false"
@@ -42,7 +46,6 @@ import AppHeader from './components/AppHeader.vue'
     <!-- Optional -->
     <template #acceptContent>J'accepte!</template>
   </vue-cookie-accept-decline>
-
 </template>
 
 <style>
