@@ -22,7 +22,7 @@ import viewpointMarker from '../components/icons/viewpoint.svg'
 import { useRouter } from 'vue-router'
 
 import axios from 'axios';
-import { ref, onMounted, watch, computed, onActivated } from 'vue'
+import { ref, onMounted, watch, computed, onActivated, onDeactivated } from 'vue'
 import { Modal } from 'bootstrap'
 import { useResizeObserver } from '@vueuse/core'
 
@@ -279,6 +279,10 @@ onMounted(function () {
 
 onActivated(function () {
   window.dispatchEvent(new Event('resize'));
+})
+
+onDeactivated(function () {
+  fitBounds(hikeDetails.value.trail.geojson);
 })
 
 </script>
