@@ -1,7 +1,6 @@
 <script setup>
-
-import { ref } from 'vue';
-
+import { ref } from 'vue'
+import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
 import router from '../router'
 
@@ -10,106 +9,47 @@ const zone = ref('')
 function goToMaps() {
   router.push({ name: 'MapComponent', params: { zone: zone.value } })
 }
- 
 </script>
 
 <template>
+  <div class="min-h-screen flex flex-col">
+    <AppHeader />
 
-<div class="container-fluid" style="text-align:center;">
-  <h1 class="simaps-bold d-none d-lg-block" style="font-size: 75px;">Cartes & Randonnées.</h1>
-  <h1 class="simaps-bold d-lg-none" style="font-size: 55px;">Cartes & Randonnées.</h1>
-  <h6 class="simaps-light" style="padding-bottom: 30px;">La cartographie des plus beaux massifs, pour préparer vos trails et randonnées.</h6>
-  <div class="container-fluid">
-    <img src="/illustration.svg" style="max-height: 500px;">
-  </div>
-  <br/>
-  <br/>
-  <div class="btn-group" role="group">
-    <button type="button" class="btn btn-outline-secondary" @click="zone = 'reunion', goToMaps()">Île de la Réunion</button>
-  </div>
-</div>
+    <!-- Contenu principal -->
+    <div class="flex-grow text-center px-4 mt-8">
+      <h1 class="text-[#3C002E] font-bold font-inter text-[50px] lg:text-[75px]">
+        Cartes & Randonnées.
+      </h1>
+      <h6 class="text-[#3C002E] font-inter font-normal text-base mb-4">
+        La cartographie des plus beaux massifs, pour préparer vos trails et randonnées.
+      </h6>
+      <div class="flex justify-center mb-12">
+        <img src="/illustration.svg" alt="Illustration" class="max-h-[500px] object-contain" />
+      </div>
+      <!-- Bouton -->
+      <div class="flex justify-center">
+        <button
+          @click="zone = 'reunion'; goToMaps()"
+          class="px-8 py-3 rounded border-1 border-[#3C002E] text-[#3C002E] font-inter font-semibold transition duration-200 hover:bg-[#3C002E] hover:text-white">
+          Île de la Réunion
+        </button>
+      </div>
+    </div>
 
-<AppFooter/>
-  
+    <AppFooter />
+  </div>
 </template>
 
-<style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;550;650;800&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
-.btn-outline-primary {
-  border-color: #FF803D !important;
-  color: #fff !important;
-  background-color:#FF803D !important;
+.font-inter {
+  font-family: 'Inter', sans-serif;
 }
 
-.btn-outline-secondary {
-  color:#3C002E !important;
-  font-family: "Inter", sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 650 !important;
-  font-style: normal;
-  padding-right: 45px !important;
-  padding-left: 45px !important;
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
-
-.btn-outline-secondary:hover {
-  color: #fff !important;
-  background-color:#3C002E !important;
-}
-
-.btn-danger {
-  border-color: #FF803D !important;
-  background-color: #fff !important;
-  color: #FF803D !important;
-  font-family: "Inter", sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 650 !important;
-  font-style: normal;
-}
-
-.btn-danger:hover {
-  color: #fff !important;
-  background-color:#FF803D !important;
-}
-
-.btn-dark {
-  border-color: #9F0000 !important;
-  background-color: #fff !important;
-  color: #9F0000 !important;
-  font-family: "Inter", sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 650 !important;
-  font-style: normal;
-}
-
-.btn-dark:hover {
-  color: #fff !important;
-  background-color:#9F0000 !important;
-}
-
-.simaps-classic {
-  color: #3C002E !important;
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 550 !important;
-  font-style: normal;
-}
-
-.simaps-bold {
-  color: #3C002E !important;
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 800 !important;
-  font-style: normal;
-}
-
-.simaps-light {
-  color: #3C002E !important;
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400 !important;
-  font-style: normal;
-}
-
 </style>

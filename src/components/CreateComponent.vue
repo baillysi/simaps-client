@@ -70,7 +70,7 @@ async function createHike() {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.post(import.meta.env.VITE_APP_ROOT_API + '/hikes', payload, { headers })
+  await axios.post(import.meta.env.VITE_APP_ROOT_API + 'api/hikes/', payload, { headers })
       .then((res) => {
           console.log(res.status)
           isResponseLoading.value = false

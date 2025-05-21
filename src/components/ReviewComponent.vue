@@ -45,7 +45,7 @@ async function submitReview(reviewId) {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + reviewId, payload, { headers })
+  await axios.put(import.meta.env.VITE_APP_ROOT_API + 'api/reviews/' + reviewId, payload, { headers })
       .then((res) => {
           console.log(res.status);
           emit('update');
@@ -61,7 +61,7 @@ async function deleteReview(reviewId) {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + reviewId, { headers })
+  await axios.delete(import.meta.env.VITE_APP_ROOT_API + 'api/reviews/' + reviewId, { headers })
       .then((res) => {
           console.log(res.status);
           emit('update');
@@ -89,7 +89,7 @@ async function deleteReview(reviewId) {
             <div class="col-9">
               <span class="simaps-bold">{{ review.title }}</span> 
               <span class="badge bg-primary" style="margin-left: 5px !important;">Avis validé</span> 
-              <button v-if="authStore.isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
+              <button v-if="authStore.isLoggedIn" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
                 <i class="pi pi-trash" style="color:#9F0000;"></i>
               </button>
             </div>
@@ -103,12 +103,12 @@ async function deleteReview(reviewId) {
           <br/>
           <span class="simaps-light">{{ review.note }}</span>
         </div>
-        <div v-if="authStore.isAdmin" v-for="review in standbyReviews" class="simaps-classic reviews">
+        <div v-if="authStore.isLoggedIn" v-for="review in standbyReviews" class="simaps-classic reviews">
           <div class="row">
             <div class="col-9">
               <span class="simaps-bold">{{ review.title }}</span> 
               <button type="button" class="btn btn-dark btn-sm" @click="submitReview(review.id)" style="margin-left: 5px !important; color:">Avis en attente</button> 
-              <button v-if="authStore.isAdmin" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
+              <button v-if="authStore.isLoggedIn" class="btn btn-light btn-sm" @click="deleteReview(review.id)" data-toggle="tooltip" title="supprimer l'avis">
                 <i class="pi pi-trash" style="color:#9F0000;"></i>
               </button>
             </div>

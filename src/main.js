@@ -10,6 +10,7 @@ import 'primeicons/primeicons.css';
 import { initializeApp } from "firebase/app";
 import { VueFire, VueFireAuth } from 'vuefire'
 
+import './assets/styles/tailwind.css'
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

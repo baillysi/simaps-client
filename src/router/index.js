@@ -3,6 +3,7 @@ import HomePage from '@/views/HomePage.vue'
 import AboutPage from '@/views/AboutPage.vue'
 import MapComponent from '@/views/MapComponent.vue'
 import HikeComponent from '@/views/HikeComponent.vue'
+import HikeMap from '@/views/HikeMap.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,8 +20,8 @@ const router = createRouter({
     },
     {
       path: '/maps/:zone',
-      name: 'MapComponent',
-      component: MapComponent,
+      name: 'HikeMap',
+      component: HikeMap,
       props: true,
     },
     {

@@ -1,91 +1,103 @@
 <script setup>
-
-import { ref } from 'vue';
-import { Modal } from 'bootstrap';
-import router from '../router'
-
-import LoginComponent from './LoginComponent.vue';
-import LogoutComponent from './LogoutComponent.vue';
-
+import { ref, computed } from 'vue'
+import LoginComponent from './LoginComponent.vue'
 import { useAuthStore } from '@/stores/auth'
+import LogoutComponent from './LogoutComponent.vue'
+
 const authStore = useAuthStore()
 
-const zone = ref('')
+const isLoginModalOpen = ref(false) // Variable pour gérer l'ouverture du modal
+const isLogoutModalOpen = ref(false) // Variable pour gérer l'ouverture du modal
 
-function goToMaps() {
-  router.push({ name: 'MapComponent', params: { zone: zone.value } })
+// Computed pour savoir si l'utilisateur est connecté
+const userIsLoggedIn = computed(() => authStore.isLoggedIn)
+
+// Fonction pour ouvrir/fermer le modal
+function toggleLoginModal() {
+  isLoginModalOpen.value = !isLoginModalOpen.value
 }
 
-function showLogin() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#login'));
-  myModal.show();
+function toggleLogoutModal() {
+  isLogoutModalOpen.value = !isLogoutModalOpen.value
 }
-
-function showLogout() {
-  let myModal = Modal.getOrCreateInstance(document.getElementById('#logout'));
-  myModal.show();
-}
-
 </script>
 
 <template>
-  
-<div id="header">
-  <nav class="navbar navbar-expand-md navbar-light">
-    <div class="container-fluid">
-      <router-link class="navbar-brand" to="/"><img src="./icons/logo.svg" alt="Kavalé Logo"/></router-link>
-      <ul class="navbar-nav me-auto"> 
-        <li class="nav-item">
-          <router-link class="nav-link simaps-classic" to="/">Accueil</router-link>
+  <div class="bg-white p-3 shadow-md sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <router-link class="flex items-center" to="/">
+        <img src="./icons/logo.svg" alt="Kavalé Logo" class="h-16 w-auto" />
+      </router-link>
+
+      <ul class="flex space-x-8">
+        <li>
+          <router-link
+            class="text-[#3C002E] font-inter text-lg hover:text-[#FF803D]"
+            :class="{ 'font-bold': $route.path === '/' }"
+            to="/"
+          >
+            Accueil
+          </router-link>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle simaps-classic" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Cartes
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <li class="nav-item"><button class="dropdown-item simaps-classic" @click="zone = 'reunion', goToMaps()">Réunion</button></li>
-          </ul>
+        <li>
+          <router-link
+            class="text-[#3C002E] font-inter text-lg hover:text-[#FF803D]"
+            :class="{ 'font-bold': $route.path === '/maps/reunion' }"
+            to="/maps/reunion"
+          >
+            Réunion
+          </router-link>
         </li>
-        <li class="nav-item">
-          <router-link class="nav-link simaps-classic" to="/about">À propos</router-link>
+        <li>
+          <router-link
+            class="text-[#3C002E] font-inter text-lg hover:text-[#FF803D]"
+            :class="{ 'font-bold': $route.path === '/about' }"
+            to="/about"
+          >
+            À propos
+          </router-link>
         </li>
       </ul>
-      <form class="form-inline">
-        <button v-if="authStore.isLoggedIn" class="btn btn-outline-secondary" type="button" @click="showLogin()">Mon compte</button>
-        <button v-if="authStore.isLoggedIn" class="btn btn-outline-primary" style="margin-left: 5px;" type="button" @click="showLogout()" data-toggle="tooltip" title="Logout"><i class="pi pi-sign-out"></i></button>
-        <button v-else class="btn btn-outline-secondary" type="button" @click="showLogin()">Se connecter</button>
-      </form>
+
+      <div class="flex items-center">
+        <!-- Affiche "Mon compte" si l'utilisateur est connecté, sinon affiche "Se connecter" -->
+        <button
+          v-if="!userIsLoggedIn"
+          class="text-[#3C002E] font-inter border-2 border-[#3C002E] px-4 py-2 rounded hover:bg-[#3C002E] hover:text-white"
+          @click="toggleLoginModal"
+        >
+          Se connecter
+        </button>
+
+        <button
+          v-else
+          class="text-[#3C002E] font-inter border-2 border-[#3C002E] px-4 py-2 rounded hover:bg-[#3C002E] hover:text-white"
+          @click="toggleLogoutModal"
+        >
+          Mon compte
+        </button>
+      </div>
     </div>
-  </nav>
-</div>
+  </div>
 
-<LoginComponent></LoginComponent>
-<LogoutComponent></LogoutComponent>
-
+  <!-- Modal LogoutComponent -->
+  <LogoutComponent v-if="isLogoutModalOpen" @close="toggleLogoutModal" />
+  <!-- Modal LoginComponent -->
+  <LoginComponent v-if="isLoginModalOpen" @close="toggleLoginModal" />
 </template>
 
-<style>
+<style scoped>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;550;650;800&display=swap');
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
 
 #header {
-  grid-row: header;
-  padding-left: 40px;
-  padding-right: 40px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
 }
-
-.navbar-brand {
-  padding-right: 10px;
-  padding-left: 10px;
-  width: 125px;
-}
-
-.nav-link {
-  font-size: 17px !important;
-  margin-right: 10px;
-}
-
-.dropdown-item.simaps-classic:hover {
-  background-color: #3C002E;
-  color: #fff !important;
-}
-
 </style>

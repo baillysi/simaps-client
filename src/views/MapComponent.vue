@@ -7,7 +7,7 @@ import 'leaflet/dist/leaflet.css'
 
 // vue components for Leaflet Maps - vue3
 // regularly check vue-leaflet project to implement new components https://github.com/vue-leaflet/vue-leaflet
-import { LMap, LTileLayer, LControlScale, LGeoJson, LTooltip } from '@vue-leaflet/vue-leaflet'
+import { LMap, LTileLayer, LControlScale, LGeoJson, LTooltip, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
 
 // native leaflet plugins
 import 'leaflet.locatecontrol'
@@ -16,6 +16,9 @@ import 'leaflet.fullscreen'
 import 'leaflet.fullscreen/Control.FullScreen.css'
 import 'leaflet.heightgraph'
 import 'leaflet.heightgraph/dist/L.Control.Heightgraph.min.css'
+
+import startMarker from '../components/icons/start.svg'
+import endMarker from '../components/icons/end.svg'
 
 import { Collapse, Modal } from 'bootstrap'
 import axios from 'axios'
@@ -46,6 +49,9 @@ const zoneId = ref('')
 const hoveredHike = ref('')
 const selectedHike = ref('')
 
+const hikeStartLatLng = ref('')
+const hikeEndLatLng = ref('')
+
 const journeys = ref([])
 const regions = ref([])
 const regionsAll = ref([])
@@ -68,7 +74,7 @@ const sortedHikes = computed(() => {
   return 0;
   }): currentOrder.value == 'Région' ?
   hikes.value.sort((a, b) => {
-  let fa = a.region['id'], fb = b.region['id'];
+  let fa = a.region.id, fb = b.region.id;
   if (fa < fb) {
     return 1;
   }
@@ -78,10 +84,10 @@ const sortedHikes = computed(() => {
   return 0;
   }):
   hikes.value.sort((a, b) => {
-  if (a.region['id'] < b.region['id']) {
+  if (a.id < b.id) {
     return -1;
   }
-  if (a.region['id'] > b.region['id']) {
+  if (a.id > b.id) {
     return 1;
   }
   return 0;
@@ -102,7 +108,7 @@ const filteredHikes = computed (() => {
             .toLowerCase()
             .includes(searchRegion.value.toString().toLowerCase())
           &&
-          hike.trail.geojson)
+          hike.trail)
 })
 const sortedRegionsAll = computed(() => {
   return regionsAll.value.sort((a, b) => {
@@ -121,6 +127,8 @@ const myMap = ref(null)
 const mapCenter = ref('')
 const mapZoom = ref(11)
 const isMapDataLoaded = ref(false)
+const showStartMarker = ref(false)
+const showEndMarker = ref(false)
 const attribution = ref('&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors')
 
 const selectedStyle = ref(
@@ -190,33 +198,38 @@ const myFullscreenControl = L.control
 
 
 async function getZoneDetails() {
-  const responseZone = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
-  const responseRegion = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions/'+ props.zone)
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/hikes', { params: { zone_id: 1 } })
+  const responseZoneTest = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/zones/1')
+  const responseRegion = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/regions')
   isResponseLoading.value = false
-  mapCenter.value = [parseFloat(responseZone.data['lat']), parseFloat(responseZone.data['lng'])]
-  zoneId.value = responseZone.data['id'].toString()
-  hikes.value = responseZone.data['hikes']
+  mapCenter.value = [parseFloat(responseZoneTest.data['lat']), parseFloat(responseZoneTest.data['lng'])]
+  zoneId.value = responseZoneTest.data['id'].toString()
+  hikes.value = response.data
   regionsAll.value = responseRegion.data
 }
 
 async function getJourneys() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/journeys')
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/journeys')
   journeys.value = response.data
 }
 
 async function getRegions() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions')
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/regions')
   regions.value = response.data
 }
 
 function resetData() {
   selectedHike.value = ''
   hideHeightgraph()
+  showStartMarker.value = false
+  showEndMarker.value = false
 }
 
 function resetDataAndFilters() {
   selectedHike.value = ''
   hideHeightgraph()
+  showStartMarker.value = false
+  showEndMarker.value = false
   fitBoundsZone(mapCenter.value)
   searchDifficulty.value = ''
   searchRegion.value = ''
@@ -335,6 +348,16 @@ function showSelected(hike) {
   });
 }
 
+function showStartEnd(hike) {
+  let hikeLength = hike.trail.geojson.features[0].geometry.coordinates.length
+  hikeStartLatLng.value = [hike.trail.geojson.features[0].geometry.coordinates[0][1], hike.trail.geojson.features[0].geometry.coordinates[0][0]]
+  hikeEndLatLng.value = [hike.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][1], hike.trail.geojson.features[0].geometry.coordinates[hikeLength - 1][0]]
+  showStartMarker.value = true;
+  if (hike.journey.id != 1) {
+    showEndMarker.value = true;
+  }
+}
+
 // routing
 function goToHike(hike) {
   router.push({ name: 'HikeComponent', params: { id: hike.id } })
@@ -378,7 +401,7 @@ onDeactivated(function () {
         <l-control-scale position="bottomleft" :imperial="false" :metric="true"></l-control-scale>
         <l-tile-layer :url="'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'" :attribution="attribution"></l-tile-layer>
 
-        <l-geo-json @click="selectedHike=hike.id, showSelected(hike), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
+        <l-geo-json @click="selectedHike=hike.id, showSelected(hike), showStartEnd(hike), showHeightgraph(hike.trail.geojson), fitBounds(hike.trail.geojson)" 
         @mouseover="hoveredHike=hike.id" 
         @mouseout="hoveredHike=''" 
         v-for="hike in filteredHikes" :key="hike.id" :geojson="hike.trail.geojson" 
@@ -389,7 +412,23 @@ onDeactivated(function () {
             <span v-else-if="hike.difficulty == 3" class="badge bg-danger">Difficile</span>
             <span v-else class="badge bg-dark">Expert</span>
           </l-tooltip>
-        </l-geo-json> 
+        </l-geo-json>
+
+        <l-marker v-if="showStartMarker" :lat-lng="hikeStartLatLng">
+        <l-tooltip v-if="showEndMarker" class="simaps-classic">Départ</l-tooltip>
+        <l-tooltip v-else class="simaps-classic">Départ / Arrivée</l-tooltip>
+        <l-icon
+          :iconSize="mapZoom >= 15 ? [28, 28] : ((mapZoom >= 13 ? [24, 24] : [18, 18]))"
+          :iconAnchor="mapZoom >= 15 ? [14, 28] : ((mapZoom >= 13 ? [12, 24] : [9, 18]))"
+          :icon-url="startMarker"/>
+        </l-marker>
+        <l-marker v-if="showEndMarker" :lat-lng="hikeEndLatLng">
+          <l-tooltip class="simaps-classic">Arrivée</l-tooltip>
+          <l-icon
+            :iconSize="mapZoom >= 15 ? [28, 28] : ((mapZoom >= 13 ? [24, 24] : [18, 18]))"
+            :iconAnchor="mapZoom >= 15 ? [14, 28] : ((mapZoom >= 13 ? [12, 24] : [9, 18]))"
+            :icon-url="endMarker"/>
+        </l-marker>
 
       </l-map>
     </div>
@@ -397,7 +436,7 @@ onDeactivated(function () {
 
   <div class="col-lg-4">
 
-    <div v-if="authStore.isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 20px;" >
+    <div v-if="authStore.isLoggedIn" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 20px;" >
       <button class="btn btn-outline-secondary" @click="getJourneys(), getRegions(), showCreate()">+ nouvel itinéraire</button>
     </div>
 
@@ -472,13 +511,13 @@ onDeactivated(function () {
                   </button>
                 </div>
                 <div class="col text-end">
-                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="getJourneys(), getRegions(), showUpdate(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button v-if="authStore.isLoggedIn" class="btn btn-light" @click="getJourneys(), getRegions(), showUpdate(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
                     <i class="pi pi-download" style="color:#3C002E;"></i>
                   </button>
-                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
+                  <button v-if="authStore.isLoggedIn" class="btn btn-light" @click="showDelete(), hikeDetails = hike" data-toggle="tooltip" title="supprimer l'itinéraire">
                     <i class="pi pi-trash" style="color:#FF803D;"></i>
                   </button>
                 </div>

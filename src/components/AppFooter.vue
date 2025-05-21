@@ -3,33 +3,16 @@
 </script>
 
 <template>
-  
-<div id="footer">
-  <span class="simaps-footer">&#127279;2025 Simon BAILLY. Licence publique générale GNU v3.0.</span>
-</div>
-
+  <div id="footer" class="flex justify-center items-center px-10 py-4 mt-4 mb-4">
+    <span class="text-[#3C002E] font-inter font-semibold text-sm opacity-50">
+      📍 2025 Simon BAILLY. Licence publique générale GNU v3.0.
+    </span>
+  </div>
 </template>
 
-<style>
-
-#footer {
-  grid-row: footer;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  padding-left: 40px;
-  padding-right: 40px;
-  text-align: center;
-}
-
-.simaps-footer {
-  color: #3C002E !important;
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 550 !important;
-  font-style: normal;
-  opacity: 0.5;
-}
-
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;550;650;800&display=swap');
 </style>
+
 
 

@@ -48,7 +48,7 @@ async function createReview() {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.post(import.meta.env.VITE_APP_ROOT_API + '/reviews', payload, { headers })
+  await axios.post(import.meta.env.VITE_APP_ROOT_API + 'api/reviews/', payload, { headers })
       .then((res) => {
           console.log(res.status);
           isResponseLoading.value = false

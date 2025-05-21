@@ -13,7 +13,7 @@ const isMaintenance = import.meta.env.VITE_APP_MAINTENANCE === 'true'
 
 <template>
   <Maintenance v-if="isMaintenance" />
-  <AppHeader v-if="!isMaintenance"/>
+  <!-- <AppHeader v-if="!isMaintenance"/> -->
   
   <router-view v-slot="{ Component }" v-if="!isMaintenance">
     <keep-alive :include="['HikeComponent', 'MapComponent']">
