@@ -26,7 +26,7 @@ async function deleteHike() {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, { headers })
+  await axios.delete(import.meta.env.VITE_APP_ROOT_API + 'api/hikes/' + props.hikeId, { headers })
       .then((res) => {
           console.log(res.status)
           isResponseLoading.value = false

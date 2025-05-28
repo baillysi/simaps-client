@@ -7,7 +7,7 @@ import { RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import Maintenance from '@/views/Maintenance.vue'
 
-const isMaintenance = import.meta.env.VITE_APP_MAINTENANCE === 'true'
+const isMaintenance = import.meta.env.VITE_APP_MAINTENANCE === 'false'
 
 </script>
 

@@ -125,7 +125,7 @@ const myFullscreenControl = L.control
   })
 
 async function getHikeDetails() {
-  const responseHike = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.id)
+  const responseHike = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/hikes/' + props.id)
   isResponseLoading.value = false
   hikeDetails.value = responseHike.data
   mapCenter.value = [-21.128756, 55.519246]
@@ -135,13 +135,13 @@ async function getHikeDetails() {
 }
 
 async function getHikeReviews() {
-  const responseReviews = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/reviews', { params: { hike_id: props.id } })
+  const responseReviews = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/reviews', { params: { hike_id: props.id } })
   isResponseLoading.value = false
   hikeReviews.value = responseReviews.data
 }
 
 async function getHikeViewpoints() {
-  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/viewpoints', { params: { hike_id: props.id } })
+  const responseViewpoints = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/viewpoints', { params: { hike_id: props.id } })
   isResponseLoading.value = false
   hikeViewpoints.value = responseViewpoints.data
 }
