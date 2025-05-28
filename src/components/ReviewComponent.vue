@@ -45,7 +45,7 @@ async function submitReview(reviewId) {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + reviewId, payload, { headers })
+  await axios.put(import.meta.env.VITE_APP_ROOT_API + 'api/reviews/' + reviewId, payload, { headers })
       .then((res) => {
           console.log(res.status);
           emit('update');
@@ -61,7 +61,7 @@ async function deleteReview(reviewId) {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.delete(import.meta.env.VITE_APP_ROOT_API + '/reviews/' + reviewId, { headers })
+  await axios.delete(import.meta.env.VITE_APP_ROOT_API + 'api/reviews/' + reviewId, { headers })
       .then((res) => {
           console.log(res.status);
           emit('update');

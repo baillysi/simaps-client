@@ -107,7 +107,7 @@ async function updateHike() {
     Authorization: 'Bearer ' + token
   };
 
-  await axios.put(import.meta.env.VITE_APP_ROOT_API + '/hikes/' + props.hikeId, payload, { headers })
+  await axios.put(import.meta.env.VITE_APP_ROOT_API + 'api/hikes/' + props.hikeId, payload, { headers })
       .then((res) => {
           console.log(res.status)
           isResponseLoading.value = false

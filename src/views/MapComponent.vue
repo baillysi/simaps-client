@@ -48,7 +48,6 @@ const selectedHike = ref('')
 
 const journeys = ref([])
 const regions = ref([])
-const regionsAll = ref([])
 
 const searchName = ref('')
 const searchDifficulty = ref('')
@@ -104,8 +103,8 @@ const filteredHikes = computed (() => {
           &&
           hike.trail.geojson)
 })
-const sortedRegionsAll = computed(() => {
-  return regionsAll.value.sort((a, b) => {
+const sortedRegions = computed(() => {
+  return regions.value.sort((a, b) => {
   if (a.id < b.id) {
     return -1;
   }
@@ -190,22 +189,23 @@ const myFullscreenControl = L.control
 
 
 async function getZoneDetails() {
-  const responseZone = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/zones/' + props.zone)
-  const responseRegion = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions/'+ props.zone)
-  isResponseLoading.value = false
+  const responseHikes = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/hikes', { params: { zone_id: 1 } })
+  const responseZone = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/zones/1')
+  hikes.value = responseHikes.data
+
   mapCenter.value = [parseFloat(responseZone.data['lat']), parseFloat(responseZone.data['lng'])]
-  zoneId.value = responseZone.data['id'].toString()
-  hikes.value = responseZone.data['hikes']
-  regionsAll.value = responseRegion.data
+  zoneId.value = responseZone.data['id']
+
+  isResponseLoading.value = false
 }
 
 async function getJourneys() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/journeys')
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/journeys')
   journeys.value = response.data
 }
 
 async function getRegions() {
-  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + '/regions')
+  const response = await axios.get(import.meta.env.VITE_APP_ROOT_API + 'api/regions')
   regions.value = response.data
 }
 
@@ -344,6 +344,8 @@ function goToHike(hike) {
 onMounted(function () {
   isResponseLoading.value = true
   getZoneDetails()
+  getJourneys()
+  getRegions()
 })
 
 onActivated(function () {
@@ -398,7 +400,7 @@ onDeactivated(function () {
   <div class="col-lg-4">
 
     <div v-if="authStore.isAdmin" class="row" style="margin-left: 40px; margin-right: 40px; margin-bottom: 20px;" >
-      <button class="btn btn-outline-secondary" @click="getJourneys(), getRegions(), showCreate()">+ nouvel itinéraire</button>
+      <button class="btn btn-outline-secondary" @click="showCreate()">+ nouvel itinéraire</button>
     </div>
 
     <div class="dataContainer">
@@ -407,7 +409,7 @@ onDeactivated(function () {
         <div class="col-lg-5 col-4" >
           <select class="form-select form-select-sm simaps-classic" v-model="searchRegion" @click="resetData(), fitBoundsRegion()" data-bs-toggle="collapse" :data-bs-target="'#flush-collapseOne'+selectedHike">
             <option selected disabled value="">Région</option>
-            <option v-for="region in sortedRegionsAll" :value="region.id">{{ region.name }}</option>
+            <option v-for="region in sortedRegions" :value="region.id">{{ region.name }}</option>
           </select>
         </div>
         <div class="col-lg-5 col-4" >
@@ -472,7 +474,7 @@ onDeactivated(function () {
                   </button>
                 </div>
                 <div class="col text-end">
-                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="getJourneys(), getRegions(), showUpdate(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
+                  <button v-if="authStore.isAdmin" class="btn btn-light" @click="showUpdate(), hikeDetails = hike" data-toggle="tooltip" title="mettre à jour l'itinéraire">
                     <i class="pi pi-file-edit" style="color:#3C002E;"></i>
                   </button>
                   <button v-if="hike.trail.geojson" class="btn btn-light"  @click="downloadGPX(hike.trail.geojson, hike.name)" data-toggle="tooltip" title="télécharger la trace gpx">
